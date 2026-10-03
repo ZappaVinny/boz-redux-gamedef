@@ -1,0 +1,3002 @@
+# BOZ Redux symbol database. Edit in Ghidra and export (see docs/modding-design.md),
+# or by hand. Offsets are from the image base. Confidence: confirmed | likely.
+
+[game]
+version = "1.0.11"
+version_code = 1045111
+image_sha256 = "f458c15a7111779ad320af377d0bb751294119788ba06d430bee0cc977539fee"
+image_base = 0x4a000000
+
+# Mapping progress per subsystem (free text, kept by hand).
+[coverage]
+engine = "boundary report by import family (ExportBozEngineBoundary); asset pipeline mapped: Game_InitEngine picks blackops_<format>.dz, CIsArchiveManager (slots 2-10) mounts it through derbh (dzArchiveAttach), CIwResManager_LoadGroup builds [debug_patches/]<name>.group.bin, IwPath_Resolve tries data-<style>/ then the bare name, everything reaches s3eFileOpen; IwHashString"
+runtime = "main loop (GameMain, CIwGame/CGame Init/Update/ShutDown), top-level game states (0 Ingame, 1 DOIngame, 2 FrontEnd, 3 Splash), CIsStateMachine events (1 Enter, 2 Exit, 4 message, 5 frame); class map with constructors/destructors from tools; console variables (13 Cvar_Register*, 597 cvars); frame pipeline mapped: CGame::Update -> CIwGame::Update -> BeginFrame (UpdateStates: state Update -> sub-state Update -> CIwWorld::Update) and slot 27 (state Render, sound, network, Director_Tick: component tables Update/Update2/Update3 + systems Update/LateUpdate, then PostUpdate); 65 singletons located (T::s_instance, BozNameSingletons); system and component-table slot meanings"
+state = "rounds mapped: CWaveManager (struct, Update, OnEvent, StartWave) runs CWave definitions (slots 20-46 getters; CWaveRepeatable scales base * multiplier^(round - m_StartingWave)); round ends when killed >= GetZombieCount; score mapped: CScoreManager::AddScore, SUBJECT_ADD_SCORE / SUBJECT_CHARGE_POINTS / SUBJECT_POINTS_PENALTY, COD Points fallback, cvars UnlimitedScore and StartingScore; Dead Ops: CDORoundManager rounds from 42 CDORound resources (arena, lightmap, music, lighting), CDOZombieSpawner hordes (unlock round, spawn rates)"
+entities = "component system mapped: CIsComponent slots (Init, GetTypeId, ...), 162 CIsComponentTable<T> globals (T::s_table) and 114 T::FromEntity lookups named by BozNameComponentTables; observer events (CIsSubject Subscribe/Notify/Dispatch, CIsObserver::OnEvent); reflection mapped (CIsClassInfo, AddBase, AddProperty): 369 classes, 929 named fields in sdk/reflection/boz-1.0.11.toml (ExportBozReflection), T::GetClassInfo and T::RegisterReflection named; event bus mapped: 337 SUBJECT_* events (ids = IwHashString of the name, SubjectId_Register) in sdk/events/boz-1.0.11.toml with sending and handling classes (BozNameHashGlobals, ExportBozEvents); purchases all send SUBJECT_CHARGE_POINTS to CScoreManager; pathing: Recast/Detour v7 navmeshes (CIsNavMesh = 128-byte Recast config + Detour tiles), CIsCrowdAgent crowd agents, CIsNavMeshConnection / CJumpConnection climbs"
+weapons = "firing mapped: weapon behaviours are state machines (State_Firing takes ammo unless WeaponsUnlimitedAmmo; FinishReload moves reserve to clip); the shoot animation drives Weapon_FireBullets (spread, Physics_RayCast, SUBJECT_WEAPON_HIT to the target CIsBroadcaster); CWeaponManager SetWeapon / SetReloading / MeleeAttack / GiveWeapon; data layout from reflection"
+rendering = "transform interpolation helpers known from the client"
+ui = "Flash front end: CFlashMenuState CallActionScript / TransitionState (C++ -> ActionScript), menus answer with SUBJECT_* events; HUD via IwUI elements found by name (CUIPageManager::FindElement), CHUDManager::UpdateWeapon / SetScore"
+audio = "sound specs are resources: CIwSoundSpecSound (sample data on s3eSound channels) and CIwSoundSpecAudio (streamed mp3 via s3eAudio, e.g. blackops-music/*.mp3); CIwSoundManager::Play(hash), CSoundSequenceManager::Play; spec slots 16-20"
+saves = "fully decoded in bozkit/save.py: all .i3d files are u32 version + u32 Adler-32 checksum (field zeroed) + body; game save = level cstring, dynamic count, sections (owner, class, data; many sections are reflection blobs); settings = CSaveManager +0xf8 fields (sensitivity, volumes, brightness, ...); CSaveManager Serialise / Collect / GetSection"
+network = "Marmalade IwNetwork with pluggable backends; configurations Bonjour_Tcp (local Wi-Fi: Bonjour/mDNS discovery _PROJECT_KIWI._tcp + TCP) and OnlineDemonware (DemonWare rooms + STUN), chosen by CIwNetworkConfigurationManager::SetConfiguration; all DemonWare use goes through IwDemonware::Get (rooms, login, telemetry, server time, key archive); host-authoritative (CGameNetwork isHost +0x54)"
+
+[[struct]]
+name = "CGameNetwork"
+size = 0x000240
+notes = "Game-side network singleton (CGameNetwork::s_instance) over Marmalade IwNetwork. Most gameplay code checks isHost; clients follow the host through NetworkProperty fields and CIsNetworkSubject events."
+[[struct.field]]
+name = "subject"
+offset = 0x000010
+type = "void *"
+notes = "CIsSubject for network-wide game events (Event_* such as player ready, in-game state)"
+[[struct.field]]
+name = "room"
+offset = 0x000024
+type = "void *"
+notes = "current network room/lobby object (null when offline)"
+[[struct.field]]
+name = "isHost"
+offset = 0x000054
+type = "bool"
+notes = "this client is the host (or playing alone); host-only logic (spawning, damage, deaths, rounds) checks it"
+[[struct.field]]
+name = "hostReady"
+offset = 0x000055
+type = "bool"
+notes = "host has finished setting up"
+[[struct.field]]
+name = "multiplayerAvailable"
+offset = 0x000088
+type = "bool"
+notes = "multiplayer service available"
+[[struct.field]]
+name = "wifiAvailable"
+offset = 0x000089
+type = "bool"
+notes = "local Wi-Fi play available (sent to the menu with setWifiMode)"
+[[struct.field]]
+name = "sessionAvailable"
+offset = 0x0001e2
+type = "bool"
+notes = "a game session can be joined/hosted"
+
+[[struct]]
+name = "CIsStateMachine"
+size = 0x000020
+notes = "Generic event-driven state machine used for game states and in-game/menu sub-states."
+[[struct.field]]
+name = "vtable"
+offset = 0x000000
+type = "pointer"
+[[struct.field]]
+name = "handler"
+offset = 0x000004
+type = "pointer"
+notes = "object whose vtable slot 2 receives events"
+[[struct.field]]
+name = "state"
+offset = 0x000008
+type = "int"
+notes = "current state id"
+[[struct.field]]
+name = "next_state"
+offset = 0x00000c
+type = "int"
+notes = "requested state id"
+[[struct.field]]
+name = "running"
+offset = 0x000010
+type = "bool"
+[[struct.field]]
+name = "event"
+offset = 0x000014
+type = "StateEvent *"
+notes = "event being delivered, or null"
+[[struct.field]]
+name = "time_in_state"
+offset = 0x00001c
+type = "int"
+notes = "reset on each state change"
+
+[[struct]]
+name = "CScoreManager"
+size = 0x000070
+notes = "Points singleton (CScoreManager::s_instance). Embeds a CIsObserver at +0x20 and a CIsNetworkSubject at +0x28."
+[[struct.field]]
+name = "scores"
+offset = 0x000040
+type = "void *"
+notes = "map player id -> current points"
+[[struct.field]]
+name = "earned"
+offset = 0x00004c
+type = "void *"
+notes = "map player id -> points earned (stats)"
+[[struct.field]]
+name = "unlimitedScore"
+offset = 0x00005c
+type = "void *"
+notes = "the UnlimitedScore cvar (value at +0x10): purchases cost nothing"
+
+[[struct]]
+name = "CWaveManager"
+size = 0x0000c8
+notes = "Round manager singleton (CWaveManager::s_instance). Not reflected; layout from Update, OnEvent and StartWave."
+[[struct.field]]
+name = "vtable"
+offset = 0x000000
+type = "void *"
+[[struct.field]]
+name = "loaded"
+offset = 0x00001c
+type = "bool"
+notes = "set once the level's wave state is loaded; events are ignored before"
+[[struct.field]]
+name = "subject"
+offset = 0x000020
+type = "void *"
+notes = "CIsSubject (+0x20) the manager sends its events through (start of the embedded subject)"
+[[struct.field]]
+name = "wave"
+offset = 0x000050
+type = "CWave *"
+notes = "current round's wave definition"
+[[struct.field]]
+name = "specialityRound"
+offset = 0x000054
+type = "uint"
+notes = "round the last speciality wave ran"
+[[struct.field]]
+name = "specialityCount"
+offset = 0x000058
+type = "uint"
+notes = "speciality waves run so far"
+[[struct.field]]
+name = "liveZombies"
+offset = 0x00006c
+type = "void *"
+notes = "map of live zombie entities"
+[[struct.field]]
+name = "liveCount"
+offset = 0x000070
+type = "uint"
+notes = "zombies currently alive"
+[[struct.field]]
+name = "round"
+offset = 0x000078
+type = "uint"
+notes = "current round number (incremented by StartWave)"
+[[struct.field]]
+name = "spawned"
+offset = 0x00007c
+type = "uint"
+notes = "zombies spawned this round"
+[[struct.field]]
+name = "killed"
+offset = 0x000084
+type = "uint"
+notes = "zombies killed this round; the round ends when this reaches GetZombieCount"
+[[struct.field]]
+name = "nextWave"
+offset = 0x000088
+type = "CWave *"
+notes = "wave queued for the next round"
+[[struct.field]]
+name = "spawnTimer"
+offset = 0x00008c
+type = "int"
+notes = "ms until the next spawn (GetSpawnTimeOut)"
+[[struct.field]]
+name = "nextWaveTimer"
+offset = 0x000090
+type = "int"
+notes = "ms until the next round starts (GetWaveTimeout)"
+[[struct.field]]
+name = "startTimer"
+offset = 0x000094
+type = "int"
+notes = "ms before spawning starts (GetStartingTimer + 1)"
+[[struct.field]]
+name = "newWaveTimer"
+offset = 0x000098
+type = "int"
+notes = "ms until the first round's SUBJECT_NEW_WAVE"
+[[struct.field]]
+name = "startingSpawned"
+offset = 0x0000a0
+type = "uint"
+notes = "starting zombies spawned so far"
+[[struct.field]]
+name = "spawningStartingZombies"
+offset = 0x0000a4
+type = "bool"
+notes = "starting zombies are being spawned"
+[[struct.field]]
+name = "staggerTimer"
+offset = 0x0000a8
+type = "int"
+notes = "ms between starting zombies (StaggerStartingZombies cvar)"
+[[struct.field]]
+name = "callOfTheDead"
+offset = 0x0000ac
+type = "bool"
+notes = "level is callofthedead (George Romero rounds)"
+[[struct.field]]
+name = "lastRomeroRound"
+offset = 0x0000b0
+type = "uint"
+notes = "round George Romero last spawned or was destroyed"
+[[struct.field]]
+name = "romero"
+offset = 0x0000b4
+type = "uint"
+notes = "George Romero's entity id, 0 when not spawned"
+[[struct.field]]
+name = "powerOn"
+offset = 0x0000b8
+type = "bool"
+notes = "SUBJECT_ON_POWER_SWITCH_ACTIVATE received; adds the powered zombie count"
+[[struct.field]]
+name = "spawnBetweenRounds"
+offset = 0x0000b9
+type = "bool"
+notes = "wave slot 46: keep spawning while waiting for the next round"
+
+[[struct]]
+name = "StateEvent"
+size = 0x000010
+notes = "The event a CIsStateMachine is delivering (CIsStateMachine +0x14)."
+[[struct.field]]
+name = "type"
+offset = 0x000000
+type = "int"
+notes = "1 Enter, 2 Exit, 5 frame update"
+[[struct.field]]
+name = "arg1"
+offset = 0x000004
+type = "int"
+[[struct.field]]
+name = "arg2"
+offset = 0x000008
+type = "int"
+[[struct.field]]
+name = "handled"
+offset = 0x00000c
+type = "bool"
+
+# Virtual function slots: name the slot once in the class that introduces it; every
+# override in every derived class is named after it by tools/ghidra/rtti_classes.py.
+# Slots 0 and 1 are always the complete and deleting destructors.
+
+[[vslot]]
+class = "CAIControllerZombie"
+slot = 19
+name = "Activate"
+confidence = "confirmed"
+notes = "Subscribes the zombie's broadcaster to every damage source (SUBJECT_WEAPON_HIT, EXPLOSION_HIT, TRAP_DAMAGE, START_BURNING, shockwave, body damage, ...) and loads its sounds."
+
+[[vslot]]
+class = "CBarricade"
+slot = 24
+name = "Interact"
+confidence = "likely"
+notes = "The player uses this point of interest: checks the cost (COD Points as a single-player fallback), sends SUBJECT_CHARGE_POINTS and performs the action."
+
+[[vslot]]
+class = "CDoor"
+slot = 24
+name = "Interact"
+confidence = "likely"
+notes = "The player uses this point of interest: checks the cost (COD Points as a single-player fallback), sends SUBJECT_CHARGE_POINTS and performs the action."
+
+[[vslot]]
+class = "CHealth"
+slot = 23
+name = "Update"
+confidence = "confirmed"
+notes = "Per-frame: head-off bleeding (m_HeadOffBleedOutRate per second), bleed-out timeout (SUBJECT_BLED_OUT, cvar HealthIgnoreBleedOutTime), invulnerability countdown and regeneration (after m_HealDelay, back to full over m_HealingTime)."
+
+[[vslot]]
+class = "CInputManager"
+slot = 4
+name = "OnInputAction"
+confidence = "confirmed"
+notes = "OnInputAction(actionId): touch/button actions. 1 melee, 2/3 use press/release (SUBJECT_POI_ACTION), 4/5 reload, 6/7/0xb/0xc grenade and tactical, 8 aim, 9/10 fire press/release, 0xd/0xe crouch/prone, 0xf fire mode, 0x10 switch weapon, 0x11 free mode; sends ON_*_BUTTON events."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 2
+name = "AddArchive"
+confidence = "confirmed"
+notes = "AddArchive(name, inMemory, onLoaded): queues a .dz archive to mount."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 3
+name = "RemoveArchive"
+confidence = "likely"
+notes = "Unmounts and forgets the named archive."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 4
+name = "MountArchive"
+confidence = "likely"
+notes = "Mounts the named archive."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 5
+name = "MountAll"
+confidence = "likely"
+notes = "Mounts every queued archive."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 6
+name = "UnmountAll"
+confidence = "likely"
+notes = "Unmounts every archive, newest first."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 7
+name = "IsResidentFile"
+confidence = "likely"
+notes = "True for files kept resident (by extension or name hash)."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 8
+name = "AddResidentFile"
+confidence = "likely"
+notes = "Marks a file name (hashed) as resident."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 9
+name = "AddResidentExtension"
+confidence = "likely"
+notes = "Marks a file extension as resident."
+
+[[vslot]]
+class = "CIsArchiveManager"
+slot = 10
+name = "LoadGroup"
+confidence = "confirmed"
+notes = "LoadGroup(name, async, flags): loads a .group through CIwResManager."
+
+[[vslot]]
+class = "CIsComponent"
+slot = 14
+name = "PoolNew"
+confidence = "likely"
+notes = "Forwards to the class's pool allocator (slot 0 of the pool object)."
+
+[[vslot]]
+class = "CIsComponent"
+slot = 15
+name = "PoolDelete"
+confidence = "likely"
+notes = "Forwards to the class's pool allocator (slot 1 of the pool object)."
+
+[[vslot]]
+class = "CIsComponent"
+slot = 16
+name = "GetTypeId"
+confidence = "confirmed"
+notes = "Hash of the class name, cached in a function-local static."
+
+[[vslot]]
+class = "CIsComponent"
+slot = 17
+name = "GetTypeName"
+confidence = "confirmed"
+notes = "Returns the class name string."
+
+[[vslot]]
+class = "CIsComponent"
+slot = 18
+name = "SetEntity"
+confidence = "likely"
+notes = "Stores the owning entity at +0xc."
+
+[[vslot]]
+class = "CIsComponent"
+slot = 22
+name = "Init"
+confidence = "likely"
+notes = "Runs once the entity is assembled: looks up sibling components (T::FromEntity), subscribes to events, finds child nodes."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 4
+name = "Create"
+confidence = "confirmed"
+notes = "Create(entityId): allocates the T component for an entity and inserts it."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 5
+name = "Destroy"
+confidence = "confirmed"
+notes = "Destroy(entityId): deletes the entity's T component."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 6
+name = "GetUpdateGroup"
+confidence = "likely"
+notes = "Fixed-step group this table belongs to (ComponentTables_FixedStep)."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 7
+name = "GetDependencies"
+confidence = "confirmed"
+notes = "Null-terminated list of table names this table updates after (ComponentTableRegistry_Sort)."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 8
+name = "Update"
+confidence = "confirmed"
+notes = "Calls the update method of every enabled component (flags +0x10: bit 0 enabled, bit 1 suspended)."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 9
+name = "FixedStep"
+confidence = "likely"
+notes = "Fixed-step update of every component."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 10
+name = "Update2"
+confidence = "likely"
+notes = "Second update phase."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 11
+name = "PostUpdate"
+confidence = "likely"
+notes = "Runs every frame (ComponentTables_PostUpdate)."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 12
+name = "Render"
+confidence = "likely"
+notes = "Render phase (ComponentTables_Render)."
+
+[[vslot]]
+class = "CIsComponentTableBase"
+slot = 13
+name = "Update3"
+confidence = "likely"
+notes = "Third update phase (CIsTransform)."
+
+[[vslot]]
+class = "CIsObserver"
+slot = 2
+name = "OnEvent"
+confidence = "confirmed"
+notes = "OnEvent(sender, event, a, b, userdata): called by CIsSubject::Dispatch for subscribed events."
+
+[[vslot]]
+class = "CIsReflectedResource"
+slot = 6
+name = "ResolveProperties"
+confidence = "likely"
+notes = "Decodes the property blob read by Serialise (+0x14) through the class's CIsClassInfo (slot 17). Data files set reflected fields this way."
+
+[[vslot]]
+class = "CIsReflectedResource"
+slot = 16
+name = "WriteProperties"
+confidence = "likely"
+notes = "Forwards to the class's CIsClassInfo (its vtable slot 0)."
+
+[[vslot]]
+class = "CIsReflectedResource"
+slot = 17
+name = "ReadProperties"
+confidence = "likely"
+notes = "Forwards to the class's CIsClassInfo (its vtable slot 1); called by ResolveProperties."
+
+[[vslot]]
+class = "CIsReflectedResource"
+slot = 18
+name = "GetClassHash"
+confidence = "confirmed"
+notes = "IwHashString of the class name (cached)."
+
+[[vslot]]
+class = "CIsReflectedResource"
+slot = 19
+name = "GetClassName"
+confidence = "confirmed"
+notes = "The class name string."
+
+[[vslot]]
+class = "CIsSubject"
+slot = 2
+name = "Notify"
+confidence = "confirmed"
+notes = "Notify(event, a, b, sender): forwards to Dispatch."
+
+[[vslot]]
+class = "CIsSubject"
+slot = 3
+name = "Dispatch"
+confidence = "confirmed"
+notes = "Queues every observer subscribed to the event (and to all events, up to 2048) and calls each one's OnEvent."
+
+[[vslot]]
+class = "CIsSystemStaticBase"
+slot = 0
+name = "GetTypeId"
+confidence = "confirmed"
+notes = "System type id (static per T)."
+
+[[vslot]]
+class = "CIsSystemStaticBase"
+slot = 1
+name = "GetDependencies"
+confidence = "confirmed"
+notes = "Null-terminated list of the names of systems this one runs after (CIsSystemDB::Sort)."
+
+[[vslot]]
+class = "CIsSystemStaticBase"
+slot = 2
+name = "Update"
+confidence = "confirmed"
+notes = "Per-frame update (Systems_Update, from Director_Tick when the clock advanced)."
+
+[[vslot]]
+class = "CIsSystemStaticBase"
+slot = 3
+name = "FixedStep"
+confidence = "likely"
+notes = "Fixed-step update (Systems_FixedStep)."
+
+[[vslot]]
+class = "CIsSystemStaticBase"
+slot = 4
+name = "LateUpdate"
+confidence = "likely"
+notes = "Second per-frame update (Systems_LateUpdate)."
+
+[[vslot]]
+class = "CIsSystemStaticBase"
+slot = 5
+name = "PostUpdate"
+confidence = "likely"
+notes = "Runs every frame, even when the clock did not advance (Systems_PostUpdate)."
+
+[[vslot]]
+class = "CIsSystemStaticBase"
+slot = 6
+name = "Render"
+confidence = "confirmed"
+notes = "Render pass (Director_Render)."
+
+[[vslot]]
+class = "CIsSystemStaticBase"
+slot = 8
+name = "SetOrderIndex"
+confidence = "likely"
+notes = "Called by CIsSystemDB::Sort with the system's position."
+
+[[vslot]]
+class = "CIwGame"
+slot = 16
+name = "Init"
+confidence = "confirmed"
+
+[[vslot]]
+class = "CIwGame"
+slot = 17
+name = "ShutDown"
+confidence = "confirmed"
+
+[[vslot]]
+class = "CIwGame"
+slot = 18
+name = "Update"
+confidence = "confirmed"
+
+[[vslot]]
+class = "CIwGame"
+slot = 19
+name = "BeginFrame"
+confidence = "likely"
+
+[[vslot]]
+class = "CIwGame"
+slot = 20
+name = "UpdateEngine"
+confidence = "likely"
+
+[[vslot]]
+class = "CIwGame"
+slot = 21
+name = "RenderEngine"
+confidence = "likely"
+
+[[vslot]]
+class = "CIwGameState"
+slot = 3
+name = "Enter"
+confidence = "confirmed"
+notes = "Top-level game state entered: CGameStateIngame creates the in-game systems here."
+
+[[vslot]]
+class = "CIwGameState"
+slot = 4
+name = "Exit"
+confidence = "confirmed"
+notes = "State left: destroys what Enter created."
+
+[[vslot]]
+class = "CIwGameState"
+slot = 5
+name = "Update"
+confidence = "confirmed"
+notes = "Per-frame update; runs the state's sub-state machine (CGameStateOSM) and the IwUI controller/view."
+
+[[vslot]]
+class = "CIwGameState"
+slot = 6
+name = "Render"
+confidence = "confirmed"
+notes = "Per-frame render: camera, sectors, Director_Render, HUD."
+
+[[vslot]]
+class = "CIwGameState"
+slot = 7
+name = "OnEvent"
+confidence = "likely"
+notes = "Game events (ids 0x80xx, e.g. 0x8011 suspend, 0x8012 resume, 0x8019 player ready)."
+
+[[vslot]]
+class = "CIwManaged"
+slot = 5
+name = "Serialise"
+confidence = "confirmed"
+notes = "Base class serialises the name hash at +4 (IwSerialise)."
+
+[[vslot]]
+class = "CIwManaged"
+slot = 8
+name = "HandleEvent"
+confidence = "likely"
+notes = "Returns false in the base class; order matches Marmalade's IwManaged.h."
+
+[[vslot]]
+class = "CIwManaged"
+slot = 9
+name = "SetName"
+confidence = "confirmed"
+notes = "Stores the hash of the name at +4."
+
+[[vslot]]
+class = "CIwManaged"
+slot = 10
+name = "GetClassName"
+confidence = "confirmed"
+notes = "Returns the class name string; nearly every class overrides it."
+
+[[vslot]]
+class = "CIwManaged"
+slot = 11
+name = "DebugRender"
+confidence = "likely"
+notes = "Empty in the base class."
+
+[[vslot]]
+class = "CIwManaged"
+slot = 12
+name = "DebugAddMenuItems"
+confidence = "confirmed"
+notes = "Adds a \"Name\" item to a debug menu."
+
+[[vslot]]
+class = "CIwManaged"
+slot = 13
+name = "ReplaceOrDelete"
+confidence = "likely"
+notes = "If the argument has the same class name, destroys this and copies the argument over it; otherwise deletes the argument."
+
+[[vslot]]
+class = "CIwSoundSpec"
+slot = 16
+name = "Stop"
+confidence = "confirmed"
+notes = "Stops a playing instance (s3eAudioStop / channel stop)."
+
+[[vslot]]
+class = "CIwSoundSpec"
+slot = 17
+name = "Pause"
+confidence = "confirmed"
+notes = "Pauses a playing instance."
+
+[[vslot]]
+class = "CIwSoundSpec"
+slot = 18
+name = "Resume"
+confidence = "confirmed"
+notes = "Resumes a paused instance."
+
+[[vslot]]
+class = "CIwSoundSpec"
+slot = 19
+name = "IsPlaying"
+confidence = "confirmed"
+notes = "True while the instance plays."
+
+[[vslot]]
+class = "CIwSoundSpec"
+slot = 20
+name = "Update"
+confidence = "likely"
+notes = "Per-frame instance update (volume from distance and settings; finishes when done)."
+
+[[vslot]]
+class = "CIwWorld"
+slot = 15
+name = "Update"
+confidence = "confirmed"
+notes = "World tick: deferred handlers, slot 20 of every active entity, add/remove queues."
+
+[[vslot]]
+class = "CLunarLander"
+slot = 24
+name = "Interact"
+confidence = "likely"
+notes = "The player uses this point of interest: checks the cost (COD Points as a single-player fallback), sends SUBJECT_CHARGE_POINTS and performs the action."
+
+[[vslot]]
+class = "CMysteryBox"
+slot = 24
+name = "Interact"
+confidence = "confirmed"
+notes = "The player uses this point of interest: checks the cost (COD Points as a single-player fallback), sends SUBJECT_CHARGE_POINTS and performs the action."
+
+[[vslot]]
+class = "CObjectState"
+slot = 2
+name = "Enter"
+confidence = "likely"
+notes = "Sub-state entered (CIngameStatePlaying subscribes to input and level events, loads the BOPlayerControlsWin console config)."
+
+[[vslot]]
+class = "CObjectState"
+slot = 3
+name = "Update"
+confidence = "confirmed"
+notes = "Sub-state per-frame update; CIngameStatePlaying ticks CIwWorld here."
+
+[[vslot]]
+class = "CObjectState"
+slot = 4
+name = "Exit"
+confidence = "likely"
+notes = "Sub-state left."
+
+[[vslot]]
+class = "CObjectState"
+slot = 5
+name = "OnEvent"
+confidence = "likely"
+notes = "Sub-state event handler."
+
+[[vslot]]
+class = "CPackAPunch"
+slot = 24
+name = "Interact"
+confidence = "confirmed"
+notes = "The player uses this point of interest: checks the cost (COD Points as a single-player fallback), sends SUBJECT_CHARGE_POINTS and performs the action."
+
+[[vslot]]
+class = "CPerk"
+slot = 24
+name = "Interact"
+confidence = "confirmed"
+notes = "The player uses this point of interest: checks the cost (COD Points as a single-player fallback), sends SUBJECT_CHARGE_POINTS and performs the action."
+
+[[vslot]]
+class = "CPerkManager"
+slot = 25
+name = "UpdateHUD"
+confidence = "likely"
+notes = "Updates the 7 perk icons on the HUD (fades the under-attack ones, cvar PerkUnderAttackFadeTimeMS)."
+
+[[vslot]]
+class = "CPlayerController"
+slot = 24
+name = "HandleState"
+confidence = "confirmed"
+notes = "IStateHandler for the player's state machine (+0x1cc): 23 states (0x14 down, 0x15 dead); the update branch runs last stand (LastStandDuration / LastStandDurationSinglePlayer, PlayerDownScorePenalty)."
+
+[[vslot]]
+class = "CTurret"
+slot = 24
+name = "Interact"
+confidence = "likely"
+notes = "The player uses this point of interest: checks the cost (COD Points as a single-player fallback), sends SUBJECT_CHARGE_POINTS and performs the action."
+
+[[vslot]]
+class = "CWave"
+slot = 20
+name = "GetZombieCount"
+confidence = "confirmed"
+notes = "GetZombieCount(round, powerOn): zombies this round, plus the powered count when the power is on. CWaveRepeatable: base * m_ZombieCountMultiplier^(round - m_StartingWave). The round ends when this many have died."
+
+[[vslot]]
+class = "CWave"
+slot = 21
+name = "GetNormalZombieCount"
+confidence = "confirmed"
+notes = "m_ZombieCount, scaled per round in CWaveRepeatable."
+
+[[vslot]]
+class = "CWave"
+slot = 22
+name = "GetPoweredZombieCount"
+confidence = "confirmed"
+notes = "m_PoweredZombieCount, scaled per round in CWaveRepeatable."
+
+[[vslot]]
+class = "CWave"
+slot = 23
+name = "GetPoweredZombieHealthMult"
+confidence = "confirmed"
+notes = "m_PoweredZombieHealthMult."
+
+[[vslot]]
+class = "CWave"
+slot = 24
+name = "GetZombieType"
+confidence = "confirmed"
+notes = "m_ZombieType (entity spec hash, e.g. zombie_dog)."
+
+[[vslot]]
+class = "CWave"
+slot = 25
+name = "GetPoweredZombieType"
+confidence = "confirmed"
+notes = "m_PoweredZombieType."
+
+[[vslot]]
+class = "CWave"
+slot = 26
+name = "GetZombieHealth"
+confidence = "confirmed"
+notes = "m_ZombieHealth."
+
+[[vslot]]
+class = "CWave"
+slot = 27
+name = "GetMaxActive"
+confidence = "confirmed"
+notes = "GetMaxActive(round): most zombies alive at once; scaled by m_MaxActiveMultiplier in CWaveRepeatable."
+
+[[vslot]]
+class = "CWave"
+slot = 28
+name = "GetSpawnTimeOut"
+confidence = "confirmed"
+notes = "GetSpawnTimeOut(round): ms between spawns (m_TimeOut, scaled by m_TimeOutMultiplier)."
+
+[[vslot]]
+class = "CWave"
+slot = 29
+name = "GetNextWave"
+confidence = "confirmed"
+notes = "m_NextWave (hash of the next CWave); CWaveRepeatable returns its own name so it repeats."
+
+[[vslot]]
+class = "CWave"
+slot = 30
+name = "GetWaveTimeout"
+confidence = "confirmed"
+notes = "m_WaveTimeout: ms before the next round starts."
+
+[[vslot]]
+class = "CWave"
+slot = 34
+name = "IsSpeciality"
+confidence = "likely"
+notes = "True for speciality waves (dogs, monkeys); co-op sync then copies the host's zombie count and health into the wave."
+
+[[vslot]]
+class = "CWave"
+slot = 37
+name = "GetStartingZombies"
+confidence = "confirmed"
+notes = "m_StartingZombies spawned at the round start (staggered by the StaggerStartingZombies cvar)."
+
+[[vslot]]
+class = "CWave"
+slot = 38
+name = "GetFogConfig"
+confidence = "confirmed"
+notes = "m_FogConfig."
+
+[[vslot]]
+class = "CWave"
+slot = 39
+name = "GetStartingTimer"
+confidence = "confirmed"
+notes = "m_StartingTimer: delay before spawning starts."
+
+[[vslot]]
+class = "CWave"
+slot = 40
+name = "GetZombieWalk"
+confidence = "confirmed"
+notes = "m_ZombieWalk speed."
+
+[[vslot]]
+class = "CWave"
+slot = 41
+name = "GetZombieWalkFast"
+confidence = "confirmed"
+notes = "m_ZombieWalkFast speed."
+
+[[vslot]]
+class = "CWave"
+slot = 42
+name = "GetZombieRun"
+confidence = "confirmed"
+notes = "m_ZombieRun speed."
+
+[[vslot]]
+class = "CWave"
+slot = 43
+name = "GetZombieSprint"
+confidence = "confirmed"
+notes = "m_ZombieSprint speed."
+
+[[vslot]]
+class = "CWave"
+slot = 44
+name = "OnWaveStart"
+confidence = "likely"
+notes = "Called by CWaveManager::StartWave with the manager."
+
+[[vslot]]
+class = "CWave"
+slot = 45
+name = "OnWaveEnd"
+confidence = "likely"
+notes = "Called on SUBJECT_WAVE_ENDED with the manager."
+
+[[vslot]]
+class = "CWeaponBehaviour"
+slot = 2
+name = "HandleState"
+confidence = "likely"
+notes = "IStateHandler for the weapon state machine (idle, firing, reloading)."
+
+[[vslot]]
+class = "CWeaponBehaviour"
+slot = 6
+name = "FinishReload"
+confidence = "confirmed"
+notes = "Moves ammo from the reserve (weapon +0x30) into the clip (+0x2c) up to m_clipSize and refreshes the HUD."
+
+[[vslot]]
+class = "CWeaponBehaviour"
+slot = 14
+name = "State_Idle"
+confidence = "likely"
+notes = "Idle state handler (starts reload when the reload flag is set)."
+
+[[vslot]]
+class = "CWeaponBehaviour"
+slot = 15
+name = "State_Firing"
+confidence = "confirmed"
+notes = "Firing state: fires (slot 20), takes a round from the clip unless WeaponsUnlimitedAmmo, plays low_ammo/out_of_ammo, switches to reload when empty. Automatic and semi-automatic weapons override it."
+
+[[vslot]]
+class = "CWeaponBehaviour"
+slot = 16
+name = "State_Reloading"
+confidence = "likely"
+notes = "Reload state handler."
+
+[[vslot]]
+class = "CWeaponBehaviour"
+slot = 19
+name = "UsesAmmo"
+confidence = "likely"
+notes = "Whether a shot takes ammo (1)."
+
+[[vslot]]
+class = "CWeaponBehaviour"
+slot = 20
+name = "Shoot"
+confidence = "confirmed"
+notes = "Plays the shoot animation trigger on the weapon (9 for the last bullet); the animation drives Weapon_FireBullets."
+
+[[vslot]]
+class = "CWeaponChalkOutline"
+slot = 24
+name = "Interact"
+confidence = "likely"
+notes = "The player uses this point of interest: checks the cost (COD Points as a single-player fallback), sends SUBJECT_CHARGE_POINTS and performs the action."
+
+[[global]]
+name = "s_playerNameFormat"
+offset = 0x3af131
+type = "char[10]"
+subsystem = "saves"
+confidence = "confirmed"
+notes = "\"Player-%d\": format of the generated account name. The client redirects the reference at image+0x18f74c to its own name."
+
+[[global]]
+name = "g_directorFixedCallback"
+offset = 0x3e6490
+type = "void *"
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Director callback slot for the fixed-step update (points at Director_FixedStepCallback). The client replaces it to capture transforms before each step."
+
+[[global]]
+name = "g_directorInterpolateCallback"
+offset = 0x3e6494
+type = "void *"
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Director callback slot called between fixed steps with an interpolation factor. The client replaces it to blend transforms for high frame rates."
+
+[[global]]
+name = "g_console"
+offset = 0x4506f8
+type = "undefined4"
+subsystem = "runtime"
+confidence = "likely"
+notes = "The CIwConsole singleton (cvar registry). Set at startup; every Cvar_Register* calls its vtable +0x5c."
+
+[[global]]
+name = "g_componentTableRegistry"
+offset = 0x4578c8
+type = "undefined4"
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Pointer to the component table registry (ComponentTableRegistry_Get)."
+
+[[global]]
+name = "g_director"
+offset = 0x4578d0
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Studio director / game clock. +4 paused flag, +0x28 total time ms (64-bit), +0x30 frame time ms (64-bit), +0x38 frame time in seconds (float). Read by most components' updates."
+
+[[global]]
+name = "g_resManager"
+offset = 0x45c394
+type = "undefined4"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "The CIsArchiveManager singleton. vtable slot 10 (+0x28) is LoadGroup(name, async, flags)."
+
+[[global]]
+name = "g_game"
+offset = 0x45c6f4
+type = "undefined4"
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "The CIwGame (CGame) instance, set by its constructor."
+
+[[global]]
+name = "g_activeTransformSet"
+offset = 0x45f2b0
+type = "void *"
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "The transform set the director interpolates (count at +8, item array at +4)."
+
+[[global]]
+name = "g_resBuildStylePath"
+offset = 0x492b20
+type = "undefined1"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "\"data-<style>\" prefix for the resource build style (CIwResManager_SetBuildStyle)."
+
+[[global]]
+name = "g_dzArchives"
+offset = 0x492ec0
+type = "undefined4"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Derbh archive table: 32 pointers."
+
+[[global]]
+name = "g_dzArchiveCount"
+offset = 0x492f4c
+type = "undefined4"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Number of attached derbh archives."
+
+[[global]]
+name = "g_iwGxState"
+offset = 0x4a00a0
+type = "undefined4"
+subsystem = "rendering"
+confidence = "likely"
+notes = "IwGx render state used by every IwGx function; +0x344 and +0x348 look like the surface width and height."
+
+[[global]]
+name = "g_iwUIController"
+offset = 0x4a41fc
+type = "undefined4"
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Marmalade IwUI controller (CIwUIController), set and cleared by its constructor/destructor; updated by game states (slot 2)."
+
+[[global]]
+name = "g_iwUIView"
+offset = 0x4a4410
+type = "undefined4"
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Marmalade IwUI view (CIwUIView); game states call slot 2 (Update, dt) and slot 4 (Render)."
+
+[[function]]
+name = "IwMain"
+offset = 0x000000
+thumb = false
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "S3E entry point (logs \"_IwMain\"). Initialises the engine, runs the game, shuts down."
+
+[[function]]
+name = "Demonware_GetServerAddress"
+offset = 0x0173f4
+thumb = true
+subsystem = "network"
+confidence = "confirmed"
+notes = "Reads a DemonWare server \"host:port\" from the app config (ICF section [Demonware], key given); used for the lobby/auth servers."
+
+[[function]]
+name = "IwDemonware::DNSLookup"
+offset = 0x0176e8
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues an IwDWDNSLookupCommand (resolve a DemonWare host)."
+
+[[function]]
+name = "IwDemonware::ListRooms"
+offset = 0x01783c
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues IwDWConnect + IwDWListRoomsCommand (online lobby browser)."
+
+[[function]]
+name = "IwDemonware::DestroyRoom"
+offset = 0x0178ac
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues IwDWDestroyRoomCommand."
+
+[[function]]
+name = "IwDemonware::CreateRoom"
+offset = 0x0178e8
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues IwDWConnect + IwDWCreateRoomCommand (host an online game)."
+
+[[function]]
+name = "IwDemonware::RecordEvent"
+offset = 0x017960
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues IwDWRecordEventCommand: telemetry, sent by the metrics manager."
+
+[[function]]
+name = "IwDemonware::GetServerTimestamp"
+offset = 0x0179a8
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues IwDWServerTimestampCommand; used by CGameStore."
+
+[[function]]
+name = "IwDemonware::WriteKeyArchive"
+offset = 0x0179d0
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues IwDWWriteKeyArchiveCommand (stores key/value stats online)."
+
+[[function]]
+name = "IwDemonware::CreateAccount"
+offset = 0x017e50
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues IwDWCreateAccountCommand."
+
+[[function]]
+name = "IwDemonware::Login"
+offset = 0x017ecc
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Queues IwDWConnect/Login (and disconnect) commands."
+
+[[function]]
+name = "IwDemonware::Get"
+offset = 0x0182dc
+thumb = true
+subsystem = "network"
+confidence = "confirmed"
+notes = "The IwDemonware singleton (created on first use). Every DemonWare use goes through it: rooms, login, telemetry, server time, key archive."
+
+[[function]]
+name = "Cvar_RegisterInt"
+offset = 0x01a41c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarint with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CIsComponentTableBase::Find"
+offset = 0x04eeb0
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Find(entity id): the component stored for that entity, or null (tree keyed by id)."
+
+[[function]]
+name = "CIsClassInfo::AddProperty"
+offset = 0x04f2b8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "AddProperty(info, spec): adds a CIsReflectPropertySpec<T> (0x1c bytes: +0 vtable, +4 info, +8 name, +0xc name hash, +0x10 flags (2 = network property), +0x14 field offset, +0x18 size-derived) keyed by its name hash. ExportBozReflection lists every registered field."
+
+[[function]]
+name = "ClassRegistry_Get"
+offset = 0x04f40c
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Returns the global class registry map used for reflection lookups by class-name hash."
+
+[[function]]
+name = "CIsClassInfo::AddBase"
+offset = 0x04f4ee
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "AddBase(info, baseInfo, offset): records a base class at an offset (multiple inheritance) and propagates it to derived classes."
+
+[[function]]
+name = "CIsClassInfo::CIsClassInfo"
+offset = 0x04f5f4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "CIsClassInfo(info, name): reflection class record. +4 name, +8 IwHashString(name), +0x3c base list (base info, offset), +0x40 property map keyed by property hash, +0x4c derived classes. Each class keeps one in a guarded static returned by T::GetClassInfo."
+
+[[function]]
+name = "ClassRegistry_Add"
+offset = 0x0a893e
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Adds (IwHashString(class name) -> CIsClassInfo) to the class registry map (from ClassRegistry_Get). Called first in every T::RegisterReflection."
+
+[[function]]
+name = "CIsBroadcaster::Subscribe"
+offset = 0x0b88d4
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Subscribe(observer, event): listens for an event sent to this entity."
+
+[[function]]
+name = "CIsBroadcaster::Send"
+offset = 0x0b88da
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Send(event, a, b): delivers an event to one entity (notifies the subject of the entity's CIsBroadcaster component). Hits and kill scores travel this way."
+
+[[function]]
+name = "ComponentTables_Update"
+offset = 0x0ba13c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Calls table slot 8 (Update) on every table in order; that calls each enabled component's own update method."
+
+[[function]]
+name = "ComponentTables_FixedStep"
+offset = 0x0ba154
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "FixedStep(group, step): calls table slot 9 on tables whose slot 6 returns the group."
+
+[[function]]
+name = "ComponentTables_Update2"
+offset = 0x0ba17e
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Calls table slot 10 on every table (second update phase)."
+
+[[function]]
+name = "ComponentTables_Update3"
+offset = 0x0ba196
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Calls table slot 13 on every table (third update phase; CIsTransform uses it)."
+
+[[function]]
+name = "ComponentTables_PostUpdate"
+offset = 0x0ba1ae
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Calls table slot 11 on every table, every frame even when the clock did not advance."
+
+[[function]]
+name = "ComponentTables_Render"
+offset = 0x0ba1c6
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Calls table slot 12 (Render) on every table."
+
+[[function]]
+name = "ComponentTableRegistry_Add"
+offset = 0x0ba358
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Adds a component table by its name hash. Called from each CIsComponentTable<T> constructor."
+
+[[function]]
+name = "ComponentTableRegistry_Sort"
+offset = 0x0ba3be
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Orders the tables so each comes after the tables it names as dependencies (table slot 7, null-terminated name list); result at registry +0xc."
+
+[[function]]
+name = "Director_InterpolateCallback"
+offset = 0x0ba7da
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Original interpolate callback; returns the director unchanged. Only reached through g_directorInterpolateCallback."
+
+[[function]]
+name = "Timer_Countdown"
+offset = 0x0ba920
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Timer_Countdown(int *ms): subtracts this frame's time (g_director +0x30) from a millisecond countdown, clamping at 0; returns true when it has run out."
+
+[[function]]
+name = "ComponentTableRegistry_Get"
+offset = 0x0ba940
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Returns (creating on first use) the registry of every CIsComponentTable<T> (g_componentTableRegistry). +0xc is the update-ordered list."
+
+[[function]]
+name = "Director_FixedStepCallback"
+offset = 0x0ba98c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Original fixed-step callback. Only reached through g_directorFixedCallback."
+
+[[function]]
+name = "Director_Render"
+offset = 0x0ba9e8
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Studio render pass: scene manager, ComponentTables_Render, then slot 6 (Render) of every enabled system. Called from CGameStateIngame::Render."
+
+[[function]]
+name = "Director_Tick"
+offset = 0x0baa40
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Studio frame tick (g_director). Processes pending entity changes, advances the clock (+0x30 frame ms, +0x28 total ms, +0x38 frame seconds), then if time moved: ComponentTables_Update, _Update2, _Update3, Systems_Update, Systems_LateUpdate; always ComponentTables_PostUpdate and Systems_PostUpdate. Called from CGame vtable slot 27 each frame."
+
+[[function]]
+name = "CIsHierarchy::FindChild"
+offset = 0x0bc7aa
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "FindChild(hierarchy, name hash): a child node by hashed name (e.g. \"mysterybox_rubble\")."
+
+[[function]]
+name = "SubjectId_Register"
+offset = 0x0bd312
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "SubjectId_Register(registry, std::string name): returns IwHashString(name), the id of an observer event (SUBJECT_*). Static initialisers store it in hash_SUBJECT_* globals."
+
+[[function]]
+name = "CIsEntityDB::GetEntity"
+offset = 0x0bd4c8
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Entity object for an entity id."
+
+[[function]]
+name = "CIsEntityDB::FindEntity"
+offset = 0x0bd514
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Finds an entity by name hash or id; returns 0 when it does not exist."
+
+[[function]]
+name = "CIsEntityDB::FindEntityByName"
+offset = 0x0bd538
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Finds an entity by name (e.g. \"player_weapon\")."
+
+[[function]]
+name = "CIsSubject::NotifyVirtual"
+offset = 0x0c12f8
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Calls the subject's Notify (vtable slot 2) with the given event and arguments."
+
+[[function]]
+name = "CIsSubject::Unsubscribe"
+offset = 0x0c1a32
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Unsubscribe(subject, observer, eventId): removes the observer's subscription to one event id; returns 1 if it was subscribed."
+
+[[function]]
+name = "CIsSubject::Subscribe"
+offset = 0x0c1aca
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Subscribe(subject, observer, event id, userdata): adds the observer to the subject's map of event id -> observers and records the subscription on the observer. Dispatch later calls observer->OnEvent(sender, event, a, b, userdata)."
+
+[[function]]
+name = "Systems_Update"
+offset = 0x0c1c64
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Calls slot 2 (Update) of every enabled system (+0x18 flag) in order."
+
+[[function]]
+name = "Systems_FixedStep"
+offset = 0x0c1c80
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "Calls slot 3 of enabled systems whose type id (slot 0) and +0x10 match the fixed-step group."
+
+[[function]]
+name = "Systems_LateUpdate"
+offset = 0x0c1cb6
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "Calls slot 4 of every enabled system."
+
+[[function]]
+name = "Systems_PostUpdate"
+offset = 0x0c1cd2
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "Calls slot 5 of every enabled system, every frame."
+
+[[function]]
+name = "CIsSystemDB::Sort"
+offset = 0x0c1f06
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Orders the systems so each comes after the systems named by its slot 1 list, then calls slot 8 with each one's index. Systems run in this order."
+
+[[function]]
+name = "CIsSystemDB::Remove"
+offset = 0x0c2040
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Removes a system (by its id at +0x14) and re-sorts. Called from each system's destructor."
+
+[[function]]
+name = "Studio_Shutdown"
+offset = 0x0c2f40
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "Destroys CIsEntityDB, the component table registry, CIsSceneManager and CIsNetworkUniverse."
+
+[[function]]
+name = "Studio_Init"
+offset = 0x0c3064
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Creates CIsNetworkUniverse, CIsSceneManager and CIsEntityDB, sorts the component tables and systems by dependency, starts the director clock."
+
+[[function]]
+name = "CIsArchiveManager::Unmount"
+offset = 0x0c333e
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Detaches a mounted archive entry (dzArchiveDetach or the in-memory variant) and sets state 2."
+
+[[function]]
+name = "CIsArchiveManager::UnmountAll"
+offset = 0x0c3372
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "vtable slot 6: unmounts every archive in reverse order."
+
+[[function]]
+name = "CIsArchiveManager::RemoveArchive"
+offset = 0x0c3396
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "vtable slot 3: unmounts the named archive and removes its entry."
+
+[[function]]
+name = "CIsArchiveManager::ReadArchiveToMemory"
+offset = 0x0c341c
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Reads a whole archive file into a new buffer (entry +0xa8, size +0xac)."
+
+[[function]]
+name = "CIsArchiveManager::Mount"
+offset = 0x0c34b8
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Mounts one archive entry: from a file through dzArchiveAttach, or (inMemory) reads it whole with ReadArchiveToMemory then dzArchiveAttachFromMem. Sets entry state 1 on success, 3 on failure."
+
+[[function]]
+name = "CIsArchiveManager::MountArchive"
+offset = 0x0c3558
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "vtable slot 4: mounts the named archive (Mount)."
+
+[[function]]
+name = "CIsArchiveManager::MountAll"
+offset = 0x0c358e
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "vtable slot 5: mounts every added archive. Called at startup after CIsResConfigLoader is created."
+
+[[function]]
+name = "CIsArchiveManager::LoadGroup"
+offset = 0x0c3670
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "vtable slot 10: LoadGroup(name, async, flags). Appends \".group\" if missing, then loads synchronously through CIwResManager (CIwResManager_LoadGroup) or queues an asynchronous load. CGame::Init loads bootstrap/bootstrap.group with it."
+
+[[function]]
+name = "CIsArchiveManager::AddResidentExtension"
+offset = 0x0c37ae
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "vtable slot 9: appends an extension to the resident-extension list at +0x44."
+
+[[function]]
+name = "CIsArchiveManager::IsResidentFile"
+offset = 0x0c381a
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "vtable slot 7: true if the file's extension is in the resident-extension list (+0x44, 32-byte strings) or its IwHashString is in the resident-file set (+0x54)."
+
+[[function]]
+name = "CIsArchiveManager::AddResidentFile"
+offset = 0x0c3874
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "vtable slot 8: adds IwHashString(name) to the resident-file set at +0x54."
+
+[[function]]
+name = "CIsArchiveManager::AddArchive"
+offset = 0x0c3920
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "vtable slot 2: AddArchive(name, inMemory, onLoaded). Appends a 0xb4-byte entry (name[0xa0], +0xa0 state 0 new/1 mounted/2 unmounted/3 failed, +0xa4 inMemory flag, +0xa8 buffer, +0xac size, +0xb0 callback) to the list at +4 (count +8). Game startup adds the chosen blackops_<format>.dz pack here."
+
+[[function]]
+name = "File_Adler32"
+offset = 0x0c3bf8
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Adler-32 checksum of a file, optionally passing each chunk to a callback."
+
+[[function]]
+name = "GameStateManager_SetState"
+offset = 0x0c4a68
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Remembers the previous state (+0x2c), then either requests the new state (while an event is being handled) or changes to it immediately. The CIwGame object keeps this manager at +0x14."
+
+[[function]]
+name = "CIsStateMachine::IsMachine"
+offset = 0x0c54b4
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "vtable slot 2: returns whether the argument is this machine."
+
+[[function]]
+name = "CIsStateMachine::GetState"
+offset = 0x0c54bc
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 4: current state id (+8)."
+
+[[function]]
+name = "CIsStateMachine::GetNextState"
+offset = 0x0c54c0
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 5: requested state id (+0xc)."
+
+[[function]]
+name = "CIsStateMachine::GetEventType"
+offset = 0x0c54c4
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 6: type of the event being delivered (1 Enter, 2 Exit, 5 update)."
+
+[[function]]
+name = "CIsStateMachine::GetEventArg1"
+offset = 0x0c54cc
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 7."
+
+[[function]]
+name = "CIsStateMachine::GetEventArg2"
+offset = 0x0c54d4
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 8."
+
+[[function]]
+name = "CIsStateMachine::IsEventHandled"
+offset = 0x0c54dc
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 3: handled flag of the event being delivered."
+
+[[function]]
+name = "CIsStateMachine::SetEventHandled"
+offset = 0x0c54e4
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 9."
+
+[[function]]
+name = "CIsStateMachine::RequestState"
+offset = 0x0c54ee
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 10: sets the next state (+0xc); the change happens after the current event."
+
+[[function]]
+name = "CIsStateMachine::SendEvent"
+offset = 0x0c5508
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Delivers event {type, a, b} to the handler (+4, vtable slot 2) with +0x14 pointing at it. Types: 1 Enter, 2 Exit, 4 message (SendMessage), 5 frame update. If the handler requested a new state (+0xc != +8), changes state afterwards."
+
+[[function]]
+name = "CIsStateMachine::ChangeState"
+offset = 0x0c554c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Sends Exit (2) to the current state if running, sets the state (+8), resets the time in state (+0x1c), marks the machine running (+0x10) and sends Enter (1)."
+
+[[function]]
+name = "CIsStateMachine::Stop"
+offset = 0x0c557a
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 15: stops the machine, sending Exit (2) first if asked."
+
+[[function]]
+name = "StateMachine_UpdateIfRunning"
+offset = 0x0c5594
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "Sends event 5 (frame update) if the machine is running."
+
+[[function]]
+name = "CIsStateMachine::SendMessage"
+offset = 0x0c55a0
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "If running and not already delivering an event, sends event 4 (message) with the message as arg2. Returns whether the state handled it."
+
+[[function]]
+name = "CIsStateMachine::GetStateBool"
+offset = 0x0c5694
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "vtable slot 11: per-state variable store (bool)."
+
+[[function]]
+name = "CIsStateMachine::GetStateInt"
+offset = 0x0c56a2
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "vtable slot 12: per-state variable store (int)."
+
+[[function]]
+name = "CIsStateMachine::SetStateBool"
+offset = 0x0c56b0
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "vtable slot 13."
+
+[[function]]
+name = "CIsStateMachine::SetStateInt"
+offset = 0x0c56c0
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "vtable slot 14."
+
+[[function]]
+name = "CIwGame::Init"
+offset = 0x0c63dc
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 16 (empty in the base class)."
+
+[[function]]
+name = "CIwGame::UpdateEngine"
+offset = 0x0c6496
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "vtable slot 20, run once per fixed step by CIwGame::Update."
+
+[[function]]
+name = "CIwGame::RenderEngine"
+offset = 0x0c649a
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "vtable slot 21, run at the end of each frame by CIwGame::Update."
+
+[[function]]
+name = "CIwGame::AddState"
+offset = 0x0c689c
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "Registers a game state object under an id (CGame's constructor adds ids 0-3)."
+
+[[function]]
+name = "CIwGame::SetState"
+offset = 0x0c68e4
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Changes the top-level game state (0 CGameStateIngame, 1 CDOGameStateIngame, 2 CGameStateFrontEnd, 3 CGameStateSplash)."
+
+[[function]]
+name = "CIwGame::UpdateStates"
+offset = 0x0c68ea
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Counts the frame (+0x64) and sends the frame-update event (5) to the game state machine."
+
+[[function]]
+name = "CIwGame::Update"
+offset = 0x0c6994
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 18: one frame. Calls slot 19 once, slot 20 once per fixed step (count at +0x60), slot 22 between steps, slot 21 at the end, then records the frame time."
+
+[[function]]
+name = "CIwGame::ShutDown"
+offset = 0x0c69ec
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 17."
+
+[[function]]
+name = "CIwNetworkConfigurationManager::FindConfiguration"
+offset = 0x0cbe56
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Index of a configuration by name, -1 if missing."
+
+[[function]]
+name = "CIwNetworkConfigurationManager::GetConfiguration"
+offset = 0x0cbe86
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "The active CIwNetworkConfiguration (slot 2 returns its name)."
+
+[[function]]
+name = "CIwNetworkConfigurationManager::SetConfiguration"
+offset = 0x0cbe96
+thumb = true
+subsystem = "network"
+confidence = "confirmed"
+notes = "Selects the network configuration by name (from iwnetworkconfigs.group): \"Bonjour_Tcp\" (local Wi-Fi: Bonjour/mDNS discovery + TCP) or \"OnlineDemonware\" (DemonWare rooms + STUN). The front end sets it from SUBJECT_SWITCHED_CONNECT_TYPE (1 = Wi-Fi)."
+
+[[function]]
+name = "CIwSoundManager::Play"
+offset = 0x0d6dae
+thumb = true
+subsystem = "audio"
+confidence = "confirmed"
+notes = "Play(soundHash, position, ...): plays a sound spec by name hash."
+
+[[function]]
+name = "Console_FindBindContext"
+offset = 0x0d8fba
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Finds a console binding context by name (list at console +0x48, compared by IwHashString), e.g. GameStateIngame, BOPlayerControlsWin, XperiaPlayBO."
+
+[[function]]
+name = "Console_RegisterCommand"
+offset = 0x0d943c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Console_RegisterCommand(handler, name, id, flags): registers a developer console command with g_console (vtable +0x58); the handler's IIwConsoleHandler slot receives (id, args). ExportBozCommands lists them."
+
+[[function]]
+name = "Console_PushBindContext"
+offset = 0x0d99f0
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Activates a named binding context: creates its key bindings (each binding runs a console command such as +FreeCamMoveIn). CIngameStatePlaying::Enter pushes GameStateIngame and the platform's control set."
+
+[[function]]
+name = "Console_PopBindContext"
+offset = 0x0d9a84
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Deactivates a named binding context and removes its bindings."
+
+[[function]]
+name = "CIwConsole::Serialise"
+offset = 0x0db264
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Reads (flag 0) or writes (flag 1) all console variables to console.bin through IwSerialise."
+
+[[function]]
+name = "CIwConsole::SaveVars"
+offset = 0x0db43c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 20: Serialise(this, write)."
+
+[[function]]
+name = "CIwConsole::LoadVars"
+offset = 0x0db442
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 21: Serialise(this, read), keeping some registered variables."
+
+[[function]]
+name = "Cvar_RegisterGraph"
+offset = 0x0db698
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvargraph with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CIwConsoleVarBool::GetTypeName"
+offset = 0x0db86c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarInt::GetTypeName"
+offset = 0x0db878
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarFixed::GetTypeName"
+offset = 0x0db884
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarAngle::GetTypeName"
+offset = 0x0db890
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarIntArray::GetTypeName"
+offset = 0x0db89c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarVec3::GetTypeName"
+offset = 0x0db8a8
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarString::GetTypeName"
+offset = 0x0db8c4
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarGraph::GetTypeName"
+offset = 0x0db8d0
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarFloat::GetTypeName"
+offset = 0x0db8dc
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarFloatAngle::GetTypeName"
+offset = 0x0db8e8
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarFloatArray::GetTypeName"
+offset = 0x0db8f4
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "CIwConsoleVarFloatGraph::GetTypeName"
+offset = 0x0db900
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Returns the cvar type tag (\"cvar...\"); vtable slot 2."
+
+[[function]]
+name = "Cvar_RegisterFloat"
+offset = 0x0e7134
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarfloat with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "TransformSet_Capture"
+offset = 0x0e8786
+thumb = true
+signature = "void TransformSet_Capture(void * set)"
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "Stores the current transform of every item in the set (the client calls it before each fixed step)."
+
+[[function]]
+name = "TransformSet_ApplyFactor"
+offset = 0x0e87c8
+thumb = true
+signature = "void TransformSet_ApplyFactor(void * set, int factor)"
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "Blends every item between its captured and current transform; factor is 20.12 fixed point (4096 = 1.0)."
+
+[[function]]
+name = "ZeroConf_Init"
+offset = 0x0f56f4
+thumb = true
+subsystem = "network"
+confidence = "confirmed"
+notes = "Loads the s3eZeroConf extension (hash 0x9f590656), used by the Bonjour discovery; the desktop runtime provides it (s3e_zeroconf.c, mDNS)."
+
+[[function]]
+name = "Cvar_RegisterBool"
+offset = 0x103fd0
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarbool with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "Entity_GetPlayerId"
+offset = 0x104218
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Player id of an entity (used to key scores per player)."
+
+[[function]]
+name = "Cvar_RegisterIntArray"
+offset = 0x10b350
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarintarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CAIControllerZombie::State_Dead"
+offset = 0x1152e8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Dead state: sends SUBJECT_ZOMBIE_DEATH, then a kill-score event to the killer by hit location/damage type (+0x124 body part, +0x22c kind): SUBJECT_ZOMBIE_SCORE_KILL_HEAD/TORSO/LIMB/KNIFE/GRENADE; headshots add the zombieHeadshotBonus cvar table; fades out after zombieDeathFadeTime."
+
+[[function]]
+name = "Cvar_RegisterFixed"
+offset = 0x11bfb0
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarfixed with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "Cvar_RegisterFloatArray2"
+offset = 0x11f72c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarfloatarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "Physics_RayCast"
+offset = 0x12640c
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Raycast(from, to, outHitPos, outNormal, outEntity, outShape, filter, mask, outMaterial)."
+
+[[function]]
+name = "Cvar_RegisterFloatArray"
+offset = 0x12f418
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarfloatarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "Cvar_RegisterFloatAngle"
+offset = 0x133b80
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarfloatangle with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "Weapon_ApplySpread"
+offset = 0x17e9ec
+thumb = true
+subsystem = "weapons"
+confidence = "likely"
+notes = "Randomises a shot direction by the weapon's spread."
+
+[[function]]
+name = "Weapon_FireBullets"
+offset = 0x17eb38
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Weapon_FireBullets(pellets, ...): per pellet applies spread, raycasts 10000 units (Physics_RayCast) and sends SUBJECT_WEAPON_HIT (with the body part hit) to the hit entity's CIsBroadcaster, or spawns the surface impact effect; draws the tracer."
+
+[[function]]
+name = "CFlashMenuState::CallActionScript"
+offset = 0x180f4c
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "CallActionScript(function, format, ...): calls an ActionScript function in the Flash front-end movie (fe_v4_cs4_swf.bin), e.g. setWifiMode, transitionState."
+
+[[function]]
+name = "CFlashMenuState::TransitionState"
+offset = 0x180fa0
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "TransitionState(menu, page, label, flag): asks the Flash front end to switch page (ActionScript transitionState)."
+
+[[function]]
+name = "CFlashMenuState::GotoMenu"
+offset = 0x180fc8
+thumb = true
+subsystem = "ui"
+confidence = "likely"
+notes = "Switches the front end to a menu by name hash (e.g. mp_map_select)."
+
+[[function]]
+name = "Cvar_RegisterString"
+offset = 0x185720
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarstring with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CGame::CGame"
+offset = 0x18c8d8
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Constructor. Creates and registers the four top-level game states (CIwGame::AddState ids 0-3) and registers console commands (BenchmarkTakeSnapshot, ToggleVFXViewer, ReloadShaders, ResetAchievements, language switches)."
+
+[[function]]
+name = "CGame::BeginFrame"
+offset = 0x18cb28
+thumb = true
+subsystem = "runtime"
+confidence = "likely"
+notes = "vtable slot 19, run at the start of each frame by CIwGame::Update."
+
+[[function]]
+name = "CGame::Init"
+offset = 0x18cd08
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 16, called once by GameMain. Loads bootstrap/bootstrap.group and iwnetworkconfigs.group, sets up sound, reads RainbowMode, registers the suspend/resume device callbacks."
+
+[[function]]
+name = "CGame::ShutDown"
+offset = 0x18ce80
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 17, called once by GameMain after the loop ends."
+
+[[function]]
+name = "CGame::Update"
+offset = 0x18cf44
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "vtable slot 18, called every frame by GameMain; forwards to CIwGame::Update."
+
+[[function]]
+name = "CGameNetwork::IsWifiMode"
+offset = 0x18e5a4
+thumb = true
+subsystem = "network"
+confidence = "confirmed"
+notes = "True when the active network configuration is Bonjour_Tcp (local Wi-Fi co-op)."
+
+[[function]]
+name = "CGameStore::SpendCODPoints"
+offset = 0x193ef8
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Pays a purchase with COD Points (the paid currency, CGameStore +0x10) when single-player points are short."
+
+[[function]]
+name = "CHUDManager::UpdateWeapon"
+offset = 0x1969d8
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "UpdateWeapon(weapon, animate): sets the weapon_icon element and the clip/reserve ammo display (also for dual wield)."
+
+[[function]]
+name = "CHUDManager::SetScore"
+offset = 0x196bc4
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "SetScore(score, delta): writes the Score_Points label and spawns a floating +points popup (cvars HUDPointsPosX/Y, HUDPointsRandomDisplacementX/Y)."
+
+[[function]]
+name = "CHealth::Damage"
+offset = 0x199754
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Damage(amount, attackerEntity): sends SUBJECT_BO_DAMAGE_RESPONSE, then (if alive) SUBJECT_HEALTH_DECREASE to itself; OnEvent applies it."
+
+[[function]]
+name = "CHealth::CheckDeath"
+offset = 0x1997c8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Below 1 health (host only): sends SUBJECT_DIED with the last attacker (m_LastDamagerEnt)."
+
+[[function]]
+name = "CHealth::ApplyDamage"
+offset = 0x199984
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Applies a SUBJECT_HEALTH_DECREASE amount through SetHealth."
+
+[[function]]
+name = "CHealth::SetHealth"
+offset = 0x19a20c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "SetHealth(value, networked, source): sends SUBJECT_HEALTH_MODIFY; OnEvent clamps to [0, max (+0x44)], ignores it while invulnerable or when the god flag (+0x70) is set, starts regeneration (m_Wound, m_HealDelay, m_HealingTime) and temporary invulnerability after a hit, then CheckDeath."
+
+[[function]]
+name = "Cvar_RegisterIntArray2"
+offset = 0x19c550
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarintarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CLevelManager::StartFirstWave"
+offset = 0x1a8e88
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Starts the level's first round (when the StartWaveOnStart cvar is 1): picks the level's starting wave for the player count/difficulty (default \"wave1\") and queues it on CWaveManager."
+
+[[function]]
+name = "Game_InitEngine"
+offset = 0x1b545c
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "Engine start-up: creates CIsArchiveManager, picks the first existing pack from blackops_{gles1,dxt,atitc,etc}.dz (or the _hires list), adds it (AddArchive), creates CIsResConfigLoader, mounts the archives and sets up particles, profiling and other singletons."
+
+[[function]]
+name = "GameMain"
+offset = 0x1b5a44
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "The game's main(), called from IwMain. Reads DeployConfig, initialises, constructs CGame (0xe4 bytes), calls Init once, Update until the quit flag at +0x54 is 1, then ShutDown and deletes the game."
+
+[[function]]
+name = "CMysteryBox::ChooseWeapon"
+offset = 0x1ba538
+thumb = true
+subsystem = "weapons"
+confidence = "likely"
+notes = "Rolls the box weapon and sends SUBJECT_MB_CHOOSE_WEAPON."
+
+[[function]]
+name = "CMysteryBox::GetCost"
+offset = 0x1ba848
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Current box price (m_Cost, or m_FireSaleCost during a fire sale)."
+
+[[function]]
+name = "Online_AutoLogin"
+offset = 0x1bf7d8
+thumb = true
+subsystem = "network"
+confidence = "likely"
+notes = "Logs in to (or creates) the DemonWare account; reached from the per-frame online update."
+
+[[function]]
+name = "CPickupManager::SpawnPickupAt"
+offset = 0x1d0dac
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "SpawnPickupAt(type, transform, offset): 2 = max ammo, 7 = perk bottle (last dog/monkey of a round)."
+
+[[function]]
+name = "CPickupManager::TryDropPickup"
+offset = 0x1d1018
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "On a zombie death: maybe drops a power-up, based on points earned since the last drop (m_ScoreSinceLastPickup)."
+
+[[function]]
+name = "CPickupManager::SpawnPickup"
+offset = 0x1d2598
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Handles SUBJECT_SPAWN_PICKUP."
+
+[[function]]
+name = "CPickupManager::ApplyPickup"
+offset = 0x1d2c98
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Handles SUBJECT_ON_PICKUP: applies a collected power-up."
+
+[[function]]
+name = "CPlayerController::FireWeapon"
+offset = 0x1d4ecc
+thumb = true
+subsystem = "weapons"
+confidence = "likely"
+notes = "Player fires: triggers the arms shoot animation and sends SUBJECT_WEAPON_SHOOT on the weapon manager (+0x88)."
+
+[[function]]
+name = "CPlayerController::AddPerk"
+offset = 0x1d54a6
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Gives the player a perk (perk type)."
+
+[[function]]
+name = "CPlayerWeapon::TriggerAnim"
+offset = 0x1dfaf8
+thumb = true
+subsystem = "weapons"
+confidence = "likely"
+notes = "Fires an animation trigger on the weapon (0 shoot, 9 last shot, 2 melee hit, 8 equip, ...)."
+
+[[function]]
+name = "Downloader_Run"
+offset = 0x1ef3e4
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "Pack downloader: mounts blackops_loader.dz, builds the pack name blackops_%s.dz for the device texture format and loads downloader/downloader.group for its UI. Skipped when packs are already present."
+
+[[function]]
+name = "CSaveManager::Collect"
+offset = 0x1f3348
+thumb = true
+subsystem = "saves"
+confidence = "confirmed"
+notes = "Clears the save sections and sends SUBJECT_SAVE so every system writes its state."
+
+[[function]]
+name = "CSaveManager::GetSection"
+offset = 0x1f3aac
+thumb = true
+subsystem = "saves"
+confidence = "confirmed"
+notes = "GetSection(saveDb, classHash, id): the CIsDataBuffer a system reads/writes its state in (systems key it by IwHashString of their class name, e.g. \"CScoreManager\")."
+
+[[function]]
+name = "CSaveManager::SaveProfile"
+offset = 0x1f404c
+thumb = true
+subsystem = "saves"
+confidence = "likely"
+notes = "Writes profile_%i.i3d."
+
+[[function]]
+name = "CSaveManager::Serialise"
+offset = 0x1f4798
+thumb = true
+subsystem = "saves"
+confidence = "confirmed"
+notes = "Serialise(saveDb, loading): reads or writes a save file through IwSerialise: u32 version, u32 checksum (patched in after writing), then every section (SUBJECT_SAVE collects them). Keeps a backup copy while replacing; ICF AllowOldSaveData accepts older versions."
+
+[[function]]
+name = "CSaveManager::SaveGame"
+offset = 0x1f4974
+thumb = true
+subsystem = "saves"
+confidence = "likely"
+notes = "Collects every system's save section (SUBJECT_SAVE) and writes <slot>_save_game.i3d; also used on suspend (SaveOnSuspend cvar)."
+
+[[function]]
+name = "CSaveManager::AutoSave"
+offset = 0x1f50c8
+thumb = true
+subsystem = "saves"
+confidence = "confirmed"
+notes = "Single-player autosave at each round start (CWaveManager::StartWave): writes the in-game save (SaveGame), then the profile/stats files."
+
+[[function]]
+name = "CScoreHandler::GetPoints"
+offset = 0x1f59fc
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Points the score table (CScoreConfig m_Scores) gives for an event; CScoreHandler::OnEvent doubles them during Double Points and sends SUBJECT_ADD_SCORE."
+
+[[function]]
+name = "CScoreManager::GetScore"
+offset = 0x1f6104
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "GetScore(playerId): a player's current points."
+
+[[function]]
+name = "CScoreManager::GetLocalScore"
+offset = 0x1f6148
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Score of the local player (entity at CLevelManager +0x1a0)."
+
+[[function]]
+name = "CScoreManager::OnScoreChanged"
+offset = 0x1f61c0
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "OnScoreChanged(score, playerId, delta): updates the HUD and co-op peers after AddScore."
+
+[[function]]
+name = "CScoreManager::AddScore"
+offset = 0x1f73e0
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "AddScore(playerId, delta, countForStats): adds to the player's score (map +0x40, created at the StartingScore cvar), clamped at 0; earned points also go to +0x4c when countForStats; then announces the change. SUBJECT_ADD_SCORE adds, SUBJECT_CHARGE_POINTS and SUBJECT_POINTS_PENALTY subtract (skipped when the UnlimitedScore cvar is set)."
+
+[[function]]
+name = "CSoundSequenceManager::Play"
+offset = 0x1f9fe8
+thumb = true
+subsystem = "audio"
+confidence = "likely"
+notes = "Play(sequenceHash, flags, ...): plays a sound sequence (music stings, wave start)."
+
+[[function]]
+name = "CUIPageManager::FindElement"
+offset = 0x20fed4
+thumb = true
+subsystem = "ui"
+confidence = "likely"
+notes = "FindElement(name, page): an IwUI element by name on the active pages (weapon_icon, Score_Points, ...)."
+
+[[function]]
+name = "Cvar_RegisterString2"
+offset = 0x21078c
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarstring with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "Wave_Find"
+offset = 0x214f28
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Returns the CWave resource with this name hash (CIwResManager lookup of type \"CWave\")."
+
+[[function]]
+name = "CWaveManager::SpawnGeorgeRomero"
+offset = 0x215230
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Spawns the George Romero boss (Call of the Dead), from SUBJECT_SPAWN_GEORGE_ROMERO."
+
+[[function]]
+name = "CWaveManager::QueueWave"
+offset = 0x215318
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "QueueWave(waveHash): sets the wave the next SUBJECT_NEW_WAVE starts."
+
+[[function]]
+name = "CWaveManager::SpawnZombies"
+offset = 0x216758
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Spawns zombies for the current wave (count, flags, source entity); called by Update when the spawn timer expires and on SUBJECT_DIED in co-op."
+
+[[function]]
+name = "CWaveManager::Save"
+offset = 0x217200
+thumb = true
+subsystem = "saves"
+confidence = "likely"
+notes = "Writes the wave state on SUBJECT_SAVE."
+
+[[function]]
+name = "CWaveManager::StartWave"
+offset = 0x217c1c
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Starts the next round: removes leftover zombies, loads the CWave named by the event (Wave_Find), resets spawned/killed counts (+0x7c/+0x84), sets the next-wave timer (+0x90, wave slot 30) and start delay (+0x94, slot 39), plays begin_wave (dog/monkey variants), increments the round (+0x78), calls the wave's slot 44, refreshes zombie health and autosaves in single player."
+
+[[function]]
+name = "CWaveManager::OnSpawnZombie"
+offset = 0x2187cc
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Handles SUBJECT_SPAWN_ZOMBIE: creates the zombie described by a ZombieSpawnInfo and tracks it in the live map (+0x6c)."
+
+[[function]]
+name = "CWaveManager::Load"
+offset = 0x219030
+thumb = true
+subsystem = "saves"
+confidence = "likely"
+notes = "Restores the wave state on SUBJECT_LOAD."
+
+[[function]]
+name = "CWeaponManager::SetReloading"
+offset = 0x21e078
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "SetReloading(on, kind): sends SUBJECT_WEAPON_RELOAD and fires the matching reload animation trigger (+0xaa reload flag)."
+
+[[function]]
+name = "CWeaponManager::MeleeAttack"
+offset = 0x21f0e8
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Knife: finds a target in a cone in front of the player (range 140), plays the hit animation and sends SUBJECT_WEAPON_HIT to the target's CIsBroadcaster."
+
+[[function]]
+name = "CWeaponManager::SetWeapon"
+offset = 0x21ffc8
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Equips a CPlayerWeapon (+0x1e0): binds the arms/weapon animation triggers (shoot, aimShoot, reload, melee, ...), then sends SUBJECT_WEAPON_SET."
+
+[[function]]
+name = "CWeaponManager::GiveWeapon"
+offset = 0x2205dc
+thumb = true
+subsystem = "weapons"
+confidence = "likely"
+notes = "Gives the player a weapon by hash (mystery box, wall buys)."
+
+[[function]]
+name = "Cvar_RegisterIntArray3"
+offset = 0x2292b4
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Registers (or finds) the console variable <name> of type cvarintarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CIwResManager_GetResHashed"
+offset = 0x235220
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "CIwResManager_GetResHashed(manager, nameHash, typeName, flags): finds a loaded resource by name hash and type."
+
+[[function]]
+name = "CIwResManager_GetResNamed"
+offset = 0x2352f8
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "GetResNamed(manager, name, typeName, flags): finds a loaded resource by name and type."
+
+[[function]]
+name = "CIwResManager_LoadGroupAsync"
+offset = 0x2353f4
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "Queues an asynchronous .group load."
+
+[[function]]
+name = "CIwResManager_SetBuildStyle"
+offset = 0x235448
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Sets the build-style data folder: g_resBuildStylePath = \"data-<style>\" (data-etc, data-gles1, ...), then installs it as the primary file path (IwPath_SetPrimaryPath) and the search list."
+
+[[function]]
+name = "CIwResManager_MakeGroupPath"
+offset = 0x2354bc
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Builds a group's file path: \"debug_patches/\" + name when the manager's debug-patch flag (+0x124) is set, else the name. LoadGroup then appends \".bin\"."
+
+[[function]]
+name = "CIwResManager_LoadGroup"
+offset = 0x235898
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "Marmalade resource manager: loads a .group file (path, flags) and returns the CIwResGroup."
+
+[[function]]
+name = "CIwSerialise_OpenRead"
+offset = 0x235c54
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "Opens a serialised file for reading through IwFileOpen."
+
+[[function]]
+name = "CIwResManager_ReadGroupHeader"
+offset = 0x235c7c
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "Reads the 4-byte .group.bin version (stored byte-reversed); versions above 0x30101 carry 16 more header bytes."
+
+[[function]]
+name = "CIwResManager_ReadGroupFile"
+offset = 0x235efa
+thumb = true
+subsystem = "engine"
+confidence = "likely"
+notes = "Opens a .group.bin, checks its header and deserialises every resource in it."
+
+[[function]]
+name = "derbh_RegisterFileSys"
+offset = 0x239cc0
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Derbh: registers its callbacks with s3eFileAddUserFileSys so s3eFileOpen finds archive members. The desktop runtime ignores this and serves members from its own index (s3e_file.c dtrz_*)."
+
+[[function]]
+name = "dzArchiveDetach"
+offset = 0x239d88
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Derbh: detaches a file-backed archive."
+
+[[function]]
+name = "dzArchiveDetachFromMem"
+offset = 0x239e68
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Derbh: detaches an in-memory archive."
+
+[[function]]
+name = "dzArchiveAttach"
+offset = 0x23a374
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Derbh: opens a .dz archive file and adds it to the archive table (max 32, g_dzArchives). Registers the derbh user filesystem on first use."
+
+[[function]]
+name = "dzArchiveAutoload"
+offset = 0x23a434
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Derbh: once, attaches the archive named by ICF [derbh] autoload if it exists."
+
+[[function]]
+name = "dzArchiveAttachFromMem"
+offset = 0x23a4a4
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Derbh: attaches an archive already loaded in memory."
+
+[[function]]
+name = "derbh_ReadHeader"
+offset = 0x23addc
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Derbh: reads the DTRZ header (file count, 16-byte file records, names) and runs the decompressor plug-ins for the archive. ICF [derbh] MinBufSize."
+
+[[function]]
+name = "IwPath_Resolve"
+offset = 0x24b5a8
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Resolves a game file name to a path. Reads: tries each override path (IwPath_SetOverridePaths), then each search path (\"<prefix>/<name>\", first that s3eFileCheckExists), then the bare name. Writes: primary path + name."
+
+[[function]]
+name = "IwFileOpen"
+offset = 0x24b744
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "IwPath_Resolve then s3eFileOpen. The resource manager opens every .group.bin through this."
+
+[[function]]
+name = "IwPath_SetSearchPaths"
+offset = 0x24b798
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Sets the null-terminated list of read prefixes."
+
+[[function]]
+name = "IwPath_SetOverridePaths"
+offset = 0x24b7ac
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Sets a null-terminated list of prefixes tried first for reads (unset in this game)."
+
+[[function]]
+name = "IwPath_SetPrimaryPath"
+offset = 0x24b7c0
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Sets the prefix used for writes."
+
+[[function]]
+name = "IwHashString"
+offset = 0x24ba2c
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Hashes a string to the 32-bit id used for names, types and events everywhere (Marmalade IwHashString)."
+
+[[function]]
+name = "IwSerialiseUInt32"
+offset = 0x257b98
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "IwSerialiseUInt32(value*, count, bits, bytes): reads or writes integers in the current serialisation stream."
+
+[[function]]
+name = "IwSerialiseUInt8"
+offset = 0x257fb4
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Reads or writes bytes in the current serialisation stream (group header version)."
+
+[[function]]
+name = "IwSerialiseOpen"
+offset = 0x25812c
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "IwSerialiseOpen(path, read, ...): opens a file for Marmalade serialisation (used by saves and .group.bin loading)."
+
+[[function]]
+name = "IwSerialiseClose"
+offset = 0x258298
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Closes the current serialisation file."
+
+[[function]]
+name = "CIwUILabel::SetCaption"
+offset = 0x305bb4
+thumb = false
+subsystem = "ui"
+confidence = "likely"
+notes = "Sets a label's text."
+
+[[function]]
+name = "operator_new"
+offset = 0x34c1a8
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "operator new(size): allocation before constructors (e.g. new CGame is operator_new(0xe4))."
+
+[[function]]
+name = "operator_delete"
+offset = 0x34c1c4
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "operator delete(ptr): called by deleting destructors."
+
+[[function]]
+name = "__cxa_guard_acquire"
+offset = 0x3524a0
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "Function-local static initialisation guard (if (!(g & 1) && acquire(&g)) { init; release(&g); })."
+
+[[function]]
+name = "__cxa_guard_release"
+offset = 0x352518
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "Function-local static initialisation guard release."
+
+[[function]]
+name = "powf"
+offset = 0x35e5a8
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "powf(base, exponent). CWaveRepeatable scales wave values by multiplier^(round - m_StartingWave)."
+
+[[function]]
+name = "memcpy"
+offset = 0x365dc0
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "memcpy(dst, src, n). image+0x366000 is inside its unrolled copy loop."
+
+[[function]]
+name = "memset"
+offset = 0x3664f4
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "memset(dst, value, n)."
+
+[[function]]
+name = "snprintf"
+offset = 0x368534
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "snprintf(buffer, size, format, ...)."
+
+[[function]]
+name = "strcat"
+offset = 0x368808
+thumb = false
+subsystem = "libc"
+confidence = "likely"
+notes = "Appends a string."
+
+[[function]]
+name = "strchr"
+offset = 0x3688a0
+thumb = false
+subsystem = "libc"
+confidence = "likely"
+notes = "Finds a character in a string."
+
+[[function]]
+name = "strcmp"
+offset = 0x368a78
+thumb = false
+subsystem = "libc"
+confidence = "likely"
+notes = "Compares two strings (used to compare class names); zero when equal."
+
+[[function]]
+name = "strcpy"
+offset = 0x368cf8
+thumb = false
+subsystem = "libc"
+confidence = "likely"
+notes = "Copies a string."
+
+[[function]]
+name = "strlen"
+offset = 0x368f80
+thumb = true
+subsystem = "libc"
+confidence = "likely"
+notes = "String length."
+
+[[function]]
+name = "strncmp"
+offset = 0x3691dc
+thumb = false
+subsystem = "libc"
+confidence = "likely"
+notes = "Compares at most n characters."
+
+[[function]]
+name = "strstr"
+offset = 0x3698f8
+thumb = false
+subsystem = "libc"
+confidence = "likely"
+notes = "Finds a substring."

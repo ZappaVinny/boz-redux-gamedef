@@ -1,0 +1,11 @@
+# BOZ Redux game definition manifest. Readers check `schema` before loading the files below.
+schema = 1
+
+[[game]]
+version = "1.0.11"
+version_code = 1045111
+image_sha256 = "f458c15a7111779ad320af377d0bb751294119788ba06d430bee0cc977539fee"
+symbols = "symbols/boz-1.0.11.toml"
+reflection = "reflection/boz-1.0.11.toml"
+events = "events/boz-1.0.11.toml"
+console = "console/boz-1.0.11.toml"
