@@ -28,6 +28,20 @@ type = "fixed"
 default = "0.1"
 
 [[cvar]]
+name = "accelerometerSmoothingEnabled"
+type = "bool"
+default = "true"
+used_by = "CAccelerometerInput::CAccelerometerInput"
+registration = "direct"
+
+[[cvar]]
+name = "accelerometerSmoothingProfile"
+type = "graph"
+default = "0,5;6000,500;"
+used_by = "CAccelerometerInput::CAccelerometerInput"
+registration = "direct"
+
+[[cvar]]
 name = "AccelHorizontalRampAiming"
 type = "graph"
 default = "0,0;216,0;1034,470;3873,1477;"
@@ -46,6 +60,13 @@ default = "0,0;216,0;1034,470;3416,3008;"
 name = "accelScreenTiltCorrectionDamping"
 type = "fixed"
 default = "0.25"
+
+[[cvar]]
+name = "accelScreenTiltCorrectionDampingShift"
+type = "int"
+default = "3"
+used_by = "CAccelerometerInput::CAccelerometerInput"
+registration = "direct"
 
 [[cvar]]
 name = "accelScreenTiltCorrectionStrength"
@@ -68,6 +89,13 @@ type = "graph"
 default = "-4096,-512;0,512;"
 
 [[cvar]]
+name = "AchievementDisplayShowTimes"
+type = "intarray"
+default = "{ 100,200 }"
+used_by = "Cvar_RegisterIntArray2"
+registration = "direct"
+
+[[cvar]]
 name = "ADSDeltaYThreshold"
 type = "float"
 default = "0.05"
@@ -86,6 +114,7 @@ default = "80.0"
 name = "AIGodmode"
 type = "bool"
 default = "false"
+used_by = "CAIControllerRomero::vf26"
 
 [[cvar]]
 name = "AIHostTimeoutToFrozen"
@@ -96,6 +125,7 @@ default = "3000"
 name = "AIIgnoreGersch"
 type = "bool"
 default = "false"
+used_by = "CAIControllerZombie::vf26"
 
 [[cvar]]
 name = "AimAssistADSLockDuration"
@@ -171,6 +201,7 @@ default = "1.0f"
 name = "AimCrouchSpeed"
 type = "float"
 default = "0.6"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "AIMonkeyClaymoreDestroyRadius"
@@ -191,16 +222,19 @@ default = "5"
 name = "AIMonkeyGroundPoundBlurFadeInTime"
 type = "int"
 default = "500"
+used_by = "CAIControllerMonkey::vf26"
 
 [[cvar]]
 name = "AIMonkeyGroundPoundSlowDownFactor"
 type = "float"
 default = "0.5"
+used_by = "CAIControllerMonkey::vf26"
 
 [[cvar]]
 name = "AIMonkeyGroundPoundSlowDownTime"
 type = "int"
 default = "3000"
+used_by = "CAIControllerMonkey::vf26"
 
 [[cvar]]
 name = "AIMonkeyMaxDistFromAgentTreshold"
@@ -251,6 +285,7 @@ default = "1.0"
 name = "AimProneSpeed"
 type = "float"
 default = "0.3"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "AimTurnSpeed"
@@ -261,6 +296,7 @@ default = "1.0"
 name = "AimWalkSpeed"
 type = "float"
 default = "1.0"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "AIPlayerTargetChangeFarDistTrashold"
@@ -276,31 +312,42 @@ default = "100.0f"
 name = "AIRomeroGroundPoundSlowDownFactor"
 type = "float"
 default = "0.5"
+used_by = "CAIControllerRomero::vf26"
 
 [[cvar]]
 name = "AIRomeroGroundPoundSlowDownTime"
 type = "int"
 default = "3000"
+used_by = "CAIControllerRomero::vf26"
 
 [[cvar]]
 name = "AITargetChangeLogicUpdateMs"
 type = "int"
 default = "2000"
+used_by = "CAIControllerHellhound::vf24"
 
 [[cvar]]
 name = "AIZombieElectricAttackSlowDownFactor"
 type = "float"
 default = "0.5"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "AIZombieElectricAttackSlowDownTime"
 type = "int"
 default = "3000"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "AllWeapons"
 type = "bool"
 default = "false"
+
+[[cvar]]
+name = "AmbientZombiesMaxRange"
+type = "float"
+default = "3000.0"
+registration = "direct"
 
 [[cvar]]
 name = "AnalogueAimXSensitivity"
@@ -363,9 +410,17 @@ type = "int"
 default = "6"
 
 [[cvar]]
+name = "BodyGibsRandomDirDeviation"
+type = "floatarray"
+default = "{0.4, 0.2, 0.2}"
+used_by = "CBodyGib::Init"
+registration = "direct"
+
+[[cvar]]
 name = "BOGravity"
 type = "float"
 default = "-981.0"
+used_by = "CBodyHandler::vf22"
 
 [[cvar]]
 name = "BOToolTipCount"
@@ -376,11 +431,18 @@ default = "58"
 name = "ButtonDoubleTapTimeOut"
 type = "int"
 default = "400"
+used_by = "CInputManager::vf4"
 
 [[cvar]]
 name = "CarpenterScoreTime"
 type = "int"
 default = "1000"
+
+[[cvar]]
+name = "CentrifugeWavesStart"
+type = "int"
+default = "2"
+registration = "direct"
 
 [[cvar]]
 name = "ClipPlaneNearZ"
@@ -426,6 +488,7 @@ default = "6.0"
 name = "CrouchSpeed"
 type = "float"
 default = "0.6"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "DeathMachineTime"
@@ -448,14 +511,54 @@ type = "int"
 default = "32"
 
 [[cvar]]
+name = "DefaultPowerSwitchName"
+type = "string"
+default = "PowerSwitch"
+registration = "direct"
+
+[[cvar]]
+name = "DefaultSoundSpecMaxPolyphony"
+type = "int"
+default = "3"
+used_by = "CIwSoundSpec::CIwSoundSpec"
+registration = "direct"
+
+[[cvar]]
 name = "DefaultSpawnedRocketName"
 type = "string"
 default = "SpawnedRocket"
+used_by = "CRocketLauncher::vf23"
 
 [[cvar]]
 name = "DetailDistance"
 type = "int"
 default = "1300"
+
+[[cvar]]
+name = "DisableAllWeather"
+type = "bool"
+default = "false"
+registration = "direct"
+
+[[cvar]]
+name = "DisableFogExtraFarPlane"
+type = "bool"
+default = "false"
+registration = "direct"
+
+[[cvar]]
+name = "DisableGerschOpenFX"
+type = "bool"
+default = "false"
+used_by = "CProjectileEntity::OnEvent"
+registration = "direct"
+
+[[cvar]]
+name = "DisableImpactDecals"
+type = "bool"
+default = "false"
+used_by = "CImpactEffect::Init"
+registration = "direct"
 
 [[cvar]]
 name = "DisableImpactVFX"
@@ -471,11 +574,13 @@ default = "false"
 name = "doAchievementEasyRhinoKillCount"
 type = "int"
 default = "20"
+used_by = "CDOPlayerController::vf23"
 
 [[cvar]]
 name = "doAchievementWholeNineYardsFireTime"
 type = "int"
 default = "2"
+used_by = "CDOPersistentStorage::vf6"
 
 [[cvar]]
 name = "doAnaloguePadAimingResponse"
@@ -523,29 +628,40 @@ type = "floatangle"
 default = "15"
 
 [[cvar]]
+name = "doBattleChickenApproachSpeed"
+type = "graph"
+default = "0,0;300,4096;"
+registration = "direct"
+
+[[cvar]]
 name = "doBattleChickenDragCoeffient"
 type = "float"
 default = "0.1"
+used_by = "CDOBattleChickenBodyHandler::vf24"
 
 [[cvar]]
 name = "doBattleChickenFlightHeight"
 type = "float"
 default = "120"
+used_by = "CDOPlayerController::vf23"
 
 [[cvar]]
 name = "doBattleChickenLife"
 type = "int"
 default = "20000"
+used_by = "CDOPickupSpawn::vf25"
 
 [[cvar]]
 name = "doBattleChickenMaxAcceleration"
 type = "float"
 default = "10.0"
+used_by = "CDOBattleChickenBodyHandler::vf24"
 
 [[cvar]]
 name = "doBattleChickenSpinSpeed"
 type = "float"
 default = "3.0"
+used_by = "CDOBattleChickenController::vf24"
 
 [[cvar]]
 name = "doBattleFollowDistance"
@@ -568,24 +684,40 @@ type = "int"
 default = "2"
 
 [[cvar]]
+name = "doBonusRoomMusic"
+type = "string"
+default = "temple"
+registration = "direct"
+
+[[cvar]]
 name = "doBootsDuration"
 type = "int"
 default = "10000"
+used_by = "CDOPickupBoots::vf24"
+
+[[cvar]]
+name = "doBootsSpeed"
+type = "float"
+default = "1.3"
+registration = "direct"
 
 [[cvar]]
 name = "doBuffaloMinMaxX"
 type = "floatarray"
 default = "{-2000,2000}"
+used_by = "CDOBuffalo::vf23"
 
 [[cvar]]
 name = "doBuffaloMinMaxZ"
 type = "floatarray"
 default = "{-2000,2000}"
+used_by = "CDOBuffalo::vf23"
 
 [[cvar]]
 name = "doBuffaloSpawnDelayTime"
 type = "int"
 default = "1000"
+used_by = "CDORoundManager::vf11"
 
 [[cvar]]
 name = "doDeathGemStartDistance"
@@ -621,6 +753,7 @@ default = "30"
 name = "doFateLightningSpawnHeight"
 type = "float"
 default = "1000"
+used_by = "CDOFateBonusTrigger::vf23"
 
 [[cvar]]
 name = "doFateMaxTriggers"
@@ -631,16 +764,19 @@ default = "4"
 name = "doFatePickupAcceleration"
 type = "float"
 default = "7000"
+used_by = "CDOPickupFate::vf22"
 
 [[cvar]]
 name = "doFateSpawnHeight"
 type = "float"
 default = "1000"
+used_by = "CDOPlayerController::vf23"
 
 [[cvar]]
 name = "doFateTimeout"
 type = "int"
 default = "5000"
+used_by = "CDORoomOfFateHelper::vf8"
 
 [[cvar]]
 name = "doFlameDeceleration"
@@ -658,29 +794,68 @@ type = "intarray"
 default = "{1000,3000}"
 
 [[cvar]]
+name = "doFreezeZombie"
+type = "bool"
+default = "false"
+registration = "direct"
+
+[[cvar]]
+name = "doGoldenBuffaloNumPickups"
+type = "intarray"
+default = "{1,5}"
+used_by = "CDOBuffalo::OnEvent"
+registration = "direct"
+
+[[cvar]]
 name = "doGoldenBuffaloProportion"
 type = "float"
 default = "0.1"
+used_by = "CDORoundManager::vf11"
+
+[[cvar]]
+name = "doGoreLife"
+type = "floatarray"
+default = "{0.3,1.0}"
+used_by = "CDOGore::CDOGore"
+registration = "direct"
+
+[[cvar]]
+name = "doGoreMaxRange"
+type = "floatarray"
+default = "{0.2,1.0}"
+used_by = "CDOGoreManager::CDOGoreManager"
+registration = "direct"
 
 [[cvar]]
 name = "doGravity"
 type = "float"
 default = "980.6650391"
+used_by = "CDOAIControllerBossSilverback::vf23"
 
 [[cvar]]
 name = "doHelicopterDragCoeffient"
 type = "float"
 default = "0.1"
+used_by = "CDOHelicopterBodyHandler::vf24"
 
 [[cvar]]
 name = "doHelicopterFlightHeight"
 type = "float"
 default = "100.0"
+used_by = "CDOHelicopterBodyHandler::vf22"
 
 [[cvar]]
 name = "doHelicopterMaxAcceleration"
 type = "float"
 default = "10.0"
+used_by = "CDOHelicopterBodyHandler::vf24"
+
+[[cvar]]
+name = "doHelicopterTilt"
+type = "graph"
+default = "0.0,0.0;2.0,0.2;"
+used_by = "CDOHelicopterBodyHandler::vf24"
+registration = "direct"
 
 [[cvar]]
 name = "doHelicopterTurnDamping"
@@ -696,11 +871,13 @@ default = "0.1"
 name = "doHerdeDelayTime"
 type = "intarray"
 default = "{1000,5000}"
+used_by = "CDORoundManager::vf11"
 
 [[cvar]]
 name = "doHerdeSize"
 type = "intarray"
 default = "{3,5}"
+used_by = "CDORoundManager::vf11"
 
 [[cvar]]
 name = "doJumpDrop"
@@ -716,11 +893,13 @@ default = "0.8"
 name = "doLightningFlashCount"
 type = "intarray"
 default = "{1,3}"
+used_by = "CDORoundManager::vf11"
 
 [[cvar]]
 name = "doLightningFlashTime"
 type = "intarray"
 default = "{10,60}"
+used_by = "CDORoundManager::vf11"
 
 [[cvar]]
 name = "doLightningSpeed"
@@ -731,11 +910,54 @@ default = "-800"
 name = "doLightningStrikeWaitTime"
 type = "intarray"
 default = "{1000,10000}"
+used_by = "CDORoundManager::vf11"
+
+[[cvar]]
+name = "doMaxBuffaloSpawnPoint"
+type = "int"
+used_by = "CDORoundManager::CDORoundManager"
+lookup_only = true
 
 [[cvar]]
 name = "doMaxChickens"
 type = "int"
 default = "5"
+
+[[cvar]]
+name = "doMaxFlamingBarrelSpawnPoint"
+type = "int"
+used_by = "CDORoundManager::CDORoundManager"
+lookup_only = true
+
+[[cvar]]
+name = "doMaxNextRoundTriggers"
+type = "int"
+used_by = "CDORoundManager::CDORoundManager"
+lookup_only = true
+
+[[cvar]]
+name = "doMaxPickupSpawnPoints"
+type = "int"
+used_by = "CDOPickupManager::CDOPickupManager"
+lookup_only = true
+
+[[cvar]]
+name = "doMaxSilverbackBossSpawnPoint"
+type = "int"
+used_by = "CDORoundManager::CDORoundManager"
+lookup_only = true
+
+[[cvar]]
+name = "doMaxTeslaSpawnPoints"
+type = "int"
+used_by = "CDORoundManager::CDORoundManager"
+lookup_only = true
+
+[[cvar]]
+name = "doMaxZombieSpawnPoints"
+type = "int"
+used_by = "CDOHordeManager::CDOHordeManager"
+lookup_only = true
 
 [[cvar]]
 name = "doMetallicBallArcingRange"
@@ -746,6 +968,7 @@ default = "100"
 name = "doMetallicBallCount"
 type = "int"
 default = "4"
+used_by = "CDOPickupPlayerShield::vf24"
 
 [[cvar]]
 name = "doMetallicBallDistance"
@@ -768,6 +991,27 @@ type = "int"
 default = "90000"
 
 [[cvar]]
+name = "doMutliplierBracket"
+type = "intarray"
+default = "{1000,1500,2500,4500,6500,9000,12000,16000,22500}"
+used_by = "CDOPersistentStorage::CDOPersistentStorage"
+registration = "direct"
+
+[[cvar]]
+name = "doNetworkPositionThresholdSqr"
+type = "int"
+default = "15000"
+used_by = "CDOTransformSynchroniser::vf23"
+registration = "direct"
+
+[[cvar]]
+name = "doNetworkRotationThreshold"
+type = "float"
+default = "0.174532"
+used_by = "CDOTransformSynchroniser::vf23"
+registration = "direct"
+
+[[cvar]]
 name = "doNumWaves"
 type = "floatarray"
 default = "{3,30}"
@@ -776,6 +1020,7 @@ default = "{3,30}"
 name = "doOilDrumCount"
 type = "int"
 default = "2"
+used_by = "CDOPickupPlayerShield::vf24"
 
 [[cvar]]
 name = "doOilDrumDistance"
@@ -786,6 +1031,7 @@ default = "200.0"
 name = "doOilDrumOutwardReleaseMass"
 type = "float"
 default = "1.0"
+used_by = "CDOSpinningShieldBarrel::vf23"
 
 [[cvar]]
 name = "doOilDrumSpinSpeed"
@@ -811,91 +1057,115 @@ default = "5"
 name = "doPickupBonusMaxItemsPerSpawnpoint"
 type = "int"
 default = "10"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupBonusMaxSpawn"
 type = "int"
 default = "4"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupBonusMinItemsPerSpawnpoint"
 type = "int"
 default = "8"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupBonusMinSpawn"
 type = "int"
 default = "4"
+used_by = "CDOPickupManager::vf2"
+
+[[cvar]]
+name = "doPickupRadius"
+type = "float"
+default = "50.000000"
+registration = "direct"
 
 [[cvar]]
 name = "doPickupRoundBeginMaxItemsPerSpawnpoint"
 type = "int"
 default = "10"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupRoundBeginMaxSpawn"
 type = "int"
 default = "4"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupRoundBeginMinItemsPerSpawnpoint"
 type = "int"
 default = "2"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupRoundBeginMinSpawn"
 type = "int"
 default = "1"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupRoundCompleteMaxItemsPerSpawnpoint"
 type = "int"
 default = "10"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupRoundCompleteMaxSpawn"
 type = "int"
 default = "4"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupRoundCompleteMinItemsPerSpawnpoint"
 type = "int"
 default = "2"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupRoundCompleteMinSpawn"
 type = "int"
 default = "3"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupWaveCompleteMaxItemsPerSpawnpoint"
 type = "int"
 default = "10"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupWaveCompleteMaxSpawn"
 type = "int"
 default = "4"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupWaveCompleteMinItemsPerSpawnpoint"
 type = "int"
 default = "2"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPickupWaveCompleteMinSpawn"
 type = "int"
 default = "1"
+used_by = "CDOPickupManager::vf2"
 
 [[cvar]]
 name = "doPlayerJumpDuration"
 type = "float"
 default = "2"
+used_by = "CDOIngameStateResult::vf11"
 
 [[cvar]]
 name = "doPlayerRepelFactor"
 type = "float"
 default = "0.75"
+used_by = "CDOPlayerController::vf23"
 
 [[cvar]]
 name = "doPlayerSpawnRadius"
@@ -912,9 +1182,17 @@ type = "int"
 default = "200000"
 
 [[cvar]]
+name = "doRainbowRingRepelSpeed"
+type = "graph"
+default = "0,0;300,4096;"
+used_by = "CDOAIController::vf24"
+registration = "direct"
+
+[[cvar]]
 name = "doRainbowRingTrapDistance"
 type = "float"
 default = "210"
+used_by = "CDOAIController::vf24"
 
 [[cvar]]
 name = "doRainbowShieldBaseRadius"
@@ -925,16 +1203,19 @@ default = "203"
 name = "doRainbowShieldContractTime"
 type = "int"
 default = "1000"
+used_by = "CDOShieldRainbow::vf24"
 
 [[cvar]]
 name = "doRainbowShieldExpandTime"
 type = "int"
 default = "1000"
+used_by = "CDOShieldRainbow::vf24"
 
 [[cvar]]
 name = "doRainbowShieldMaxScale"
 type = "float"
 default = "1.5"
+used_by = "CDOShieldRainbow::vf24"
 
 [[cvar]]
 name = "doResultsGravity"
@@ -945,6 +1226,7 @@ default = "3000"
 name = "doReturnToSpawnPointDistance"
 type = "float"
 default = "200"
+used_by = "CDOAIController::vf24"
 
 [[cvar]]
 name = "doReviveDownTime"
@@ -955,6 +1237,7 @@ default = "2000"
 name = "doReviveEffectActiveTime"
 type = "int"
 default = "9000"
+used_by = "CDOPlayerController::vf23"
 
 [[cvar]]
 name = "doReviveEffectAnimatePeriod"
@@ -992,14 +1275,22 @@ type = "intarray"
 default = "{255,0,0,255}"
 
 [[cvar]]
+name = "doRoomOfFateRange"
+type = "intarray"
+default = "{13,15}"
+registration = "direct"
+
+[[cvar]]
 name = "doSentryGunAscendAcceleration"
 type = "float"
 default = "9806.65"
+used_by = "CDOSentryGunController::vf24"
 
 [[cvar]]
 name = "doSentryGunAscendHeight"
 type = "float"
 default = "5000"
+used_by = "CDOSentryGunController::vf24"
 
 [[cvar]]
 name = "doSentryGunCollectRange"
@@ -1010,16 +1301,19 @@ default = "1000"
 name = "doSentryGunDescendAcceleration"
 type = "float"
 default = "9806.65"
+used_by = "CDOSentryGunController::vf24"
 
 [[cvar]]
 name = "doSentryGunFireBurstTime"
 type = "int"
 default = "4000"
+used_by = "CDOSentryGunController::vf24"
 
 [[cvar]]
 name = "doSentryGunLife"
 type = "int"
 default = "10000"
+used_by = "CDOSentryGunController::vf19"
 
 [[cvar]]
 name = "doSentryGunTargetRetryTime"
@@ -1030,6 +1324,7 @@ default = "1000"
 name = "doSentryGunTurnSpeed"
 type = "float"
 default = "3.0"
+used_by = "CDOSentryGunController::vf24"
 
 [[cvar]]
 name = "doSeperationFactor"
@@ -1045,6 +1340,7 @@ default = "200"
 name = "doShieldLifetime"
 type = "int"
 default = "20000"
+used_by = "CDOPickupPlayerShield::vf24"
 
 [[cvar]]
 name = "doSilverbackAscendHeight"
@@ -1055,11 +1351,20 @@ default = "15000"
 name = "doSilverbackBargeDistance"
 type = "float"
 default = "600"
+used_by = "CDOAIControllerBossSilverback::vf24"
 
 [[cvar]]
 name = "doSilverbackBargeProbability"
 type = "floatarray"
 default = "{0.1,0.1,0.25}"
+used_by = "CDOAIControllerBossSilverback::vf24"
+
+[[cvar]]
+name = "doSilverbackBargeSpeed"
+type = "float"
+default = "5.000000"
+used_by = "CDOAIControllerBossSilverback::vf24"
+registration = "direct"
 
 [[cvar]]
 name = "doSilverbackJumpDuration"
@@ -1070,26 +1375,38 @@ default = "2"
 name = "doSilverbackLeapHeight"
 type = "float"
 default = "1000"
+used_by = "CDOAIControllerBossSilverback::vf23"
 
 [[cvar]]
 name = "doSilverbackLeapProbability"
 type = "floatarray"
 default = "{0.1,0.55,0.25}"
+used_by = "CDOAIControllerBossSilverback::vf24"
 
 [[cvar]]
 name = "doSilverbackMaxBargeRange"
 type = "float"
 default = "500.000000"
+used_by = "CDOAIControllerBossSilverback::vf24"
 
 [[cvar]]
 name = "doSilverbackMeleeAttackRange"
 type = "float"
 default = "150.000000"
+used_by = "CDOAIControllerBossSilverback::vf24"
 
 [[cvar]]
 name = "doSilverbackMinLeapRange"
 type = "float"
 default = "200.000000"
+used_by = "CDOAIControllerBossSilverback::vf24"
+
+[[cvar]]
+name = "doSilverbackSpecialAttackInterval"
+type = "int"
+default = "10000"
+used_by = "CDOAIControllerBossSilverback::vf24"
+registration = "direct"
 
 [[cvar]]
 name = "doSpeedBoostDuration"
@@ -1110,6 +1427,7 @@ default = "3"
 name = "doTankAccel"
 type = "float"
 default = "1500"
+used_by = "CDOTankBodyHandler::vf24"
 
 [[cvar]]
 name = "doTankDecel"
@@ -1120,26 +1438,31 @@ default = "1600"
 name = "doTankMaxMoveThreshold"
 type = "float"
 default = "0.06981"
+used_by = "CDOTankBodyHandler::vf24"
 
 [[cvar]]
 name = "doTankMaxSpeed"
 type = "float"
 default = "800"
+used_by = "CDOTankBodyHandler::vf24"
 
 [[cvar]]
 name = "doTankMaxTurn"
 type = "float"
 default = "6.283185"
+used_by = "CDOTankBodyHandler::vf24"
 
 [[cvar]]
 name = "doTankMinTurnThreshold"
 type = "float"
 default = "0.005000"
+used_by = "CDOTankBodyHandler::vf24"
 
 [[cvar]]
 name = "doTankTurretMaxTurn"
 type = "float"
 default = "6.0"
+used_by = "CDOTankBodyHandler::vf24"
 
 [[cvar]]
 name = "doTeleporterRiseSpeed"
@@ -1150,26 +1473,48 @@ default = "25"
 name = "doTeleporterRotationSpeed"
 type = "float"
 default = "0.5"
+used_by = "CDOTeleporter::vf23"
 
 [[cvar]]
 name = "doTeleporterStartHeight"
 type = "float"
 default = "100.0"
+used_by = "CDOTeleporter::vf22"
 
 [[cvar]]
 name = "doTeslaEnemyDamageRadius"
 type = "float"
 default = "115.0"
+used_by = "CDOTeslaTower::vf23"
 
 [[cvar]]
 name = "doTeslaPlayerDamageRadius"
 type = "float"
 default = "90.0"
+used_by = "CDOTeslaTower::vf23"
 
 [[cvar]]
 name = "DOToolTipCount"
 type = "int"
 default = "14"
+
+[[cvar]]
+name = "doTransformSyncRandTime"
+type = "int"
+used_by = "CDOTransformSynchroniser::Init"
+lookup_only = true
+
+[[cvar]]
+name = "doTransformSyncTime"
+type = "int"
+used_by = "CDOTransformSynchroniser::Init"
+lookup_only = true
+
+[[cvar]]
+name = "DoubleBufferSave"
+type = "bool"
+default = "true"
+registration = "direct"
 
 [[cvar]]
 name = "DoublePointsTime"
@@ -1185,11 +1530,13 @@ default = "100"
 name = "DoubleTapTimeOut"
 type = "int"
 default = "200"
+used_by = "CTouchComponentAnaloguePad::vf2"
 
 [[cvar]]
 name = "DrawToAgentPosition"
 type = "bool"
 default = "false"
+used_by = "CAIControllerHellhound::vf21"
 
 [[cvar]]
 name = "DropRaycastDistance"
@@ -1200,11 +1547,18 @@ default = "10000"
 name = "EnableAutoCrouch"
 type = "bool"
 default = "false"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "EnableSetFov"
 type = "bool"
 default = "false"
+
+[[cvar]]
+name = "EnableVideo"
+type = "bool"
+default = "true"
+registration = "direct"
 
 [[cvar]]
 name = "EndWaveGrenades"
@@ -1260,21 +1614,25 @@ default = "20000"
 name = "FiringTapTimeOut"
 type = "int"
 default = "200"
+used_by = "CTouchComponentAnaloguePad::vf2"
 
 [[cvar]]
 name = "flingerGravity"
 type = "float"
 default = "-981.0f"
+used_by = "CFlinger::vf23"
 
 [[cvar]]
 name = "flingerTime"
 type = "float"
 default = "2.4f"
+used_by = "CFlinger::vf23"
 
 [[cvar]]
 name = "FogAltTransitionTime"
 type = "int"
 default = "5000"
+used_by = "CVFXManager::vf2"
 
 [[cvar]]
 name = "FogBaseZRange"
@@ -1285,6 +1643,13 @@ default = "12256"
 name = "FogLevelsMax"
 type = "int"
 default = "3"
+
+[[cvar]]
+name = "FogOverrideColour"
+type = "intarray"
+default = "{-1,-1,-1}"
+used_by = "CIwFogManager::CIwFogManager"
+registration = "direct"
 
 [[cvar]]
 name = "FogOverrideFarPlane"
@@ -1315,11 +1680,13 @@ default = "4000"
 name = "ForceBaddiesPositionSynchRandTimeoutMs"
 type = "int"
 default = "1500"
+used_by = "CBodyHandler::vf23"
 
 [[cvar]]
 name = "ForceBaddiesPositionSynchTimeoutMs"
 type = "int"
 default = "3000"
+used_by = "CBodyHandler::vf23"
 
 [[cvar]]
 name = "ForceGoodiePositionSynchTimeoutMs"
@@ -1330,16 +1697,33 @@ default = "2000"
 name = "ForceZombiePositionToAgent"
 type = "bool"
 default = "false"
+used_by = "CAIControllerHellhound::vf25"
+
+[[cvar]]
+name = "FrameBoneDefaultHighAccuracy"
+type = "bool"
+default = "true"
+used_by = "CIsFrameBone::CIsFrameBone"
+registration = "direct"
 
 [[cvar]]
 name = "FreeCODPointsOnBuildUpdate"
 type = "int"
 default = "5000"
+used_by = "CGameStore::vf7"
 
 [[cvar]]
 name = "FreeCODPointsOnNewDay"
 type = "int"
 default = "100"
+used_by = "CGameStore::vf7"
+
+[[cvar]]
+name = "FreeFlySpeed"
+type = "float"
+default = "60.0"
+used_by = "CPlayerFreeFly::Init"
+registration = "direct"
 
 [[cvar]]
 name = "FullScreenBlurMinCoeff"
@@ -1350,16 +1734,19 @@ default = "0.2"
 name = "GameOverWaitingTime"
 type = "int"
 default = "5000"
+used_by = "CIngameStateResults::vf2"
 
 [[cvar]]
 name = "GameResultsFXVolume"
 type = "float"
 default = "0.3"
+used_by = "CIngameStateResults::vf2"
 
 [[cvar]]
 name = "GeorgeRomero"
 type = "bool"
 default = "true"
+used_by = "CWaveManager::vf2"
 
 [[cvar]]
 name = "GrenadeFuseLength"
@@ -1417,6 +1804,12 @@ type = "float"
 default = "1.5"
 
 [[cvar]]
+name = "GunSwayUseDebugValues"
+type = "bool"
+default = "false"
+registration = "direct"
+
+[[cvar]]
 name = "GunSwayX"
 type = "float"
 default = "0.04"
@@ -1442,6 +1835,13 @@ type = "float"
 default = "10.0"
 
 [[cvar]]
+name = "HealthIgnoreBleedOutTime"
+type = "bool"
+default = "false"
+used_by = "CHealth::Update"
+registration = "direct"
+
+[[cvar]]
 name = "healthIncrease"
 type = "int"
 default = "3"
@@ -1450,6 +1850,12 @@ default = "3"
 name = "HealthLowTreshold"
 type = "float"
 default = "0.7"
+
+[[cvar]]
+name = "HUDMessagingFont"
+type = "string"
+default = "CCAdamKubertItalic_10pt"
+registration = "direct"
 
 [[cvar]]
 name = "HUDMessagingXY"
@@ -1482,9 +1888,16 @@ type = "int"
 default = "10"
 
 [[cvar]]
+name = "IgnoreCentral"
+type = "bool"
+default = "false"
+registration = "direct"
+
+[[cvar]]
 name = "InputWaitingTime"
 type = "int"
 default = "1000"
+used_by = "CIngameStateResults::vf2"
 
 [[cvar]]
 name = "InstaKillTime"
@@ -1497,6 +1910,12 @@ type = "int"
 default = "32"
 
 [[cvar]]
+name = "IsDirectionSmoothingSpeed"
+type = "int"
+default = "24570"
+registration = "direct"
+
+[[cvar]]
 name = "JumpCheckTimer"
 type = "int"
 default = "200"
@@ -1505,26 +1924,31 @@ default = "200"
 name = "KillStreakQuota"
 type = "int"
 default = "50"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "KillStreakVoxDelayTime"
 type = "int"
 default = "10000"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "LastStandDuration"
 type = "int"
 default = "30000"
+used_by = "CPlayerController::vf24"
 
 [[cvar]]
 name = "LastStandDurationSinglePlayer"
 type = "int"
 default = "10000"
+used_by = "CPlayerController::vf24"
 
 [[cvar]]
 name = "LastStandSpeed"
 type = "float"
 default = "0.2"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "LastStandWeaponMulti"
@@ -1555,6 +1979,7 @@ default = "25"
 name = "LighthouseFaceInterpTime"
 type = "int"
 default = "500"
+used_by = "CLighthouse::vf24"
 
 [[cvar]]
 name = "LighthouseGlowTime"
@@ -1585,11 +2010,13 @@ default = "10000"
 name = "LighthouseSpinSpeed"
 type = "float"
 default = "30.0"
+used_by = "CLighthouse::vf24"
 
 [[cvar]]
 name = "LighthouseSpinTime"
 type = "int"
 default = "20000"
+used_by = "CLighthouse::vf24"
 
 [[cvar]]
 name = "LightningBoltWeapon"
@@ -1600,21 +2027,25 @@ default = "dragunov"
 name = "LoadingCallbackBytes"
 type = "int"
 default = "100000"
+used_by = "CDOIngameStateLoading::vf11"
 
 [[cvar]]
 name = "LoadingCallbackMs"
 type = "int"
 default = "200"
+used_by = "CDOIngameStateLoading::vf10"
 
 [[cvar]]
 name = "LODMaxDistanceQualityProportion"
 type = "float"
 default = "8.0"
+used_by = "CIsLODControllerDistance::vf23"
 
 [[cvar]]
 name = "LODOverrideQualitySetting"
 type = "float"
 default = "-1.0"
+used_by = "CIsLODControllerDistance::vf23"
 
 [[cvar]]
 name = "LODQuotaDeathQualityModifier"
@@ -1622,14 +2053,23 @@ type = "float"
 default = "3.0"
 
 [[cvar]]
+name = "LODQuotaFrustrumRadiusBuffer"
+type = "float"
+default = "70.0f"
+used_by = "CIsLODControllerQuotaManager::FixedStep"
+registration = "direct"
+
+[[cvar]]
 name = "LODQuotaLevelsMax"
 type = "int"
 default = "3"
+used_by = "CIsLODControllerQuotaManager::vf2"
 
 [[cvar]]
 name = "LODQuotaQualityReducer"
 type = "int"
 default = "2"
+used_by = "CIsLODControllerQuotaManager::vf2"
 
 [[cvar]]
 name = "masterVolume"
@@ -1640,6 +2080,13 @@ default = "5"
 name = "MaterialFrameTime"
 type = "int"
 default = "60"
+used_by = "CFullscreenFXManager::vf2"
+
+[[cvar]]
+name = "maxDyingEntities"
+type = "int"
+used_by = "CIwWorld::CIwWorld"
+lookup_only = true
 
 [[cvar]]
 name = "MaxIntervalMul"
@@ -1680,6 +2127,7 @@ default = "32"
 name = "MaxTimeInWater"
 type = "int"
 default = "30000"
+used_by = "CPlayerController::vf22"
 
 [[cvar]]
 name = "MessageFadeTime"
@@ -1720,6 +2168,7 @@ default = "200"
 name = "MinigunBarrelMaxSpeed"
 type = "int"
 default = "3996"
+used_by = "CDeathMachineBehaviour::vf10"
 
 [[cvar]]
 name = "MinIntervalMul"
@@ -1750,16 +2199,32 @@ default = "0.005"
 name = "MTXReviveCost"
 type = "int"
 default = "1000"
+used_by = "CIngameStateQuickRevive::vf2"
 
 [[cvar]]
 name = "MultiplayerLobby4PlayersTimeoutMs"
 type = "int"
 default = "5000"
+used_by = "CFrontendStateConnectCommon::vf19"
 
 [[cvar]]
 name = "MultiplayerLobbyTimeMs"
 type = "int"
 default = "20000"
+used_by = "CFrontendStateConnectCommon::vf22"
+
+[[cvar]]
+name = "MultiplayerLobbyTimeWifiMs"
+type = "int"
+default = "20000"
+used_by = "CFrontendStateConnectWifi::vf22"
+registration = "direct"
+
+[[cvar]]
+name = "MultiplayerSpectatorCameraOffsetVec3"
+type = "intarray"
+default = "{0,2880,-1280}"
+registration = "direct"
 
 [[cvar]]
 name = "musicEnabled"
@@ -1770,16 +2235,19 @@ default = "1"
 name = "MysteryBoxMaxGoodSound"
 type = "int"
 default = "3"
+used_by = "CMysteryBox::vf24"
 
 [[cvar]]
 name = "MysteryBoxOverrideWeaponCount"
 type = "int"
 default = "-1"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxPauseTime"
 type = "int"
 default = "1000"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxRespawnTime"
@@ -1790,6 +2258,7 @@ default = "20000"
 name = "MysteryBoxTeddyHeight"
 type = "float"
 default = "700.0"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxTeddyScale"
@@ -1800,11 +2269,13 @@ default = "1.0"
 name = "MysteryBoxTeddyTime"
 type = "int"
 default = "1000"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxWeaponHeight"
 type = "float"
 default = "100.0"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxWeaponLOD"
@@ -1815,6 +2286,7 @@ default = "1"
 name = "MysteryBoxWeaponLowerTime"
 type = "int"
 default = "3000"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxWeaponScale"
@@ -1825,31 +2297,43 @@ default = "0.015625f"
 name = "MysteryBoxWeaponStartHeight"
 type = "float"
 default = "20.0"
+used_by = "CMysteryBox::vf24"
 
 [[cvar]]
 name = "MysteryBoxWeaponSwitchTime"
 type = "int"
 default = "2000"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxWeaponSwitchTimeMax"
 type = "int"
 default = "1500"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxWeaponSwitchTimeMin"
 type = "int"
 default = "50"
+used_by = "CMysteryBox::vf23"
 
 [[cvar]]
 name = "MysteryBoxWeaponTime"
 type = "int"
 default = "1500"
+used_by = "CMysteryBox::vf23"
+
+[[cvar]]
+name = "NetworkEndpointOne2One"
+type = "bool"
+default = "false"
+registration = "direct"
 
 [[cvar]]
 name = "NoExplosions"
 type = "bool"
 default = "false"
+used_by = "CExplosion::vf23"
 
 [[cvar]]
 name = "NotableEntAngle"
@@ -1867,6 +2351,12 @@ type = "int"
 default = "8"
 
 [[cvar]]
+name = "NumSubOTRenderableSlots"
+type = "float"
+default = "0.66666"
+registration = "direct"
+
+[[cvar]]
 name = "NumZombiesToInterval"
 type = "fixed"
 default = "0.1"
@@ -1880,11 +2370,13 @@ default = "true"
 name = "OnlineJoiningTimeout"
 type = "int"
 default = "10000"
+used_by = "CFrontendStateConnectOnline::vf17"
 
 [[cvar]]
 name = "OnlineRetrievingTimeout"
 type = "int"
 default = "30000"
+used_by = "CFrontendStateMTXStore::vf10"
 
 [[cvar]]
 name = "OnlineUseGameCenterMM"
@@ -1910,6 +2402,7 @@ default = "150000"
 name = "PackAPunchSpawnDelay"
 type = "int"
 default = "2000"
+used_by = "CPackAPunch::vf23"
 
 [[cvar]]
 name = "PAPMachineWeaponEndX"
@@ -1965,6 +2458,7 @@ default = "3000"
 name = "PerkedAimCrouchSpeed"
 type = "float"
 default = "1.2"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "PerkedAimPitchSpeed"
@@ -1975,6 +2469,7 @@ default = "2.0"
 name = "PerkedAimProneSpeed"
 type = "float"
 default = "0.6"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "PerkedAimTurnSpeed"
@@ -1985,11 +2480,13 @@ default = "2.0"
 name = "PerkedAimWalkSpeed"
 type = "float"
 default = "1.0"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "PerkedCrouchSpeed"
 type = "float"
 default = "1.2"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "PerkedPitchSpeed"
@@ -2000,6 +2497,7 @@ default = "2.0"
 name = "PerkedProneSpeed"
 type = "float"
 default = "0.6"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "PerkedSprintingCapacity"
@@ -2030,6 +2528,7 @@ default = "2.0"
 name = "PerkedSprintSpeed"
 type = "float"
 default = "6.0"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "PerkedSprintTurnSpeed"
@@ -2045,16 +2544,19 @@ default = "2.0"
 name = "PerkedWalkSpeed"
 type = "float"
 default = "2.0"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "PerkUnderAttackFadeTimeMS"
 type = "int"
 default = "500"
+used_by = "CPerkManager::vf25"
 
 [[cvar]]
 name = "PerkUnderAttackFlashTimeMS"
 type = "int"
 default = "6000"
+used_by = "CPerkManager::vf23"
 
 [[cvar]]
 name = "PickupDropOnDeathProbability"
@@ -2110,6 +2612,7 @@ default = "2.0"
 name = "PlayerDownScorePenalty"
 type = "float"
 default = "0.05"
+used_by = "CPlayerController::vf24"
 
 [[cvar]]
 name = "PlayerExplosionVoxMinInterval"
@@ -2175,6 +2678,7 @@ default = "colt45"
 name = "PlayerVoxRomeroNearlyDead"
 type = "int"
 default = "50"
+used_by = "CAIControllerRomero::vf26"
 
 [[cvar]]
 name = "PlayerVoxWaterDelay"
@@ -2187,19 +2691,35 @@ type = "int"
 default = "300"
 
 [[cvar]]
+name = "ProbabilityOfSpawningEachPickup"
+type = "intarray"
+default = "{10,10,10,10,10,10,10,10,0}"
+used_by = "CPickupManager::CPickupManager"
+registration = "direct"
+
+[[cvar]]
 name = "ProneSpeed"
 type = "float"
 default = "0.3"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "RateMeDelayTimer"
 type = "int"
 default = "2000"
+used_by = "CIngameStateResults::vf2"
+
+[[cvar]]
+name = "RateMeWaveNos"
+type = "intarray"
+default = "{5,10,15,20}"
+registration = "direct"
 
 [[cvar]]
 name = "RayCastTestEnabled"
 type = "bool"
 default = "true"
+used_by = "CGameStateIngame::vf6"
 
 [[cvar]]
 name = "RecoilDamping"
@@ -2305,6 +2825,7 @@ default = "0.15f"
 name = "RenderFromPlayer"
 type = "bool"
 default = "false"
+used_by = "CGameStateIngame::vf6"
 
 [[cvar]]
 name = "RenderOccluder"
@@ -2400,6 +2921,7 @@ default = "0.5"
 name = "RomeroDeathMachineDamageMultiplier"
 type = "float"
 default = "0.1"
+used_by = "CAIControllerRomero::vf26"
 
 [[cvar]]
 name = "RomeroDistOffsetFromBarricade"
@@ -2415,6 +2937,7 @@ default = "180"
 name = "RomeroHeavyDamagePercentage"
 type = "float"
 default = "0.25"
+used_by = "CAIControllerRomero::vf26"
 
 [[cvar]]
 name = "romeroHitReactionDelay"
@@ -2430,11 +2953,13 @@ default = "200.0"
 name = "RomeroLightDamagePercentage"
 type = "float"
 default = "0.75"
+used_by = "CAIControllerRomero::vf26"
 
 [[cvar]]
 name = "RomeroMediumDamagePercentage"
 type = "float"
 default = "0.5"
+used_by = "CAIControllerRomero::vf26"
 
 [[cvar]]
 name = "RomeroPerkXSparationOffset"
@@ -2475,21 +3000,45 @@ default = "5000"
 name = "RomeroVoxRomeroNearlyDead"
 type = "int"
 default = "20"
+used_by = "CAIControllerRomero::vf25"
 
 [[cvar]]
 name = "RomeroVoxTargetCloseDistSq"
 type = "float"
 default = "70000"
+used_by = "CAIControllerRomero::vf25"
 
 [[cvar]]
 name = "RomeroVoxTimeMinMax"
 type = "intarray"
 default = "{50000, 90000}"
+used_by = "CAIControllerRomero::vf25"
 
 [[cvar]]
 name = "RoomMaxPlayers"
 type = "int"
 default = "2"
+used_by = "CIwNetworkRoom::vf15"
+
+[[cvar]]
+name = "SaveOnPause"
+type = "bool"
+default = "true"
+used_by = "CIngameStatePaused::Enter"
+registration = "direct"
+
+[[cvar]]
+name = "SaveOnSuspend"
+type = "bool"
+default = "true"
+used_by = "CIngameStatePlaying::OnEvent"
+registration = "direct"
+
+[[cvar]]
+name = "ScoreConfigName"
+type = "string"
+default = "score_table"
+registration = "direct"
 
 [[cvar]]
 name = "SetFov"
@@ -2522,6 +3071,12 @@ type = "int"
 default = "25"
 
 [[cvar]]
+name = "SpawnMaxDistance"
+type = "float"
+default = "5000.0"
+registration = "direct"
+
+[[cvar]]
 name = "SplashScreenMs"
 type = "int"
 default = "3000"
@@ -2530,11 +3085,13 @@ default = "3000"
 name = "SprintAngle"
 type = "float"
 default = "0.5"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "SprintDownFactor"
 type = "float"
 default = "1.2"
+used_by = "CTouchComponentStickyStick::vf6"
 
 [[cvar]]
 name = "SprintingCapacity"
@@ -2565,6 +3122,7 @@ default = "1.0"
 name = "SprintSpeed"
 type = "float"
 default = "3.0"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "SprintTurnSpeed"
@@ -2575,11 +3133,26 @@ default = "1.0"
 name = "StaggerStartingZombies"
 type = "int"
 default = "500"
+used_by = "CWaveManager::vf2"
+
+[[cvar]]
+name = "StartingScore"
+type = "int"
+used_by = "CScoreManager::GetScore"
+lookup_only = true
 
 [[cvar]]
 name = "StartMaterialFadeTime"
 type = "int"
 default = "500"
+used_by = "CFullscreenFXManager::vf2"
+
+[[cvar]]
+name = "StartSinglePlayerGame"
+type = "bool"
+default = "true"
+used_by = "CFrontendStateSinglePlayer::CFrontendStateSinglePlayer"
+registration = "direct"
 
 [[cvar]]
 name = "StickyAimXSensitivity"
@@ -2617,14 +3190,23 @@ type = "int"
 default = "50"
 
 [[cvar]]
+name = "Tcolor"
+type = "intarray"
+default = "{255,204,204,204}"
+used_by = "CAIControllerMonkey::OnEvent"
+registration = "direct"
+
+[[cvar]]
 name = "TeleportDurationMS"
 type = "int"
 default = "1000"
+used_by = "CTeleportManager::vf2"
 
 [[cvar]]
 name = "TeleportFadeMS"
 type = "int"
 default = "100"
+used_by = "CTeleportManager::vf2"
 
 [[cvar]]
 name = "TeleportProbabilityToRandomRoom"
@@ -2655,6 +3237,7 @@ default = "10000"
 name = "TimeToMove"
 type = "int"
 default = "100"
+used_by = "CTouchComponentControl::vf2"
 
 [[cvar]]
 name = "TouchAimXSensitivity"
@@ -2670,6 +3253,14 @@ default = "{ 1.0, 1.0 }"
 name = "TouchComponentPressTimeOut"
 type = "int"
 default = "200"
+used_by = "CDOTouchComponentAnaloguePad::vf2"
+
+[[cvar]]
+name = "TouchControlAimingResponse"
+type = "graph"
+default = "0,0;50,0;50,2048;4096,4096;"
+used_by = "CTouchComponentControl::CTouchComponentControl"
+registration = "direct"
 
 [[cvar]]
 name = "TouchControlBalance"
@@ -2680,11 +3271,13 @@ default = "12.0"
 name = "TrapNonDamagePeriodMS"
 type = "int"
 default = "1000"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "TurnMult"
 type = "float"
 default = "0.25"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "TurnSpeed"
@@ -2695,26 +3288,31 @@ default = "1.0"
 name = "TutorShootAngleDelta"
 type = "float"
 default = "0.05f"
+used_by = "CAITutor::vf23"
 
 [[cvar]]
 name = "TutorShootTimeMS"
 type = "int"
 default = "800"
+used_by = "CAITutor::vf23"
 
 [[cvar]]
 name = "TutorTargetRange"
 type = "int"
 default = "290000"
+used_by = "CAITutor::vf23"
 
 [[cvar]]
 name = "TutorTargetTimer"
 type = "int"
 default = "500"
+used_by = "CAITutor::vf23"
 
 [[cvar]]
 name = "TutorTurnRate"
 type = "float"
 default = "5.0f"
+used_by = "CAITutor::vf23"
 
 [[cvar]]
 name = "UDPPacketCorruptionRate"
@@ -2735,6 +3333,7 @@ default = "250"
 name = "UIDoubleClickReleaseTime"
 type = "int"
 default = "150"
+used_by = "CInputManager::vf4"
 
 [[cvar]]
 name = "UIDoubleClickTime"
@@ -2747,9 +3346,17 @@ type = "bool"
 default = "false"
 
 [[cvar]]
+name = "UnlimitedScore"
+type = "bool"
+default = "false"
+used_by = "CScoreManager::CScoreManager"
+registration = "direct"
+
+[[cvar]]
 name = "UnlimitedStamina"
 type = "bool"
 default = "false"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "UnlimitedWaterMove"
@@ -2757,9 +3364,16 @@ type = "bool"
 default = "false"
 
 [[cvar]]
+name = "UseFastIwVolumesIntersection"
+type = "bool"
+default = "true"
+registration = "direct"
+
+[[cvar]]
 name = "VFXDecalFadeDuration"
 type = "int"
 default = "3000"
+used_by = "CImpactEffect::vf22"
 
 [[cvar]]
 name = "VFXPosZOffset"
@@ -2780,11 +3394,13 @@ default = "{960,540}"
 name = "WalkFraction"
 type = "float"
 default = "0.9"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "WalkSpeed"
 type = "float"
 default = "1.0"
+used_by = "CPlayerController::vf23"
 
 [[cvar]]
 name = "WaterLayer0TimeMult"
@@ -2830,6 +3446,7 @@ default = "false"
 name = "XPBarSpeed"
 type = "float"
 default = "0.2f"
+used_by = "CIngameStateResults::vf2"
 
 [[cvar]]
 name = "ZombieAllowHostMigrationDelay"
@@ -2840,6 +3457,7 @@ default = "1000"
 name = "ZombieAttackingDistanceBarricadeIncrease"
 type = "float"
 default = "55"
+used_by = "CAIControllerZombie::vf22"
 
 [[cvar]]
 name = "ZombieAttackingDistancePushBack"
@@ -2850,6 +3468,7 @@ default = "0.1"
 name = "ZombieAttackingDistanceTolerance"
 type = "float"
 default = "0.1"
+used_by = "CAIControllerZombie::vf22"
 
 [[cvar]]
 name = "ZombieAttackPauseTime"
@@ -2870,6 +3489,7 @@ default = "0.5"
 name = "ZombieDamageFreezeFraction"
 type = "float"
 default = "0.25"
+used_by = "CAIControllerZombie::vf26"
 
 [[cvar]]
 name = "zombieDeathFadeTime"
@@ -2890,6 +3510,7 @@ default = "0.5"
 name = "ZombieFreezeTimeMS"
 type = "int"
 default = "3000"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "ZombieHangTime"
@@ -2900,6 +3521,13 @@ default = "10000"
 name = "ZombieHardHealthMultiplier"
 type = "float"
 default = "1.0"
+
+[[cvar]]
+name = "zombieHeadshotBonus"
+type = "intarray"
+default = "{0,0,0,10,10,20,20,30,30,40}"
+used_by = "CAIControllerZombie::State_Dead"
+registration = "direct"
 
 [[cvar]]
 name = "ZombieHellhoundMaxDistFromAgentTreshold"
@@ -2915,6 +3543,7 @@ default = "{500,2000}"
 name = "ZombieIceOffset"
 type = "float"
 default = "15.0"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "ZombieJumpFinishDist"
@@ -2930,6 +3559,7 @@ default = "200"
 name = "ZombieMoonWalkWaterSpeedModifier"
 type = "float"
 default = "1.0"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "ZombieNetworkAngleError"
@@ -2955,6 +3585,7 @@ default = "30000"
 name = "ZombieRunWaterSpeedModifier"
 type = "float"
 default = "1.0"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "ZombiesCheckDistanceFromGershDeviceInterval"
@@ -2965,26 +3596,31 @@ default = "1000"
 name = "ZombieScreamAltTimer"
 type = "int"
 default = "3000"
+used_by = "CAIControllerZombie::vf22"
 
 [[cvar]]
 name = "ZombieSnapSpeed"
 type = "float"
 default = "1.0"
+used_by = "CAIControllerZombie::vf22"
 
 [[cvar]]
 name = "ZombieSprintWaterSpeedModifier"
 type = "float"
 default = "1.0"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "ZombieWalkFastWaterSpeedModifier"
 type = "float"
 default = "1.0"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "ZombieWalkWaterSpeedModifier"
 type = "float"
 default = "1.0"
+used_by = "CAIControllerZombie::vf28"
 
 [[cvar]]
 name = "ZombieZiplineStartFailsafeTime"

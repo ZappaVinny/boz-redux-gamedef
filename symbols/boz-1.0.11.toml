@@ -1065,6 +1065,14 @@ confidence = "likely"
 notes = "The CIwConsole singleton (cvar registry). Set at startup; every Cvar_Register* calls its vtable +0x5c."
 
 [[global]]
+name = "CIwSoundManager::s_instance"
+offset = 0x4535d8
+type = "undefined4"
+subsystem = "audio"
+confidence = "confirmed"
+notes = "CIwSoundManager singleton (sound effects). CIwSoundManager::Play(manager, soundHash, 0, 0, 0) plays a sound spec, e.g. IwHashString(\"menu_press\")."
+
+[[global]]
 name = "g_componentTableRegistry"
 offset = 0x4578c8
 type = "undefined4"
@@ -1102,6 +1110,51 @@ type = "void *"
 subsystem = "rendering"
 confidence = "confirmed"
 notes = "The transform set the director interpolates (count at +8, item array at +4)."
+
+[[global]]
+name = "CLevelManager::s_instance"
+offset = 0x460840
+type = "undefined4"
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "CLevelManager singleton (Zombies level). +0x1a0: the local player's entity (pointer; entity id at +4)."
+
+[[global]]
+name = "CUIPageManager::s_instance"
+offset = 0x46363c
+type = "undefined4"
+subsystem = "ui"
+confidence = "confirmed"
+notes = "CUIPageManager singleton: in-game IwUI pages (FindElement by name, ShowPage)."
+
+[[global]]
+name = "CInputManager::s_instance"
+offset = 0x467858
+type = "undefined4"
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "CInputManager singleton. +0x20: its CIsSubject (input events; input action 0x11 sends SUBJECT_PLAYER_FREE_MODE)."
+
+[[global]]
+name = "CPerkManager::s_table"
+offset = 0x46be2c
+subsystem = "state"
+confidence = "confirmed"
+notes = "Component table of CPerkManager (on the player entity). Red-black tree like CWeaponManager::s_table; Find(&s_table, playerEntityId)."
+
+[[global]]
+name = "CPlayerFreeFly::s_table"
+offset = 0x46ced4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CPlayerFreeFly (developer fly mode), keyed by player entity id."
+
+[[global]]
+name = "CWeaponManager::s_table"
+offset = 0x4704d0
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Component table of CWeaponManager. Components live in a red-black tree: header node pointer at +4 (header +8 = first node), nodes link parent +4, left +8, right +0xc, key (entity id) +0x10, component +0x14. The weapon manager sits on a child of the player entity; its +0x48 is the player entity."
 
 [[global]]
 name = "g_resBuildStylePath"
@@ -1248,6 +1301,14 @@ confidence = "confirmed"
 notes = "The IwDemonware singleton (created on first use). Every DemonWare use goes through it: rooms, login, telemetry, server time, key archive."
 
 [[function]]
+name = "Anim_FindId"
+offset = 0x01a3d8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Anim_FindId(out, kind, stateMachine, name): writes the id of a named animation trigger (kind 0), event (1) or callback (2) of a CIsAnimStateMachine to *out, 0xffff if missing. The three lookups fault on a null state machine; the client recovers (codboz_crash_recovery.c)."
+
+[[function]]
 name = "Cvar_RegisterInt"
 offset = 0x01a41c
 thumb = true
@@ -1296,6 +1357,62 @@ confidence = "confirmed"
 notes = "CIsClassInfo(info, name): reflection class record. +4 name, +8 IwHashString(name), +0x3c base list (base info, offset), +0x40 property map keyed by property hash, +0x4c derived classes. Each class keeps one in a guarded static returned by T::GetClassInfo."
 
 [[function]]
+name = "gameswf_FnCallArg"
+offset = 0x05fa6c
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "fn_call::arg(call, n): the n-th argument (as_value, 0x30 bytes) of a native ActionScript call."
+
+[[function]]
+name = "gameswf_AsTrace"
+offset = 0x062f8c
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Native ActionScript trace(value): gameswf_LogMsg(\"%s\\n\", value as string)."
+
+[[function]]
+name = "Flash_IsSendMessage"
+offset = 0x062fd8
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Native ActionScript function IsSendMessage(name, a, b) (the front-end movie's _root.sendMsg forwards to it): number arguments become integers, string arguments IwHashString values; posts event IwHashString(name) with (a, b) through Flash_PostMessage to the current Flash menu state's OnEvent. Any new SUBJECT_* name works, so movie edits can send new events."
+
+[[function]]
+name = "gameswf_LogMsg"
+offset = 0x0768e4
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "gameswf log_msg(fmt, ...): formats with vsnprintf into a 4 KB buffer and passes it to the log handler at 0x4a4175e8, which the release build never sets (so ActionScript trace() and gameswf warnings are dropped). Hook it to see them."
+
+[[function]]
+name = "gameswf_RegisterGlobals"
+offset = 0x07eaa4
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Registers ActionScript globals: trace, IsLocalise, IsSendMessage, IsPlaySound, IsAssert, Object, Sound, Array, MovieClip, ... (studio natives start with Is)."
+
+[[function]]
+name = "gameswf_AsValueToString"
+offset = 0x08d648
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "as_value::to_string(value): the value as a C string."
+
+[[function]]
+name = "Flash_PostMessage"
+offset = 0x08e854
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Flash_PostMessage(eventHash, a, b): delivers a message from ActionScript to the Flash movie's listeners (the active CFlashMenuState)."
+
+[[function]]
 name = "ClassRegistry_Add"
 offset = 0x0a893e
 thumb = true
@@ -1318,6 +1435,14 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Send(event, a, b): delivers an event to one entity (notifies the subject of the entity's CIsBroadcaster component). Hits and kill scores travel this way."
+
+[[function]]
+name = "CIsCamera::FromEntity"
+offset = 0x0b9414
+thumb = true
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsCamera component."
 
 [[function]]
 name = "ComponentTables_Update"
@@ -1912,12 +2037,36 @@ confidence = "confirmed"
 notes = "Play(soundHash, position, ...): plays a sound spec by name hash."
 
 [[function]]
+name = "Console_Print"
+offset = 0x0d8ed4
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Console_Print(console, text): formats into a 2 KB buffer and passes it to the output handler at console +0x9c (IIwConsoleHandler vtable +0x10). The release build never sets a handler, so output is discarded; the BOZ client installs its own to capture it."
+
+[[function]]
+name = "Console_FindCommand"
+offset = 0x0d8f80
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Console_FindCommand(console, name): the registered command (map at console +0x14 keyed by IwHashString), or null."
+
+[[function]]
 name = "Console_FindBindContext"
 offset = 0x0d8fba
 thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Finds a console binding context by name (list at console +0x48, compared by IwHashString), e.g. GameStateIngame, BOPlayerControlsWin, XperiaPlayBO."
+
+[[function]]
+name = "Console_FindVar"
+offset = 0x0d8ff0
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Console_FindVar(console, name): the CIwConsoleVar registered under name (map at console +0x20 keyed by IwHashString), or null. Var vtable: +0x10 ToString(buf, size), +0x14 FromString(text), +0xc validate; value at +0x10."
 
 [[function]]
 name = "Console_RegisterCommand"
@@ -1942,6 +2091,46 @@ thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Deactivates a named binding context and removes its bindings."
+
+[[function]]
+name = "Console_ResolveAlias"
+offset = 0x0d9acc
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Follows console aliases (map at console +0x80) to the final command text."
+
+[[function]]
+name = "Console_ExecuteLine"
+offset = 0x0d9b04
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Expands aliases, splits on ';' and runs each part: a command goes to its owner (IIwConsoleHandler +8 (owner, id, args)); a cvar with no argument prints its value through Console_Print, with an argument sets it (var vtable +0x14 FromString, +0xc validate; on success console +0x91 = dirty)."
+
+[[function]]
+name = "Console_Execute"
+offset = 0x0d9bfc
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Console_Execute(console, text): runs a console line. Ignores empty text; otherwise Console_ExecuteLine. The release game calls it for menu items and Event_ConsoleCommand (HandleEvent 0x600)."
+
+[[function]]
+name = "CIwConsole::Update"
+offset = 0x0d9c24
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Per-frame console update (vtable slot 16): ticks the output/input handlers at +0x9c/+0xa0, then runs key bindings (bound command strings through Console_Execute) unless a handler takes the keyboard (+0x1c)."
+
+[[function]]
+name = "CIwConsole::OnCommand"
+offset = 0x0db1ec
+thumb = true
+subsystem = "runtime"
+confidence = "confirmed"
+notes = "Built-in console commands (vtable slot 14) by id: 2 unbindAll, 3 alias, 5 listCommands, 6 listVars, 7 listAliases, 8 listBindingSets, 9 bindingSetActivate, 10 bindingSetDeactivate, 11 saveConsole. Listings go through Console_Print."
 
 [[function]]
 name = "CIwConsole::Serialise"
@@ -2226,6 +2415,30 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarstring with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "CFrontendStateOptions::PushSettings"
+offset = 0x189c90
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Sends the saved settings into the movie: CallActionScript setLOD, setMusicVol, setSfxVol."
+
+[[function]]
+name = "CFrontendStateOptions::OnEvent"
+offset = 0x189e94
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Front-end Options/Settings menu events (from the movie's sliders and buttons): SUBJECT_OPTIONS_SENSITIVITY_X/Y_AXIS -> CSaveManager +0xf8/+0xfc (fixed point), INVERT_Y_AXIS +0x100, CONTROL_METHOD +0x102, AUTO_AIM +0x106, LEFTY_CONTROLS +0x107, VOLUME +0x108 (music), SFX +0x10c, DETAIL_LEVEL +0x110, BRIGHTNESS +0x114, DEFAULT_SETTINGS; each saves the settings. Unknown events go to CFlashMenuState::OnEvent, so hooks can add new ones."
+
+[[function]]
+name = "Options_RegisterSubjects"
+offset = 0x18a398
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Static init: registers the SUBJECT_OPTIONS_* event ids."
+
+[[function]]
 name = "CGame::CGame"
 offset = 0x18c8d8
 thumb = true
@@ -2338,12 +2551,121 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarintarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "CIngameStateOptions::Exit"
+offset = 0x19d704
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+
+[[function]]
+name = "CIngameStateOptions::OnLODChanged"
+offset = 0x19d794
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Slot OnLODChanged(state, slider, value 0..4096): detail level."
+
+[[function]]
+name = "CIngameStateOptions::OnSFXChanged"
+offset = 0x19d7c4
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Slot OnSFXChanged(state, slider, value 0..4096): sound effects volume."
+
+[[function]]
+name = "CIngameStateOptions::OnMusicChanged"
+offset = 0x19d7f8
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Slot OnMusicChanged(state, slider, value 0..4096): music volume."
+
+[[function]]
+name = "CIngameStateOptions::SetSliderValue"
+offset = 0x19d8d0
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "SetSliderValue(state, elementName, value): FindElement then CIwUISlider::SetValue."
+
+[[function]]
+name = "CIngameStateOptions::SetElementVisible"
+offset = 0x19d8f4
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "SetElementVisible(state, elementName, visible)."
+
+[[function]]
+name = "CIngameStateOptions::OnAutoAim"
+offset = 0x19d978
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "OnAutoAim(state, button): slot for the checkbox button; flips its saved CSaveManager byte (AutoAim +0x106, InvertY +0x100, RightHanded +0x107), shows or hides the row's cross image and plays menu_press."
+
+[[function]]
+name = "CIngameStateOptions::OnInvertY"
+offset = 0x19d9c0
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "OnInvertY(state, button): slot for the checkbox button; flips its saved CSaveManager byte (AutoAim +0x106, InvertY +0x100, RightHanded +0x107), shows or hides the row's cross image and plays menu_press."
+
+[[function]]
+name = "CIngameStateOptions::OnRightHanded"
+offset = 0x19da08
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "OnRightHanded(state, button): slot for the checkbox button; flips its saved CSaveManager byte (AutoAim +0x106, InvertY +0x100, RightHanded +0x107), shows or hides the row's cross image and plays menu_press."
+
+[[function]]
+name = "CIngameStateOptions::SetLabelText"
+offset = 0x19da64
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "SetLabelText(state, elementName, text): FindElement then CIwUILabel::SetCaption."
+
+[[function]]
+name = "CIngameStateOptions::Enter"
+offset = 0x19deac
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+
+[[function]]
+name = "CIngameStateOptions::AttachHandler"
+offset = 0x19e108
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Event handler setup (slot 9): registers slots Back, AutoAim, InvertY, RightHanded, Left, Right, Calibrate (element) and OnLODChanged, OnMusicChanged, OnSFXChanged (element, short value) on the page root (+0x24)."
+
+[[function]]
+name = "CIngameStateSensitivity::Enter"
+offset = 0x1a44c4
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+
+[[function]]
 name = "CLevelManager::StartFirstWave"
 offset = 0x1a8e88
 thumb = true
 subsystem = "state"
 confidence = "likely"
 notes = "Starts the level's first round (when the StartWaveOnStart cvar is 1): picks the level's starting wave for the player count/difficulty (default \"wave1\") and queues it on CWaveManager."
+
+[[function]]
+name = "UI_GetLocalisedCaption"
+offset = 0x1af724
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Text for an IwUI label's localiseCaption property (a string id hash) via Localise_GetString."
 
 [[function]]
 name = "Game_InitEngine"
@@ -2384,6 +2706,38 @@ thumb = true
 subsystem = "network"
 confidence = "likely"
 notes = "Logs in to (or creates) the DemonWare account; reached from the per-frame online update."
+
+[[function]]
+name = "CPerkManager::PerkImageName"
+offset = 0x1cb940
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "HUD image element name for a perk id (Perk_Deadshot_Image ... Perk_Speed_Cola_Image)."
+
+[[function]]
+name = "CPerkManager::OnCommand"
+offset = 0x1cc016
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Console commands: id 1 ResetAllPerks. EnablePerk (id 0) is registered but has no handler in the release build."
+
+[[function]]
+name = "CPerkManager::GainPerk"
+offset = 0x1cc080
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "GainPerk(perkManager, perk, applyEffects): sets the perk's bit in +0x58 (network bool array at +0x4c), shows its HUD icon and, with applyEffects, applies Juggernog (perk 2: doubles max health and heals). Perks: 0 Deadshot, 1 Double Tap, 2 Juggernog, 3 Stamin-Up, 4 PHD Flopper, 5 Quick Revive, 6 Speed Cola."
+
+[[function]]
+name = "CPerkManager::OnPerkGained"
+offset = 0x1cc15c
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "SUBJECT_ON_PERK_GAINED handler: GainPerk unless the perk is already owned."
 
 [[function]]
 name = "CPickupManager::SpawnPickupAt"
@@ -2432,6 +2786,22 @@ thumb = true
 subsystem = "state"
 confidence = "likely"
 notes = "Gives the player a perk (perk type)."
+
+[[function]]
+name = "CPlayerFreeFly::Init"
+offset = 0x1ddc74
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Registers the FreeFlySpeed cvar (\"Flying!\", default 60, kept at +0x34) and subscribes to SUBJECT_PLAYER_FREE_MODE on CInputManager."
+
+[[function]]
+name = "CPlayerFreeFly::OnEvent"
+offset = 0x1dddb8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Developer fly mode (noclip). SUBJECT_PLAYER_FREE_MODE toggles +0x30 (flying): switches the player controller's movement off/on and subscribes to ON_ANALOG_STICK and SUBJECT_PLAYER_ASCEND. While flying, the movement stick moves the transform along the view axes by FreeFlySpeed x stick per event, and SUBJECT_PLAYER_ASCEND raises it by FreeFlySpeed (no collision)."
 
 [[function]]
 name = "CPlayerWeapon::TriggerAnim"
@@ -2546,11 +2916,19 @@ confidence = "likely"
 notes = "Play(sequenceHash, flags, ...): plays a sound sequence (music stings, wave start)."
 
 [[function]]
+name = "CUIPageManager::ShowPage"
+offset = 0x20fe1c
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "ShowPage(manager, pageResourceName-hash, eventHandler): creates the page from its resource, adds it under the page root, attaches the handler and shows it in the IwUI view."
+
+[[function]]
 name = "CUIPageManager::FindElement"
 offset = 0x20fed4
 thumb = true
 subsystem = "ui"
-confidence = "likely"
+confidence = "confirmed"
 notes = "FindElement(name, page): an IwUI element by name on the active pages (weapon_icon, Score_Points, ...)."
 
 [[function]]
@@ -2626,6 +3004,14 @@ confidence = "likely"
 notes = "Restores the wave state on SUBJECT_LOAD."
 
 [[function]]
+name = "CWeaponManager::FromEntity"
+offset = 0x21dd88
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "FromEntity(entity): CIsComponentTableBase::Find(&CWeaponManager::s_table, entity->id)."
+
+[[function]]
 name = "CWeaponManager::SetReloading"
 offset = 0x21e078
 thumb = true
@@ -2642,6 +3028,14 @@ confidence = "confirmed"
 notes = "Knife: finds a target in a cone in front of the player (range 140), plays the hit animation and sends SUBJECT_WEAPON_HIT to the target's CIsBroadcaster."
 
 [[function]]
+name = "CWeaponManager::UpdateFov"
+offset = 0x21f640
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Per-frame view FOV. Not aiming (+0xbc false): eases +0xc0 (current FOV) up toward +0xc4 (base FOV) at ADSZoomOutSpeed; when current >= base it returns early WITHOUT writing the camera, so lowering the base changes nothing on screen. To apply a new base at once, set +0xc0 just below it; the next update steps onto it and writes the camera. Aiming: eases down to the weapon's ADS FOV (weapon +0x278) at ADSZoomInSpeed. With the EnableSetFov cvar it uses SetFov instead, clamped to at most +0xc4 and at least 1. Writes the result to the MainCamera CIsCamera m_fov (+0x40) and the projection scale (+0x44)."
+
+[[function]]
 name = "CWeaponManager::SetWeapon"
 offset = 0x21ffc8
 thumb = true
@@ -2656,6 +3050,14 @@ thumb = true
 subsystem = "weapons"
 confidence = "likely"
 notes = "Gives the player a weapon by hash (mystery box, wall buys)."
+
+[[function]]
+name = "CWeaponManager::Init"
+offset = 0x2225c4
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Component Init: the weapon manager lives on a child of the player entity; +0x48 is that player entity. Links its controller, perks and broadcaster, finds the MainCamera entity and copies its CIsCamera m_fov into +0xc4 (base FOV) and +0xc0 (current FOV)."
 
 [[function]]
 name = "Cvar_RegisterIntArray3"
@@ -2874,12 +3276,124 @@ confidence = "likely"
 notes = "Closes the current serialisation file."
 
 [[function]]
+name = "IwPropertySet_Find"
+offset = 0x2e240c
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "IwPropertySet_Find(set, nameHash, inherited): the property in a property set (an element's set is at +0xa0), then (inherited) in its parent sets / style (vtable +0x50). The value is at property +0x14."
+
+[[function]]
+name = "CIwUIElement::Clone"
+offset = 0x2fd4e0
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Clone(element): a deep copy of an IwUI element (vtable +0x28, new, +0x88 copy). Pages are created by cloning their resource."
+
+[[function]]
+name = "CIwUIElement::CreateFromResource"
+offset = 0x2fd518
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "CreateFromResource(name, group): CIwResManager_GetResNamed(name, \"CIwUIElement\") then Clone."
+
+[[function]]
+name = "CIwUIElement::FindChildHashed"
+offset = 0x2fd7ac
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "FindChildHashed(element, nameHash, recursive): searches the children (+0x1c/+0x20) by name hash."
+
+[[function]]
+name = "CIwUIElement::FindSlot"
+offset = 0x2fd9b0
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "FindSlot(element, nameHash): the element's slot with that name (slot vtable +0x1c returns the hash), or null."
+
+[[function]]
+name = "CIwUIElement::RemoveEventHandlers"
+offset = 0x2fe014
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Destroys the element's event handlers (+0x34/+0x38)."
+
+[[function]]
+name = "CIwUIElement::AddEventHandler"
+offset = 0x2fe088
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "AddEventHandler(element, handler): adds a CIwUIElementEventHandler to the element's handler list (+0x34 array, +0x38 count) and sets handler +0x18 = element. CUIPageManager::ShowPage attaches the screen's state this way."
+
+[[function]]
+name = "CIwUIElement::AddSlot"
+offset = 0x2febc8
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "AddSlot(element, slot): adds an event slot (CIwUISlot) to the element's list (+0x48 array, +0x4c count)."
+
+[[function]]
+name = "CIwUIElement::SetParent"
+offset = 0x2ff7f8
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "SetParent(element, parent): element +0x18 = parent."
+
+[[function]]
+name = "CIwUIElement::AddChild"
+offset = 0x2ff840
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "AddChild(parent, child): names an unnamed child (unnamed_element_%u), sets child +0x18 = parent, appends to the parent's children (CIwManagedList at +0x1c: data, +0x20 count), activates it if the parent is active and adds it to the parent's layout (+0x8c, vtable +0x5c)."
+
+[[function]]
+name = "CIwUIElement::SetVisible"
+offset = 0x300f0c
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "SetVisible(element, visible): sets flag 2 and sends CIwUIEventVisibility."
+
+[[function]]
 name = "CIwUILabel::SetCaption"
 offset = 0x305bb4
 thumb = false
 subsystem = "ui"
-confidence = "likely"
+confidence = "confirmed"
 notes = "Sets a label's text."
+
+[[function]]
+name = "CIwUISlider::SetValue"
+offset = 0x318074
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "SetValue(slider, value): clamps to the slider range, updates the thumb, calls the element's OnSliderChanged slot (element, value) and sends CIwUIEventSlider. In-game sliders use 0..4096."
+
+[[function]]
+name = "Localise_GetString"
+offset = 0x32b694
+thumb = false
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Localise_GetString(idHash, ...): the text for a localised string id (IwHashString of e.g. S_MENU_MUSIC) in the current language, or \">>Unknown Hash<<\". Labels with a localiseCaption property and the game's menus use it."
+
+[[function]]
+name = "Rb_tree_increment"
+offset = 0x32bf98
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "std::_Rb_tree_increment(node): next node in order (parent +4, left +8, right +0xc). Used to walk console maps and component tables."
 
 [[function]]
 name = "operator_new"
@@ -3000,3 +3514,11 @@ thumb = false
 subsystem = "libc"
 confidence = "likely"
 notes = "Finds a substring."
+
+[[function]]
+name = "vsnprintf"
+offset = 0x371eec
+thumb = false
+subsystem = "libc"
+confidence = "likely"
+notes = "vsnprintf(buffer, size, format, va_list) (libc; va_list is a pointer to the argument words)."
