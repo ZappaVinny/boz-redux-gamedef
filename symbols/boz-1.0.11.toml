@@ -2367,6 +2367,22 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarfloatangle with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "CDOPlayerController::FixedStep"
+offset = 0x1586f0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Fixed-step update of one Dead Ops player controller (called by CIsComponentTable<CDOPlayerController>::FixedStep for each enabled one); runs only while a Dead Ops match runs unpaused."
+
+[[function]]
+name = "CIsComponentTable<CDOPlayerController>::FixedStep"
+offset = 0x158a48
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Calls CDOPlayerController::FixedStep for every enabled Dead Ops player controller. The director calls the table every fixed step, also in the front end with no players."
+
+[[function]]
 name = "Weapon_ApplySpread"
 offset = 0x17e9ec
 thumb = true
@@ -2511,6 +2527,22 @@ confidence = "confirmed"
 notes = "SetScore(score, delta): writes the Score_Points label and spawns a floating +points popup (cvars HUDPointsPosX/Y, HUDPointsRandomDisplacementX/Y)."
 
 [[function]]
+name = "CHUDManager::GetAimXSensitivity"
+offset = 0x198378
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Horizontal look sensitivity for the current control scheme (+100: 0 sticky stick, 1 touch, 2 tilt, 3 analogue pad): lerps the scheme's {min, max} cvar (StickyAimXSensitivity, TouchAimXSensitivity, AccelAimXSensitivity, AnalogueAimXSensitivity) by the player's sensitivity setting at +0x54."
+
+[[function]]
+name = "CHUDManager::GetAimYSensitivity"
+offset = 0x1984dc
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Vertical look sensitivity, as GetAimXSensitivity with the *AimYSensitivity cvars and the setting at +0x58."
+
+[[function]]
 name = "CHealth::Damage"
 offset = 0x199754
 thumb = true
@@ -2652,6 +2684,38 @@ subsystem = "ui"
 confidence = "confirmed"
 
 [[function]]
+name = "CInputManager::OnInputAction"
+offset = 0x1a6d9c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "OnInputAction(input, actionId, arg): the game's touch button actions. 1 melee; 2/3 use press/release (SUBJECT_POI_ACTION; also holds +0x4d, which makes the move stick sprint); 4/5 the touch weapon button press/release (timers +0x78/+0x7c: holding it or a double tap swaps weapons, a single tap reloads later; it is not a plain reload); 6/7 grenade and 0xb/0xc tactical press/release (tap/hold timers, thrown from Update); 8 aim (a toggle: ON_AIM_BUTTON on press only); 9/10 fire press/release (+0x41 fire; a second press within ButtonDoubleTapTimeOut sets +0x4c, which keeps +0x41 set on automatic weapons, so a single held press fires one shot); 0xd/0xe crouch press/release (tap crouches, hold goes prone); 0xf fire mode; 0x10 swap weapons (ON_SWAP_WEAPONS_BUTTON); 0x11 free fly (SUBJECT_PLAYER_FREE_MODE). Direct reload: set +0x43 and send ON_RELOAD_BUTTON (1) on +0x20."
+
+[[function]]
+name = "CInputManager::SendAnalogStick"
+offset = 0x1a7100
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "SendAnalogStick(input, angle, magnitude, radiusFraction, x, y, isLook): sends ON_ANALOG_STICK on the input subject (+0x20) with {angle, magnitude, radiusFraction, x, y, isLook}. Floats are passed in core registers. angle = atan2(y, x) of the screen offset (y down), x/y the unit direction. While +0x4d (use button held) the radius fraction is replaced by 3.5, which sprints."
+
+[[function]]
+name = "CInputManager::HandleEvent"
+offset = 0x1a7148
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Engine event 0x8014 (an analog stick): forwards angle (+0x10), magnitude (+0x14), x (+0x1c), y (+0x20) and is_look (+0x18) to SendAnalogStick."
+
+[[function]]
+name = "CInputManager::Update"
+offset = 0x1a73fc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Per-frame input update (in a match): runs the button timers of OnInputAction (weapon button hold -> ON_SWAP_WEAPONS_BUTTON, grenade/tactical throws, crouch/prone), sends the release events of last frame's buttons, and keeps +0x41 (fire) set while +0x4c (auto fire) is set and the weapon is automatic."
+
+[[function]]
 name = "CLevelManager::StartFirstWave"
 offset = 0x1a8e88
 thumb = true
@@ -2772,6 +2836,30 @@ confidence = "likely"
 notes = "Handles SUBJECT_ON_PICKUP: applies a collected power-up."
 
 [[function]]
+name = "CPlayerController::IsAiming"
+offset = 0x1d3746
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "True while the player's state machine (+0x1cc) is in state 8, an aiming movement state (picks the Aim* turn and walk speeds). Not a reliable 'aiming down sights' test: standing still while aiming is another state. Use the weapon manager's +0xbc flag for that."
+
+[[function]]
+name = "CPlayerController::LateUpdate"
+offset = 0x1d3b38
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Per-frame late update (CIsComponentTable<CPlayerController>::Update2): clears the frame's input (+0x140 move amount, +0x144 look magnitude, +0x160/+0x164 strongest stick this frame; +0x154/+0x155 look/move flags when both were zero) and places the player transform and the MainCamera."
+
+[[function]]
+name = "CPlayerController::GetTiltTurn"
+offset = 0x1d4990
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Tilt controls (HUD control scheme 2): yaw speed from the accelerometer through the AccelHorizontalRamp* graphs, damped by accelDampingHorizontal."
+
+[[function]]
 name = "CPlayerController::FireWeapon"
 offset = 0x1d4ecc
 thumb = true
@@ -2786,6 +2874,30 @@ thumb = true
 subsystem = "state"
 confidence = "likely"
 notes = "Gives the player a perk (perk type)."
+
+[[function]]
+name = "CPlayerController::FixedStep"
+offset = 0x1d8e3c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Fixed-step player update (CIsComponentTable<CPlayerController>::FixedStep). Moves the player from +0x13c (move angle) and +0x140 (move amount), then turns: yaw += -(+0x148 look x) * TurnSpeed * (+0x144 look magnitude) * GetAimXSensitivity, pitch += (+0x14c look y) * PitchSpeed * (+0x144) * GetAimYSensitivity (Aim*/Sprint*/Perked* variants while aiming, sprinting or with Deadshot). Yaw at +0x170 and pitch at +0x174 are radians; pitch is clamped to +-MaxPitch; yaw over 2pi is reset to 0. The view rotation is only rebuilt when +0x15b (look allowed) and +0x154 (look input this frame) or tilt controls. Turn deltas also go to the weapon manager (+0x88) +0x104/+0x108 while its recoil flag +0xfa is set; recoil offsets come from its +0xfc/+0x100. Runs only while a Zombies match runs unpaused."
+
+[[function]]
+name = "CIsComponentTable<CPlayerController>::FixedStep"
+offset = 0x1da1ac
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Calls CPlayerController::FixedStep for every enabled player controller. The director calls the table every fixed step, also in the front end with no players."
+
+[[function]]
+name = "CPlayerController::OnEvent"
+offset = 0x1da250
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Player events. ON_ANALOG_STICK (args: angle, magnitude, radius fraction, x, y, is_look): look stick sets +0x154, adds TurnMult * magnitude to +0x144 and stores x/2.5, y/2.5 at +0x148/+0x14c; move stick sets +0x155, +0x13c = angle + pi/2, sprints (+0x156) when the radius fraction is at least sprintUp (sprintDown while sprinting) and the angle is within SprintAngle of straight ahead, and adds min(magnitude / WalkFraction, 1) * speed / 3 to +0x140 (speed from WalkSpeed, SprintSpeed, Crouch*, Prone*, Aim*, Perked*). Also damage, crouch/prone buttons, revive, waves, saves."
 
 [[function]]
 name = "CPlayerFreeFly::Init"
@@ -2916,6 +3028,14 @@ confidence = "likely"
 notes = "Play(sequenceHash, flags, ...): plays a sound sequence (music stings, wave start)."
 
 [[function]]
+name = "CTouchComponentAnaloguePad::Update"
+offset = 0x203744
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Per-frame analogue pad (Xperia Play touchpads; HUD scheme 3 only). +0x7c is the pad (0 move, 1 look). While touched it sends SendAnalogStick with the angle of the finger from the pad centre, the magnitude through the pad's response graph, the radius fraction and the unit direction."
+
+[[function]]
 name = "CUIPageManager::ShowPage"
 offset = 0x20fe1c
 thumb = true
@@ -3010,6 +3130,38 @@ thumb = true
 subsystem = "weapons"
 confidence = "confirmed"
 notes = "FromEntity(entity): CIsComponentTableBase::Find(&CWeaponManager::s_table, entity->id)."
+
+[[function]]
+name = "CWeaponManager::AddTurnPitch"
+offset = 0x21dfce
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Adds the player's pitch turn to +0x108 (counted against recoil)."
+
+[[function]]
+name = "CWeaponManager::AddTurnYaw"
+offset = 0x21dfe0
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Adds the player's yaw turn to +0x104 (counted against recoil)."
+
+[[function]]
+name = "CWeaponManager::GetRecoilPitch"
+offset = 0x21dff2
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Returns -(+0x100), the recoil pitch offset."
+
+[[function]]
+name = "CWeaponManager::GetRecoilYaw"
+offset = 0x21dffc
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Returns -(+0xfc), the recoil yaw offset."
 
 [[function]]
 name = "CWeaponManager::SetReloading"
