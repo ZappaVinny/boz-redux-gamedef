@@ -9,7 +9,7 @@ image_base = 0x4a000000
 
 # Mapping progress per subsystem (free text, kept by hand).
 [coverage]
-engine = "boundary report by import family (ExportBozEngineBoundary); asset pipeline mapped: Game_InitEngine picks blackops_<format>.dz, CIsArchiveManager (slots 2-10) mounts it through derbh (dzArchiveAttach), CIwResManager_LoadGroup builds [debug_patches/]<name>.group.bin, IwPath_Resolve tries data-<style>/ then the bare name, everything reaches s3eFileOpen; IwHashString"
+engine = "boundary report by import family (ExportBozEngineBoundary); asset pipeline mapped: Game_InitEngine picks blackops_<format>.dz, CIsArchiveManager (slots 2-10) mounts it through derbh (dzArchiveAttach), CIwResManager_LoadGroup builds [debug_patches/]<name>.group.bin, IwPath_Resolve tries data-<style>/ then the bare name, everything reaches s3eFileOpen; native assets: CIwTexture/CIwImage serialisation identifies row-major RGB565 format 0x05 and BGRA8888 format 0x0e; CIwModelBlockVerts stores a center-biased component-planar int16 position array followed by unique-to-render vertex remaps, with GL UV and triangle-list blocks addressing render vertices; IwHashString"
 runtime = "main loop (GameMain, CIwGame/CGame Init/Update/ShutDown), top-level game states (0 Ingame, 1 DOIngame, 2 FrontEnd, 3 Splash), CIsStateMachine events (1 Enter, 2 Exit, 4 message, 5 frame); class map with constructors/destructors from tools; console variables (13 Cvar_Register*, 597 cvars); frame pipeline mapped: CGame::Update -> CIwGame::Update -> BeginFrame (UpdateStates: state Update -> sub-state Update -> CIwWorld::Update) and slot 27 (state Render, sound, network, Director_Tick: component tables Update/Update2/Update3 + systems Update/LateUpdate, then PostUpdate); 65 singletons located (T::s_instance, BozNameSingletons); system and component-table slot meanings"
 state = "rounds mapped: CWaveManager (struct, Update, OnEvent, StartWave) runs CWave definitions (slots 20-46 getters; CWaveRepeatable scales base * multiplier^(round - m_StartingWave)); round ends when killed >= GetZombieCount; score mapped: CScoreManager::AddScore, SUBJECT_ADD_SCORE / SUBJECT_CHARGE_POINTS / SUBJECT_POINTS_PENALTY, COD Points fallback, cvars UnlimitedScore and StartingScore; Dead Ops: CDORoundManager rounds from 42 CDORound resources (arena, lightmap, music, lighting), CDOZombieSpawner hordes (unlock round, spawn rates)"
 entities = "component system mapped: CIsComponent slots (Init, GetTypeId, ...), 162 CIsComponentTable<T> globals (T::s_table) and 114 T::FromEntity lookups named by BozNameComponentTables; observer events (CIsSubject Subscribe/Notify/Dispatch, CIsObserver::OnEvent); reflection mapped (CIsClassInfo, AddBase, AddProperty): 369 classes, 929 named fields in sdk/reflection/boz-1.0.11.toml (ExportBozReflection), T::GetClassInfo and T::RegisterReflection named; event bus mapped: 337 SUBJECT_* events (ids = IwHashString of the name, SubjectId_Register) in sdk/events/boz-1.0.11.toml with sending and handling classes (BozNameHashGlobals, ExportBozEvents); purchases all send SUBJECT_CHARGE_POINTS to CScoreManager; pathing: Recast/Detour v7 navmeshes (CIsNavMesh = 128-byte Recast config + Detour tiles), CIsCrowdAgent crowd agents, CIsNavMeshConnection / CJumpConnection climbs"
@@ -2856,6 +2856,46 @@ thumb = false
 subsystem = "engine"
 confidence = "likely"
 notes = "Reads or writes bytes in the current serialisation stream (group header version)."
+
+[[function]]
+name = "CIwModelBlockVerts::Serialise"
+offset = 0x242f48
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises CIwModelBlockVerts. The body contains render and unique-position counts, one signed center value, three component-planar signed-16 streams biased by that center, then one u16 unique-position index for each duplicated render vertex. Normals, UVs, colours and GL triangle indices address the expanded render-vertex array. Vtable slot 5 at image 0x4a408a8c."
+
+[[function]]
+name = "CIwImage::Serialise"
+offset = 0x24ea90
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises the embedded CIwImage descriptor and texels: u8 format, u16 flags, u16 width, u16 height and u16 pitch, followed by format-dependent data and optional palette. BOZ ETC groups use row-major RGB565 format 0x05 and BGRA8888 format 0x0e among other unsupported cooked formats."
+
+[[function]]
+name = "CIwTexture::Serialise"
+offset = 0x27edd8
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises CIwTexture and delegates its embedded image payload to CIwImage::Serialise. Used to confirm texture header fields and native channel order for PNG conversion."
+
+[[function]]
+name = "IwSerialiseStructArray"
+offset = 0x258774
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Descriptor-driven array serialiser used by native resource blocks. Descriptor 0x00c5 used by CIwModelBlockVerts means three signed-16 components; it writes one shared center and then each component as a separate stream."
+
+[[function]]
+name = "IwSerialiseInt16"
+offset = 0x257eb0
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Reads or writes signed 16-bit integer streams, including the component streams used by CIwModelBlockVerts; supports narrower signed bit widths with sign extension."
 
 [[function]]
 name = "IwSerialiseOpen"
