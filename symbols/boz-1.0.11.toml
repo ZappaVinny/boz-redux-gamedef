@@ -3040,3 +3040,19 @@ thumb = false
 subsystem = "libc"
 confidence = "likely"
 notes = "Finds a substring."
+
+[[function]]
+name = "boz_re_gles_apply_material_state"
+offset = 0x2b74fc
+thumb = false
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "Analyst-assigned name. Material flags at +0x10: bits16..18 select blend mode. 0/5 disable blending; 1/4 SRC_ALPHA,ONE_MINUS_SRC_ALPHA; 2 SRC_ALPHA,ONE; 3 ZERO,ONE_MINUS_SRC_COLOR. Mode5 with primary texture runtime flags(+0x34)&8 enables alpha test GREATER 0.75. Bits25..28 select explicit alpha comparison, reference byte at material+0x17. Texture-combine mode5 (bits22..24) overrides blending with ZERO,SRC_COLOR. Also binds texture stages and configures culling/depth write. Verified from GLES calls; not a claim that Blender reproduces all native shading."
+
+[[function]]
+name = "boz_re_build_compressed_image_payload"
+offset = 0x24c7b4
+thumb = false
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "Analyst-assigned name. Allocates sum(mip sizes)+0x48 bytes. Writes u16 format at +0, u16 version 2 at +2, total size at +4, GL internal format at +8, mip count at +0xc, dimensions at +0x10/+0x14, u32 mip sizes at +0x18. Copies mip blocks starting at fixed +0x48, NOT after just the populated size entries. For supported serialized CIwTexture bodies this payload starts at byte23, so first blocks start at byte95."
