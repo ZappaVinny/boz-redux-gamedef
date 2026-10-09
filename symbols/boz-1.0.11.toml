@@ -1557,6 +1557,14 @@ confidence = "confirmed"
 notes = "Original interpolate callback; returns the director unchanged. Only reached through g_directorInterpolateCallback."
 
 [[function]]
+name = "Entity_CreateAllFromGroup"
+offset = 0x0ba8e4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Entity_CreateAllFromGroup(director, group, classHash): creates an entity (Entity_CreateFromSpec) for every resource of the class in the group. Level_Load calls it with CIsEntitySpec on <level>_statics. A level has no separate entity list: adding a CIsEntitySpec resource to a loaded group adds an entity."
+
+[[function]]
 name = "Timer_Countdown"
 offset = 0x0ba920
 thumb = true
@@ -1595,6 +1603,14 @@ thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Studio frame tick (g_director). Processes pending entity changes, advances the clock (+0x30 frame ms, +0x28 total ms, +0x38 frame seconds), then if time moved: ComponentTables_Update, _Update2, _Update3, Systems_Update, Systems_LateUpdate; always ComponentTables_PostUpdate and Systems_PostUpdate. Called from CGame vtable slot 27 each frame."
+
+[[function]]
+name = "Entity_CreateFromSpec"
+offset = 0x0bb64e
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "CIsEntityDB::CreateFromSpec(db, spec, mode, owner): allocates an entity with a fresh runtime id, creates the spec's child specs recursively and attaches them through CIsHierarchy, applies the spec (vslot 16: every component spec creates/initialises its component), then initialises components. Entities are found by CIsNamed name hash, so copies need unique names."
 
 [[function]]
 name = "CIsHierarchy::FindChild"
@@ -2764,6 +2780,14 @@ confidence = "likely"
 notes = "Starts the level's first round (when the StartWaveOnStart cvar is 1): picks the level's starting wave for the player count/difficulty (default \"wave1\") and queues it on CWaveManager."
 
 [[function]]
+name = "Level_Load"
+offset = 0x1aae4c
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Loads a Zombies level: <level>_sectors (portals and occluders into CIsSectorManager), then <level>_statics, whose every CIsEntitySpec becomes an entity (Entity_CreateAllFromGroup); spawns the local player at spawn_player_1/respawn_player_1, sets up fog, LOD quotas, the starting CArea, the PowerSwitch subscription and the NavMesh resource (+0x290)."
+
+[[function]]
 name = "UI_GetLocalisedCaption"
 offset = 0x1af724
 thumb = true
@@ -3266,6 +3290,22 @@ thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarintarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "Sector_LoadGroup"
+offset = 0x230d3c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Loads a sector's resource group (the rooms' *_shared groups) and creates an entity for every CIsEntitySpec in it. Resource names ending _shell, _inside_shell, _mergemodel, _details/_detail, _decals/_decal (and _inside_ variants) are treated as the room shell, detail and decal sets; other renderables are tracked for visibility."
+
+[[function]]
+name = "IwResGroup_GetListHashed"
+offset = 0x233fc4
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Returns the CIwResList of a class (by IwHashString of the class name) in a resource group."
 
 [[function]]
 name = "CIwResManager_GetResHashed"
