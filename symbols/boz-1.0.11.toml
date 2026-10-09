@@ -2559,6 +2559,14 @@ confidence = "confirmed"
 notes = "True when the active network configuration is Bonjour_Tcp (local Wi-Fi co-op)."
 
 [[function]]
+name = "Console_GetStringOr"
+offset = 0x191620
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "String cvar value by name, or the default when the cvar does not exist."
+
+[[function]]
 name = "CGameStore::SpendCODPoints"
 offset = 0x193ef8
 thumb = true
@@ -2772,12 +2780,44 @@ confidence = "confirmed"
 notes = "Per-frame input update (in a match): runs the button timers of OnInputAction (weapon button hold -> ON_SWAP_WEAPONS_BUTTON, grenade/tactical throws, crouch/prone), sends the release events of last frame's buttons, and keeps +0x41 (fire) set while +0x4c (auto fire) is set and the weapon is automatic."
 
 [[function]]
+name = "LevelManager_BindLevel"
+offset = 0x1a83b0
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Subscribes the level managers to SUBJECT_RESTART_LEVEL/END_GAME/SAVE/LOAD, then finds the group named after the level (CLevelManager+0x55) and stores its CLevel resource of the same name (searched in the group and its children) at +0x204. Called by CGameStateIngame::vf2 after ResConfig_InGame loads the level's groups."
+
+[[function]]
+name = "LevelManager_GetWeaponsGroup"
+offset = 0x1a89b4
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "The loaded group named weapons_<level> (tutorial uses kino), else weapons_common (not shipped). Only the group's own resources are used, so a new level needs a renamed copy, not a wrapper."
+
+[[function]]
+name = "LevelManager_GetProjectilesGroup"
+offset = 0x1a8a44
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "The loaded group named weapon_projectiles_<level> (tutorial uses kino), else weapon_projectiles_common (not shipped)."
+
+[[function]]
 name = "CLevelManager::StartFirstWave"
 offset = 0x1a8e88
 thumb = true
 subsystem = "state"
 confidence = "likely"
 notes = "Starts the level's first round (when the StartWaveOnStart cvar is 1): picks the level's starting wave for the player count/difficulty (default \"wave1\") and queues it on CWaveManager."
+
+[[function]]
+name = "LevelManager_SpawnPlayers"
+offset = 0x1aabb4
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Spawns every network player at spawn_player_<n> (respawn_player_<n> on rejoin in Ascension) with the MPCharactersKino/Asce character list; returns the local player entity."
 
 [[function]]
 name = "Level_Load"
@@ -2882,6 +2922,14 @@ thumb = true
 subsystem = "state"
 confidence = "likely"
 notes = "On a zombie death: maybe drops a power-up, based on points earned since the last drop (m_ScoreSinceLastPickup)."
+
+[[function]]
+name = "PickupManager_InitForLevel"
+offset = 0x1d2250
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Sets the death machine / lightning bolt pickups allowed from the DeathMachineLevels and LightningBoltLevels cvar lists for this level name."
 
 [[function]]
 name = "CPickupManager::SpawnPickup"
@@ -3132,6 +3180,22 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarstring with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "FrontEnd_StartGame"
+offset = 0x2107f4
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "StartLevel <name> (front-end console command id 0): switches the network to Loopback, makes a room and sends CEventStartGame carrying the level name. The name is not checked against any list."
+
+[[function]]
+name = "LoadingScreen_GetGroupPath"
+offset = 0x210a84
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Looks up the CResolutionSpecificString named loading-<level> (in fixed.group) and returns the loading screen group path for the current resolution, or 0. A missing entry makes CIwResManager_LoadGroup strcpy a null path (crash)."
+
+[[function]]
 name = "Wave_Find"
 offset = 0x214f28
 thumb = true
@@ -3202,6 +3266,14 @@ thumb = true
 subsystem = "weapons"
 confidence = "confirmed"
 notes = "FromEntity(entity): CIsComponentTableBase::Find(&CWeaponManager::s_table, entity->id)."
+
+[[function]]
+name = "WeaponManager_FindWeapon"
+offset = 0x21de72
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Weapon by name hash from the manager's map at +0x1d4, or 0."
 
 [[function]]
 name = "CWeaponManager::AddTurnPitch"
@@ -3276,6 +3348,14 @@ confidence = "likely"
 notes = "Gives the player a weapon by hash (mystery box, wall buys)."
 
 [[function]]
+name = "WeaponManager_GiveStartWeapons"
+offset = 0x220a24
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Unequips all slots, then gives PlayerStartWeapon (colt45) with PlayerStartAmmo, the knife and 2 frag grenades. Writes to the found weapon without a null check: a level without the weapon crashes here."
+
+[[function]]
 name = "CWeaponManager::Init"
 offset = 0x2225c4
 thumb = true
@@ -3306,6 +3386,22 @@ thumb = true
 subsystem = "engine"
 confidence = "confirmed"
 notes = "Returns the CIwResList of a class (by IwHashString of the class name) in a resource group."
+
+[[function]]
+name = "CIwResGroup_GetResNamed"
+offset = 0x2345ae
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Finds a resource by name and class in a group and its child groups."
+
+[[function]]
+name = "CIwResManager_GetGroupNamed"
+offset = 0x2351c0
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Returns the loaded CIwResGroup whose name matches (case-insensitive hash), or 0."
 
 [[function]]
 name = "CIwResManager_GetResHashed"
