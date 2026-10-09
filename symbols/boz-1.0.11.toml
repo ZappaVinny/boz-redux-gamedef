@@ -1317,6 +1317,14 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarint with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "btBulletWorldImporter::createBvhTriangleMeshShape"
+offset = 0x02020e
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Bullet 2.78 btWorldImporter::createBvhTriangleMeshShape (vslot 16). With a null btOptimizedBvh it constructs btBvhTriangleMeshShape(mesh, quantized=true, buildBvh=true) and builds a fresh BVH; otherwise it reuses the deserialized one. bozkit clears m_quantizedFloatBvh after editing collision geometry so this rebuild path runs."
+
+[[function]]
 name = "CIsComponentTableBase::Find"
 offset = 0x04eeb0
 thumb = true
@@ -1355,6 +1363,14 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "CIsClassInfo(info, name): reflection class record. +4 name, +8 IwHashString(name), +0x3c base list (base info, offset), +0x40 property map keyed by property hash, +0x4c derived classes. Each class keeps one in a guarded static returned by T::GetClassInfo."
+
+[[function]]
+name = "Collision_BuildBIH"
+offset = 0x05184c
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Recursively builds the bounding interval hierarchy CIsCollisionMeshSpec uses for its own triangle queries, from the plain vertex/index arrays serialized after the Bullet shape. Splits on the longest box axis at the midpoint; cvars BIHMaxDepth and BIHMaxSingled stop the recursion. Called through FUN_4a051c88 at the end of CIsCollisionMeshSpec::Serialise."
 
 [[function]]
 name = "gameswf_FnCallArg"
@@ -1411,6 +1427,30 @@ thumb = true
 subsystem = "ui"
 confidence = "confirmed"
 notes = "Flash_PostMessage(eventHash, a, b): delivers a message from ActionScript to the Flash movie's listeners (the active CFlashMenuState)."
+
+[[function]]
+name = "Nav_GetPolyHeight"
+offset = 0x0958e0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Detour dtNavMeshQuery::getPolyHeight(query, ref, pos, &height)."
+
+[[function]]
+name = "Nav_FindNearestPoly"
+offset = 0x095e80
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Detour dtNavMeshQuery::findNearestPoly(query, centre, extents, filter, &ref, nearest): queryPolygons (128 max) then closestPointOnPoly; returns DT_SUCCESS 0x40000000 or DT_FAILURE|DT_INVALID_PARAM 0x80000008."
+
+[[function]]
+name = "Nav_MoveAlongSurface"
+offset = 0x0961ac
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Detour dtNavMeshQuery::moveAlongSurface(query, startRef, start, end, filter, result, visited, &visitedCount, maxVisited)."
 
 [[function]]
 name = "ClassRegistry_Add"
@@ -2852,6 +2892,14 @@ confidence = "confirmed"
 notes = "Per-frame late update (CIsComponentTable<CPlayerController>::Update2): clears the frame's input (+0x140 move amount, +0x144 look magnitude, +0x160/+0x164 strongest stick this frame; +0x154/+0x155 look/move flags when both were zero) and places the player transform and the MainCamera."
 
 [[function]]
+name = "Player_MoveOnNavMesh"
+offset = 0x1d4024
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Moves the player's navmesh position: Nav_MoveAlongSurface from the current poly (+0x1b0) with the level's query (CLevelManager-like +0x16c -> +0x1528, filter +0x152c), then takes the first visited poly with a valid Nav_GetPolyHeight as the new poly and height. Player walking is constrained by the Detour navmesh (positions /100, metres), not by the collision mesh or Bullet: editing collision changes bullets and ray casts only."
+
+[[function]]
 name = "CPlayerController::GetTiltTurn"
 offset = 0x1d4990
 thumb = true
@@ -3348,6 +3396,56 @@ confidence = "confirmed"
 notes = "Derbh: reads the DTRZ header (file count, 16-byte file records, names) and runs the decompressor plug-ins for the archive. ICF [derbh] MinBufSize."
 
 [[function]]
+name = "CIwModel::CIwModel_Serialise"
+offset = 0x23ebe0
+thumb = false
+subsystem = "unknown"
+confidence = "likely"
+
+[[function]]
+name = "CIwModelBlockGLPrimBase_ResolveMaterial"
+offset = 0x23f1ec
+thumb = false
+subsystem = "unknown"
+confidence = "likely"
+
+[[function]]
+name = "CIwModelBlockGLPrimBase::CIwModelBlockGLPrimBase_Serialise"
+offset = 0x240878
+thumb = false
+subsystem = "unknown"
+confidence = "likely"
+
+[[function]]
+name = "CIwModelBlockGLPrimBase::CIwModelBlockGLPrimBase_ApplyMaterialAndIndices"
+offset = 0x2409dc
+thumb = false
+subsystem = "unknown"
+confidence = "likely"
+
+[[function]]
+name = "CIwModelBlockGLTriList::CIwModelBlockGLTriList_Render"
+offset = 0x240b9c
+thumb = false
+subsystem = "unknown"
+confidence = "likely"
+
+[[function]]
+name = "CIwModelBlockCols::CIwModelBlockCols_Serialise"
+offset = 0x24220c
+thumb = false
+subsystem = "unknown"
+confidence = "likely"
+
+[[function]]
+name = "CIwModelBlockVerts::Serialise"
+offset = 0x242f48
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises CIwModelBlockVerts. The body contains render and unique-position counts, one signed center value, three component-planar signed-16 streams biased by that center, then one u16 unique-position index for each duplicated render vertex. Normals, UVs, colours and GL triangle indices address the expanded render-vertex array. Vtable slot 5 at image 0x4a408a8c."
+
+[[function]]
 name = "IwPath_Resolve"
 offset = 0x24b5a8
 thumb = false
@@ -3396,12 +3494,36 @@ confidence = "confirmed"
 notes = "Hashes a string to the 32-bit id used for names, types and events everywhere (Marmalade IwHashString)."
 
 [[function]]
+name = "Rendering_BuildCompressedImage"
+offset = 0x24c7b4
+thumb = false
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "Builds the platform image payload of a cooked CIwTexture. Allocates sum(mip sizes)+0x48 bytes: u16 format at +0, u16 version 2 at +2, total size at +4, GL internal format at +8, mip count at +0xc, width/height at +0x10/+0x14, twelve u32 mip-size slots from +0x18. Mip blocks start at the fixed +0x48. In serialized CIwTexture bodies the payload starts at byte 23, so blocks start at byte 95."
+
+[[function]]
+name = "CIwImage::Serialise"
+offset = 0x24ea90
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises the embedded CIwImage descriptor and texels: u8 format, u16 flags, u16 width, u16 height and u16 pitch, followed by format-dependent data and optional palette. BOZ raw textures use format 0x0e (32-bit, A R G B from the most significant bits; bytes B G R A) and format 0x05 (16-bit ARGB4444, A in bits 12..15). Proven by the same texture shipping as 0x0e in the tutorial and 0x05 in Kino with matching values (alpha-0 red: 00 00 ff 00 and 0x0f00). 0x05 is not RGB565."
+
+[[function]]
 name = "IwSerialiseUInt32"
 offset = 0x257b98
 thumb = false
 subsystem = "engine"
 confidence = "likely"
 notes = "IwSerialiseUInt32(value*, count, bits, bytes): reads or writes integers in the current serialisation stream."
+
+[[function]]
+name = "IwSerialiseInt16"
+offset = 0x257eb0
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Reads or writes signed 16-bit integer streams, including the component streams used by CIwModelBlockVerts; supports narrower signed bit widths with sign extension."
 
 [[function]]
 name = "IwSerialiseUInt8"
@@ -3426,6 +3548,37 @@ thumb = false
 subsystem = "engine"
 confidence = "likely"
 notes = "Closes the current serialisation file."
+
+[[function]]
+name = "IwSerialiseStructArray"
+offset = 0x258774
+thumb = false
+subsystem = "engine"
+confidence = "likely"
+notes = "Descriptor-driven array serialiser used by native resource blocks. Descriptor 0x00c5 used by CIwModelBlockVerts means three signed-16 components; it writes one shared center and then each component as a separate stream."
+
+[[function]]
+name = "IwGxSetMaterial"
+offset = 0x277f44
+thumb = false
+subsystem = "unknown"
+confidence = "likely"
+
+[[function]]
+name = "CIwTexture::Serialise"
+offset = 0x27edd8
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises CIwTexture and delegates its embedded image payload to CIwImage::Serialise. Used to confirm texture header fields and native channel order for PNG conversion."
+
+[[function]]
+name = "Rendering_ApplyMaterialGLES"
+offset = 0x2b74fc
+thumb = false
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "Applies a CIwMaterial to the GLES1 fixed-function pipeline. Flags at +0x10.\nStage 0 (GL_TEXTURE0): texture slot 0 combined GL_MODULATE with the primary colour (vertex colours); blend mode 4 of bits 22..24 instead replaces RGB with the primary colour.\nStage 1 (GL_TEXTURE1): texture slot 1 (baked lightmap atlas in shipped maps, sampled with CIwModelBlockGLUVs2). glTexEnvx GL_TEXTURE_ENV_MODE by bits 19..21: 0 GL_MODULATE, 1 GL_DECAL, 2 GL_ADD, 3 GL_REPLACE, 4 GL_BLEND, 5 GL_COMBINE with GL_RGB_SCALE 2.0, 6 GL_COMBINE with GL_RGB_SCALE 4.0 (default COMBINE_RGB = MODULATE). Without the combine extension 5/6 fall back to GL_BLEND.\nBlend by bits 16..18: 0/5 opaque; 1/4 SRC_ALPHA,ONE_MINUS_SRC_ALPHA; 2 SRC_ALPHA,ONE; 3 ZERO,ONE_MINUS_SRC_COLOR. Mode 5 with primary texture runtime flags(+0x34)&8 enables GL_ALPHA_TEST GREATER 0.75. Bits 25..28 select an explicit alpha function, reference byte material+0x17. Bit 2: GL_SMOOTH vs GL_FLAT. A dot3 path swaps the stages when normal mapping is active (FUN_4a2b519c).\nVerified from the GL calls in this function (glTexEnvx arguments read from the disassembly)."
 
 [[function]]
 name = "IwPropertySet_Find"
