@@ -1065,6 +1065,34 @@ confidence = "likely"
 notes = "The CIwConsole singleton (cvar registry). Set at startup; every Cvar_Register* calls its vtable +0x5c."
 
 [[global]]
+name = "CIsCollisionBox::s_table"
+offset = 0x4519ac
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsCollisionBox (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsCollisionBox."
+
+[[global]]
+name = "CIsCollisionCapsule::s_table"
+offset = 0x451aec
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsCollisionCapsule (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsCollisionCapsule."
+
+[[global]]
+name = "CIsCollisionMesh::s_table"
+offset = 0x451c50
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsCollisionMesh (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsCollisionMesh."
+
+[[global]]
+name = "CIsCollisionSphere::s_table"
+offset = 0x451da4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsCollisionSphere (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsCollisionSphere."
+
+[[global]]
 name = "CIwSoundManager::s_instance"
 offset = 0x4535d8
 type = "undefined4"
@@ -1086,6 +1114,21 @@ offset = 0x4578d0
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Studio director / game clock. +4 paused flag, +0x28 total time ms (64-bit), +0x30 frame time ms (64-bit), +0x38 frame time in seconds (float). Read by most components' updates."
+
+[[global]]
+name = "CIsHierarchy::s_table"
+offset = 0x457a5c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsHierarchy (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsHierarchy."
+
+[[global]]
+name = "CIsTransform::s_table"
+offset = 0x45c2e8
+type = "undefined4"
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsTransform (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsTransform."
 
 [[global]]
 name = "g_resManager"
@@ -1120,6 +1163,13 @@ confidence = "confirmed"
 notes = "CLevelManager singleton (Zombies level). +0x1a0: the local player's entity (pointer; entity id at +4)."
 
 [[global]]
+name = "CAIControllerZombie::s_table"
+offset = 0x460d24
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAIControllerZombie (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CAIControllerZombie."
+
+[[global]]
 name = "CUIPageManager::s_instance"
 offset = 0x46363c
 type = "undefined4"
@@ -1128,12 +1178,33 @@ confidence = "confirmed"
 notes = "CUIPageManager singleton: in-game IwUI pages (FindElement by name, ShowPage)."
 
 [[global]]
+name = "CEntityFlags::s_table"
+offset = 0x4669cc
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CEntityFlags (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CEntityFlags."
+
+[[global]]
 name = "CInputManager::s_instance"
 offset = 0x467858
 type = "undefined4"
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "CInputManager singleton. +0x20: its CIsSubject (input events; input action 0x11 sends SUBJECT_PLAYER_FREE_MODE)."
+
+[[global]]
+name = "CHealth::s_table"
+offset = 0x46795c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CHealth (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CHealth."
+
+[[global]]
+name = "CPOI::s_table"
+offset = 0x469f24
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CPOI (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CPOI."
 
 [[global]]
 name = "CPerkManager::s_table"
@@ -1150,11 +1221,39 @@ confidence = "confirmed"
 notes = "Component table of CPlayerFreeFly (developer fly mode), keyed by player entity id."
 
 [[global]]
+name = "CSoundEmitter::s_table"
+offset = 0x46e448
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CSoundEmitter (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CSoundEmitter."
+
+[[global]]
+name = "CSpawnPoint::s_table"
+offset = 0x46e5a4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CSpawnPoint (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CSpawnPoint."
+
+[[global]]
 name = "CWeaponManager::s_table"
 offset = 0x4704d0
 subsystem = "weapons"
 confidence = "confirmed"
 notes = "Component table of CWeaponManager. Components live in a red-black tree: header node pointer at +4 (header +8 = first node), nodes link parent +4, left +8, right +0xc, key (entity id) +0x10, component +0x14. The weapon manager sits on a child of the player entity; its +0x48 is the player entity."
+
+[[global]]
+name = "CIsRenderableGFXEmitter::s_table"
+offset = 0x471180
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsRenderableGFXEmitter (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsRenderableGFXEmitter."
+
+[[global]]
+name = "CIsRenderableModel::s_table"
+offset = 0x4712e4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsRenderableModel (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsRenderableModel."
 
 [[global]]
 name = "g_resBuildStylePath"
@@ -1373,6 +1472,62 @@ confidence = "confirmed"
 notes = "Recursively builds the bounding interval hierarchy CIsCollisionMeshSpec uses for its own triangle queries, from the plain vertex/index arrays serialized after the Bullet shape. Splits on the longest box axis at the midpoint; cvars BIHMaxDepth and BIHMaxSingled stop the recursion. Called through FUN_4a051c88 at the end of CIsCollisionMeshSpec::Serialise."
 
 [[function]]
+name = "CIsCollisionObject::OnCollisionEnter"
+offset = 0x052c10
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component vslot 26 (this, otherCollisionObject, contact): notifies SUBJECT_ENTER_COLLISION on the subject at +0x28 with a = this, b = the other collision object. Ghost volumes (CSnowTrigger children, the teleporter volume) are told who entered this way."
+
+[[function]]
+name = "CIsCollisionObject::OnCollisionPersist"
+offset = 0x052c30
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component vslot 27: SUBJECT_PERSIST_COLLISION on the subject at +0x28 (a = this, b = other) every step two objects keep touching."
+
+[[function]]
+name = "CIsCollisionObject::OnCollisionExit"
+offset = 0x052c58
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "(this, otherCollisionObject): notifies SUBJECT_EXIT_COLLISION on the subject at +0x28 with a = this, b = the other collision object."
+
+[[function]]
+name = "CIsCollisionObject::Enable"
+offset = 0x052c78
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Adds the collision object to the physics world (SUBJECT_ENABLE_COLLISION; Init when the start-enabled flag at +0x5c is set)."
+
+[[function]]
+name = "CIsCollisionObject::Init"
+offset = 0x052ca4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Creates the btCollisionObject (btGhostObject when m_Ghost), back-pointer at bullet +0xec, enables it when the start-enabled flag is set, follows the transform and subscribes to ENABLE/DISABLE_COLLISION on the entity's broadcaster."
+
+[[function]]
+name = "CIsCollisionObject::Disable"
+offset = 0x052df4
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Removes the collision object from the physics world (SUBJECT_DISABLE_COLLISION, sent by doors when they open)."
+
+[[function]]
+name = "CIsCollisionObject::OnEvent"
+offset = 0x052e20
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Follows its transform (moves the Bullet object), enables on SUBJECT_ENABLE_COLLISION and disables on SUBJECT_DISABLE_COLLISION (subscribed on the entity's broadcaster)."
+
+[[function]]
 name = "gameswf_FnCallArg"
 offset = 0x05fa6c
 thumb = true
@@ -1451,6 +1606,38 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Detour dtNavMeshQuery::moveAlongSurface(query, startRef, start, end, filter, result, visited, &visitedCount, maxVisited)."
+
+[[function]]
+name = "NavMesh_FindTag"
+offset = 0x0a3754
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "FindTag(navMesh, tagHash, &entry): the tag map (navMesh +0xb0, keyed by tag hash) entry's polygon list (+0x14), if the tag exists."
+
+[[function]]
+name = "NavMesh_SetPolyListFlags"
+offset = 0x0a39d8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "SetPolyListFlags(polyList, flags, set): ORs or clears flags in the u16 dtPoly flags (+0x1c) of each polygon in a tag's list (8-byte entries, poly pointer first)."
+
+[[function]]
+name = "NavMesh_SetTagOpen"
+offset = 0x0a3a0c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "SetTagOpen(navMesh, tagHash, open): opens (1) or closes (0) the navmesh polygons tagged with tagHash (a door's name hash): stores open at entry +0x20 and clears/sets poly flag 0x2000 (closed) on every polygon of the tag. CDoor::Init closes its tag, CDoor::OnEvent opens it; CZiplineBarrier and CLunarLanderStation use it too, so any tag in the navmesh works."
+
+[[function]]
+name = "NavMesh_SetTagFlags"
+offset = 0x0a3a36
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "SetTagFlags(navMesh, tagHash, flags, set): sets or clears arbitrary poly flags on every polygon of a tag (CDONextRoundTrigger)."
 
 [[function]]
 name = "ClassRegistry_Add"
@@ -2359,12 +2546,12 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarbool with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
-name = "Entity_GetPlayerId"
+name = "Entity_GetNameHash"
 offset = 0x104218
 thumb = true
 subsystem = "entities"
 confidence = "likely"
-notes = "Player id of an entity (used to key scores per player)."
+notes = "IwHashString of the entity's name (entity +0x20), cached at +0x2c. The game keys scores per player and navmesh door tags by it; CIsEntityDB::FindEntity finds entities by it."
 
 [[function]]
 name = "Cvar_RegisterIntArray"
@@ -2437,6 +2624,30 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Calls CDOPlayerController::FixedStep for every enabled Dead Ops player controller. The director calls the table every fixed step, also in the front end with no players."
+
+[[function]]
+name = "CDoor::Init"
+offset = 0x17bd24
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Finds the NavMesh resource and closes the door's navmesh tag (NavMesh_SetTagOpen with its name hash, 0), subscribes to the interact and door_open broadcasts, its power switch, and makes its collision box listen for SUBJECT_DISABLE_COLLISION."
+
+[[function]]
+name = "CDoor::Interact"
+offset = 0x17c1ac
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Use on a closed door: checks the score (COD Points fallback), charges m_Cost (SUBJECT_CHARGE_POINTS) and notifies open_door."
+
+[[function]]
+name = "CDoor::OnEvent"
+offset = 0x17c340
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Opens the door (state 2): plays playSound, opens its navmesh tag, hides the model when m_HideAfterActivate, notifies SUBJECT_DISABLE_COLLISION; a power switch opens powered doors."
 
 [[function]]
 name = "Weapon_ApplySpread"
@@ -2741,6 +2952,30 @@ confidence = "confirmed"
 notes = "Event handler setup (slot 9): registers slots Back, AutoAim, InvertY, RightHanded, Left, Right, Calibrate (element) and OnLODChanged, OnMusicChanged, OnSFXChanged (element, short value) on the page root (+0x24)."
 
 [[function]]
+name = "Poi_FindPromptElement"
+offset = 0x19f78c
+thumb = true
+subsystem = "ui"
+confidence = "likely"
+notes = "The IwUI element of the POI prompt (ig_poi* variants; the Xperia one with the analog touch pad)."
+
+[[function]]
+name = "Poi_ShowPrompt"
+offset = 0x19f9d0
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "ShowPrompt(element, text, show, showButton): sets the POI prompt label caption and shows or hides the prompt, its button and image (and the input manager's use-button flag +0x88)."
+
+[[function]]
+name = "Poi_SendUse"
+offset = 0x19fd48
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "The player pressed use (SUBJECT_POI_ACTION): broadcasts the interact event (the id doors, perks, ... subscribe on their CIsBroadcaster) on the nearest point of interest, entity id at CLevelManager +0x214, with the local player's name hash."
+
+[[function]]
 name = "CIngameStateSensitivity::Enter"
 offset = 0x1a44c4
 thumb = true
@@ -2828,6 +3063,14 @@ confidence = "confirmed"
 notes = "Loads a Zombies level: <level>_sectors (portals and occluders into CIsSectorManager), then <level>_statics, whose every CIsEntitySpec becomes an entity (Entity_CreateAllFromGroup); spawns the local player at spawn_player_1/respawn_player_1, sets up fog, LOD quotas, the starting CArea, the PowerSwitch subscription and the NavMesh resource (+0x290)."
 
 [[function]]
+name = "LevelManager_UpdateNearestPoi"
+offset = 0x1ac1d4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Picks the nearest point of interest in reach, stores its entity id at CLevelManager +0x214 and notifies SUBJECT_POI_TRIGGER (a = entity id, 0 for none); CIngameStatePlaying::OnEvent then shows the prompt for its CPOI m_poiType (0 barricade, 1 door, 2 wall buy, 3 box, 4 perk, 5 Pack-a-Punch, 6 trap switch, 7 power, 8 turret, 9 teleporter, 10 mainframe, 11 lander, 12/13 lander station, 14 revive, 15 claymore, 16 tutorial pickup)."
+
+[[function]]
 name = "UI_GetLocalisedCaption"
 offset = 0x1af724
 thumb = true
@@ -2874,6 +3117,14 @@ thumb = true
 subsystem = "network"
 confidence = "likely"
 notes = "Logs in to (or creates) the DemonWare account; reached from the per-frame online update."
+
+[[function]]
+name = "CPerk::Init"
+offset = 0x1ca960
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component Init (vslot 22): sets up the perk machine; powers it (+0x7c powered, +0x7d lit) only for Quick Revive in solo, otherwise the power switch does."
 
 [[function]]
 name = "CPerkManager::PerkImageName"
@@ -3370,6 +3621,14 @@ thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarintarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CIsRenderableModel::SetVisible"
+offset = 0x22c5a8
+thumb = true
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "SetVisible(model, visible): sets the visible byte of every asset in the model's asset list (+0x4c). CDoor hides its model with it after opening when m_HideAfterActivate is set."
 
 [[function]]
 name = "Sector_LoadGroup"
