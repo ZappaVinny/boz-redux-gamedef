@@ -1163,11 +1163,27 @@ confidence = "confirmed"
 notes = "CLevelManager singleton (Zombies level). +0x1a0: the local player's entity (pointer; entity id at +4)."
 
 [[global]]
+name = "CSaveManager::s_instance"
+offset = 0x460848
+type = "undefined4"
+subsystem = "saves"
+confidence = "confirmed"
+notes = "Save manager singleton. The save database (CIsSubject for SUBJECT_SAVE/SUBJECT_LOAD, sections at +0x30) is at s_instance + 8; one in-game save, save_game.i3d."
+
+[[global]]
 name = "CAIControllerZombie::s_table"
 offset = 0x460d24
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Component table of CAIControllerZombie (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CAIControllerZombie."
+
+[[global]]
+name = "CScoreManager::s_instance"
+offset = 0x461080
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "Score singleton (points). GetLocalScore(s_instance), AddScore(s_instance, playerNameHash, delta, 0). Embeds a CIsObserver at +0x20 and a CIsNetworkSubject at +0x28."
 
 [[global]]
 name = "CUIPageManager::s_instance"
@@ -1214,11 +1230,25 @@ confidence = "confirmed"
 notes = "Component table of CPerkManager (on the player entity). Red-black tree like CWeaponManager::s_table; Find(&s_table, playerEntityId)."
 
 [[global]]
+name = "CPlayerController::s_table"
+offset = 0x46c90c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CPlayerController (on the player entity): stance +0x1f4 (8 = downed), state machine at +0x1cc (state +0x1d4; 0x14 and 0x15 = dead)."
+
+[[global]]
 name = "CPlayerFreeFly::s_table"
 offset = 0x46ced4
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Component table of CPlayerFreeFly (developer fly mode), keyed by player entity id."
+
+[[global]]
+name = "CPowerSwitch::s_table"
+offset = 0x46d188
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CPowerSwitch (red-black tree keyed by entity id, entity +4). CPowerSwitch +0x7c StartEnabled (usable), +0x88 switched on (no prompt once on)."
 
 [[global]]
 name = "CSoundEmitter::s_table"
@@ -1910,6 +1940,22 @@ thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Removes a system (by its id at +0x14) and re-sorts. Called from each system's destructor."
+
+[[function]]
+name = "CIsTransform::UpdateWorld"
+offset = 0x0c2488
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Refreshes the world matrix when the transform moved (dirty flag +0x30): world rotation at +0x38, world position at +0x5c/+0x60/+0x64 (game centimetres, y up). Callers read the position right after it (CAIControllerZombie::State_Dead, sound placement)."
+
+[[function]]
+name = "CIsTransform::ComputeWorld"
+offset = 0x0c2494
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Builds the world matrix from the local rotation quaternion +0x98, position +0xa8 and scale +0xb4, times the parent's (hierarchy +0x34), into +0x38 and +0x68; clears the dirty flag +0x30."
 
 [[function]]
 name = "Studio_Shutdown"
@@ -2650,6 +2696,22 @@ confidence = "confirmed"
 notes = "Opens the door (state 2): plays playSound, opens its navmesh tag, hides the model when m_HideAfterActivate, notifies SUBJECT_DISABLE_COLLISION; a power switch opens powered doors."
 
 [[function]]
+name = "CEasterEgg::OnEvent"
+offset = 0x17cdb8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "On SUBJECT_WEAPON_HIT (a weapon hit the skull): tells the musical easter egg manager (CLevelManager +0x27c) that this egg of its song (IwHashString of the song path) was hit, with the egg's name hash."
+
+[[function]]
+name = "CEasterEgg::Init"
+offset = 0x17dbe0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Subscribes to SUBJECT_WEAPON_HIT on the entity's broadcaster and registers the egg with the musical easter egg manager (CLevelManager +0x27c) under its song."
+
+[[function]]
 name = "Weapon_ApplySpread"
 offset = 0x17e9ec
 thumb = true
@@ -2976,6 +3038,14 @@ confidence = "confirmed"
 notes = "The player pressed use (SUBJECT_POI_ACTION): broadcasts the interact event (the id doors, perks, ... subscribe on their CIsBroadcaster) on the nearest point of interest, entity id at CLevelManager +0x214, with the local player's name hash."
 
 [[function]]
+name = "CIngameStatePlaying::UpdatePoiPrompt"
+offset = 0x1a1e68
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Observer for the level manager's POI events. SUBJECT_POI_ACTION: Poi_SendUse. SUBJECT_POI_TRIGGER (arg 4 = the POI entity in reach, 0 for none): hides the prompt (and the COD points elements), then builds the prompt for the POI's m_poiType (0 barricade: needs a CBarricade; 1 door, 2 wall buy, 3 box, 4 perk, ...) or from the POI's interface (+0x3c, vtable +8 returns the text and show/button flags), and shows it with Poi_ShowPrompt or the cost variant. A type whose component is missing leaves the prompt hidden."
+
+[[function]]
 name = "CIngameStateSensitivity::Enter"
 offset = 0x1a44c4
 thumb = true
@@ -3047,6 +3117,14 @@ confidence = "likely"
 notes = "Starts the level's first round (when the StartWaveOnStart cvar is 1): picks the level's starting wave for the player count/difficulty (default \"wave1\") and queues it on CWaveManager."
 
 [[function]]
+name = "LevelManager_AddMovingPoi"
+offset = 0x1a948c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Adds a moving point of interest's entity to the level manager's list (+0x224), always considered."
+
+[[function]]
 name = "LevelManager_SpawnPlayers"
 offset = 0x1aabb4
 thumb = true
@@ -3061,6 +3139,22 @@ thumb = true
 subsystem = "state"
 confidence = "confirmed"
 notes = "Loads a Zombies level: <level>_sectors (portals and occluders into CIsSectorManager), then <level>_statics, whose every CIsEntitySpec becomes an entity (Entity_CreateAllFromGroup); spawns the local player at spawn_player_1/respawn_player_1, sets up fog, LOD quotas, the starting CArea, the PowerSwitch subscription and the NavMesh resource (+0x290)."
+
+[[function]]
+name = "LevelManager_AddPoi"
+offset = 0x1abd4c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Adds a fixed point of interest's entity to the level manager's grid (+0x218), searched by LevelManager_FindNearbyPois."
+
+[[function]]
+name = "LevelManager_FindNearbyPois"
+offset = 0x1ac146
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "The points of interest near the player: grid cells around it plus the moving list, then filtered by reach and angle (CPOI fields)."
 
 [[function]]
 name = "LevelManager_UpdateNearestPoi"
@@ -3117,6 +3211,14 @@ thumb = true
 subsystem = "network"
 confidence = "likely"
 notes = "Logs in to (or creates) the DemonWare account; reached from the per-frame online update."
+
+[[function]]
+name = "CPOI::Init"
+offset = 0x1bfa54
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Registers the point of interest with the level manager: in the moving list when m_Moveable, else in the nearby-POI grid. Nothing else is needed for it to be the POI in reach (use works through Poi_SendUse)."
 
 [[function]]
 name = "CPerk::Init"
@@ -3271,6 +3373,14 @@ confidence = "confirmed"
 notes = "Player events. ON_ANALOG_STICK (args: angle, magnitude, radius fraction, x, y, is_look): look stick sets +0x154, adds TurnMult * magnitude to +0x144 and stores x/2.5, y/2.5 at +0x148/+0x14c; move stick sets +0x155, +0x13c = angle + pi/2, sprints (+0x156) when the radius fraction is at least sprintUp (sprintDown while sprinting) and the angle is within SprintAngle of straight ahead, and adds min(magnitude / WalkFraction, 1) * speed / 3 to +0x140 (speed from WalkSpeed, SprintSpeed, Crouch*, Prone*, Aim*, Perked*). Also damage, crouch/prone buttons, revive, waves, saves."
 
 [[function]]
+name = "CPlayerController::SetStance"
+offset = 0x1db634
+thumb = true
+subsystem = "entities"
+confidence = "likely"
+notes = "Sets the stance at +0x1f4 (1 standing, 2 crouching, 4 prone, 8 last stand / downed) and starts the camera height blend toward that stance's height (+0x188/+0x18c/+0x190). HandleState sets 8 when the player goes down."
+
+[[function]]
 name = "CPlayerFreeFly::Init"
 offset = 0x1ddc74
 thumb = true
@@ -3301,6 +3411,14 @@ thumb = true
 subsystem = "engine"
 confidence = "likely"
 notes = "Pack downloader: mounts blackops_loader.dz, builds the pack name blackops_%s.dz for the device texture format and loads downloader/downloader.group for its UI. Skipped when packs are already present."
+
+[[function]]
+name = "CSaveManager::NotifyLoad"
+offset = 0x1f3240
+thumb = true
+subsystem = "saves"
+confidence = "confirmed"
+notes = "Sends SUBJECT_LOAD on the save database (CSaveManager::s_instance + 8): every subscribed system reads its section (GetSection). Called from CIngameStateResumeLoading::Update when a saved game is continued (CLevelManager +0x298 set at level start) and by Dead Ops on rejoin."
 
 [[function]]
 name = "CSaveManager::Collect"
