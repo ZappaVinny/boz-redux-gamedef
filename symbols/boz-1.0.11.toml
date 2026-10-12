@@ -3381,6 +3381,14 @@ confidence = "likely"
 notes = "Sets the stance at +0x1f4 (1 standing, 2 crouching, 4 prone, 8 last stand / downed) and starts the camera height blend toward that stance's height (+0x188/+0x18c/+0x190). HandleState sets 8 when the player goes down."
 
 [[function]]
+name = "CPlayerController::HandleFireInput"
+offset = 0x1dd520
+thumb = true
+subsystem = "weapons"
+confidence = "likely"
+notes = "Fire button: checks the weapon can shoot (ammo, requiresADS, not reloading), then fires through CPlayerController::FireWeapon or its aiming / alternate variants and notifies the tutorial."
+
+[[function]]
 name = "CPlayerFreeFly::Init"
 offset = 0x1ddc74
 thumb = true
@@ -3397,12 +3405,44 @@ confidence = "confirmed"
 notes = "Developer fly mode (noclip). SUBJECT_PLAYER_FREE_MODE toggles +0x30 (flying): switches the player controller's movement off/on and subscribes to ON_ANALOG_STICK and SUBJECT_PLAYER_ASCEND. While flying, the movement stick moves the transform along the view axes by FreeFlySpeed x stick per event, and SUBJECT_PLAYER_ASCEND raises it by FreeFlySpeed (no collision)."
 
 [[function]]
+name = "CPlayerWeapon::CreateBehaviour"
+offset = 0x1df434
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "CreateBehaviour(weapon, behaviour): the fire-mode object for CPlayerWeapon::behaviour (+0x64): 1 CSingleShotBehaviour, 2 CAutomaticBehaviour, 3 CSemiAutomaticBehaviour (burst, semiBurst), 4 CShotgunBehaviour, 5 CAutomaticShotgunBehaviour, 6 CRevolverBehaviour, 9 CSingleShotLauncherBehaviour, 10 CDeathMachineBehaviour, 15 CThunderGunBehaviour, 16 CHumanGunBehaviour, 17 CWunderWaffeBehaviour; 0 (melee, perk bottles), 7/8 (grenades), 11-14 (claymore, monkey bomb, ...) have none."
+
+[[function]]
+name = "CPlayerWeapon::GetBehaviour"
+offset = 0x1df60e
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "The weapon's fire-mode object (+0x34), or its attached weapon's (+0x3c, when +0x40 is set)."
+
+[[function]]
+name = "CPlayerWeapon::RequiresADS"
+offset = 0x1df84c
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "requiresADS (+0x27c) of the weapon in use: it only fires while aiming down sights."
+
+[[function]]
 name = "CPlayerWeapon::TriggerAnim"
 offset = 0x1dfaf8
 thumb = true
 subsystem = "weapons"
 confidence = "likely"
 notes = "Fires an animation trigger on the weapon (0 shoot, 9 last shot, 2 melee hit, 8 equip, ...)."
+
+[[function]]
+name = "CPlayerWeapon::IsAutomatic"
+offset = 0x1dfcac
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "True for behaviour 2 (automatic), 10 (Death Machine) and 5 (automatic shotgun): holding fire keeps shooting."
 
 [[function]]
 name = "Downloader_Run"
@@ -3685,6 +3725,14 @@ confidence = "confirmed"
 notes = "SetReloading(on, kind): sends SUBJECT_WEAPON_RELOAD and fires the matching reload animation trigger (+0xaa reload flag)."
 
 [[function]]
+name = "CWeaponManager::UpdateSpread"
+offset = 0x21e59e
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Effective spread of the weapon in use: m_accuracy (+0x1c0) spreadMin/Max (+0x1c8/+0x1cc) times modCrouched (+0x1d0) when crouched or modProne (+0x1d4) when prone, times the DeadshotAccuracyModifier cvar with Deadshot; results at +0x1d8/+0x1dc."
+
+[[function]]
 name = "CWeaponManager::MeleeAttack"
 offset = 0x21f0e8
 thumb = true
@@ -3707,6 +3755,14 @@ thumb = true
 subsystem = "weapons"
 confidence = "confirmed"
 notes = "Equips a CPlayerWeapon (+0x1e0): binds the arms/weapon animation triggers (shoot, aimShoot, reload, melee, ...), then sends SUBJECT_WEAPON_SET."
+
+[[function]]
+name = "CWeaponManager::EquipWeapon"
+offset = 0x2202fc
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "EquipWeapon(manager, weapon, slot, ...): puts a weapon in a slot: 0 primary (+0x1e0, the one in hand), 1 secondary (+0x1e4), 2 melee (+0x1e8, behaviour 0), 3 grenade (+0x1ec, behaviour 7/8), 4 special (+0x1f0); sends SUBJECT_WEAPON_UNEQUIPPED / EQUIPPED with the weapon's name and upgrade."
 
 [[function]]
 name = "CWeaponManager::GiveWeapon"
@@ -3957,6 +4013,14 @@ thumb = false
 subsystem = "engine"
 confidence = "confirmed"
 notes = "Serialises CIwModelBlockVerts. The body contains render and unique-position counts, one signed center value, three component-planar signed-16 streams biased by that center, then one u16 unique-position index for each duplicated render vertex. Normals, UVs, colours and GL triangle indices address the expanded render-vertex array. Vtable slot 5 at image 0x4a408a8c."
+
+[[function]]
+name = "IwSerialiseQuatCompressed"
+offset = 0x249bdc
+thumb = false
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "Reads or writes an IwFQuat (s16 w, x, y, z; 4096 = 1.0) as 32 bits: the top 2 bits name the largest component (0 x, 1 y, 2 z, 3 w), which is dropped and rebuilt as sqrt(1 - the others squared); three 10-bit fields v hold the others as (v * 0x16a2 >> 10) - 0xb51. Files before 0x3040a use 11/11/10 bits. Used by CIwAnimBone and CIwAnimKeyFrameParser (bozkit.anim)."
 
 [[function]]
 name = "IwPath_Resolve"
