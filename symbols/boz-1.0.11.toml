@@ -1057,12 +1057,36 @@ confidence = "confirmed"
 notes = "Director callback slot called between fixed steps with an interpolation factor. The client replaces it to blend transforms for high frame rates."
 
 [[global]]
+name = "CIwNetworkConnectionStunDemonware::s_instance"
+offset = 0x42c178
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIwNetworkConnectionStunDemonware singleton (CIsSingleton<CIwNetworkConnectionStunDemonware>): its constructor stores this here, its destructor clears it."
+
+[[global]]
 name = "g_console"
 offset = 0x4506f8
 type = "undefined4"
-subsystem = "runtime"
+subsystem = "engine"
 confidence = "likely"
 notes = "The CIwConsole singleton (cvar registry). Set at startup; every Cvar_Register* calls its vtable +0x5c."
+
+[[global]]
+name = "CIsBulletWorld::s_instance"
+offset = 0x4519a0
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsBulletWorld singleton (CIsSingleton<CIsBulletWorld>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsSystemDB::s_instance"
+offset = 0x4519a4
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsSystemDB singleton (CIsSingleton<CIsSystemDB>): its constructor stores this here, its destructor clears it."
 
 [[global]]
 name = "CIsCollisionBox::s_table"
@@ -1079,6 +1103,13 @@ confidence = "confirmed"
 notes = "Component table of CIsCollisionCapsule (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsCollisionCapsule."
 
 [[global]]
+name = "CIsCollisionCompound::s_table"
+offset = 0x451b98
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsCollisionCompound (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
 name = "CIsCollisionMesh::s_table"
 offset = 0x451c50
 subsystem = "entities"
@@ -1093,12 +1124,95 @@ confidence = "confirmed"
 notes = "Component table of CIsCollisionSphere (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsCollisionSphere."
 
 [[global]]
+name = "CIsRigidBody::s_table"
+offset = 0x451e74
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsRigidBody (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsDebugDisplay::s_instance"
+offset = 0x451f20
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsDebugDisplay singleton (CIsSingleton<CIsDebugDisplay>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsDebugRenderManager::s_instance"
+offset = 0x451f24
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsDebugRenderManager singleton (CIsSingleton<CIsDebugRenderManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIwTouchManager::s_instance"
+offset = 0x451f28
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIwTouchManager singleton (CIsSingleton<CIwTouchManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIwWorld::s_instance"
+offset = 0x451f30
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIwWorld singleton (CIsSingleton<CIwWorld>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsDebugMenu::s_instance"
+offset = 0x451f38
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsDebugMenu singleton (CIsSingleton<CIsDebugMenu>): its constructor stores this here, its destructor clears it."
+
+[[global]]
 name = "CIwSoundManager::s_instance"
 offset = 0x4535d8
 type = "undefined4"
-subsystem = "audio"
+subsystem = "state"
 confidence = "confirmed"
-notes = "CIwSoundManager singleton (sound effects). CIwSoundManager::Play(manager, soundHash, 0, 0, 0) plays a sound spec, e.g. IwHashString(\"menu_press\")."
+notes = "The CIwSoundManager singleton (CIsSingleton<CIwSoundManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsCrowdAgent::s_table"
+offset = 0x4536fc
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsCrowdAgent (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsNavMeshTarget::s_table"
+offset = 0x45384c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsNavMeshTarget (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsPathFollower::s_table"
+offset = 0x453918
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsPathFollower (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsBroadcaster::s_table"
+offset = 0x457748
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsBroadcaster (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsCamera::s_table"
+offset = 0x4577f4
+type = "undefined4"
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsCamera (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
 
 [[global]]
 name = "g_componentTableRegistry"
@@ -1116,11 +1230,57 @@ confidence = "confirmed"
 notes = "Studio director / game clock. +4 paused flag, +0x28 total time ms (64-bit), +0x30 frame time ms (64-bit), +0x38 frame time in seconds (float). Read by most components' updates."
 
 [[global]]
+name = "CIsNetworkUniverse::s_instance"
+offset = 0x457918
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsNetworkUniverse singleton (CIsSingleton<CIsNetworkUniverse>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsSceneManager::s_instance"
+offset = 0x45791c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsSceneManager singleton (CIsSingleton<CIsSceneManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsEntityDB::s_instance"
+offset = 0x457920
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsEntityDB singleton (CIsSingleton<CIsEntityDB>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsEntityProperties::s_table"
+offset = 0x4579b0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsEntityProperties (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
 name = "CIsHierarchy::s_table"
 offset = 0x457a5c
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Component table of CIsHierarchy (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsHierarchy."
+
+[[global]]
+name = "CIsRenderable::s_table"
+offset = 0x458104
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsRenderable (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIwFogManager::s_instance"
+offset = 0x4582b8
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIwFogManager singleton (CIsSingleton<CIwFogManager>): its constructor stores this here, its destructor clears it."
 
 [[global]]
 name = "CIsTransform::s_table"
@@ -1135,8 +1295,16 @@ name = "g_resManager"
 offset = 0x45c394
 type = "undefined4"
 subsystem = "engine"
-confidence = "confirmed"
+confidence = "likely"
 notes = "The CIsArchiveManager singleton. vtable slot 10 (+0x28) is LoadGroup(name, async, flags)."
+
+[[global]]
+name = "CIsResConfigLoader::s_instance"
+offset = 0x45c6f0
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsResConfigLoader singleton (CIsSingleton<CIsResConfigLoader>): its constructor stores this here, its destructor clears it."
 
 [[global]]
 name = "g_game"
@@ -1147,6 +1315,38 @@ confidence = "confirmed"
 notes = "The CIwGame (CGame) instance, set by its constructor."
 
 [[global]]
+name = "CIwKeyboard::s_instance"
+offset = 0x45c6f8
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIwKeyboard singleton (CIsSingleton<CIwKeyboard>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIwGFXParticleManager::s_instance"
+offset = 0x45c704
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIwGFXParticleManager singleton (CIsSingleton<CIwGFXParticleManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIwNetworkConfigurationManager::s_instance"
+offset = 0x45c810
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIwNetworkConfigurationManager singleton (CIsSingleton<CIwNetworkConfigurationManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIwGCMatchmakingManager::s_instance"
+offset = 0x45d840
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIwGCMatchmakingManager singleton (CIsSingleton<CIwGCMatchmakingManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
 name = "g_activeTransformSet"
 offset = 0x45f2b0
 type = "void *"
@@ -1155,20 +1355,121 @@ confidence = "confirmed"
 notes = "The transform set the director interpolates (count at +8, item array at +4)."
 
 [[global]]
+name = "CAIControllerHellhound::s_table"
+offset = 0x460620
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAIControllerHellhound (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CSpawnManager::s_instance"
+offset = 0x460830
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CSpawnManager singleton (CIsSingleton<CSpawnManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CWaveManager::s_instance"
+offset = 0x460834
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CWaveManager singleton (CIsSingleton<CWaveManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CVFXManager::s_instance"
+offset = 0x460838
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CVFXManager singleton (CIsSingleton<CVFXManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CPickupManager::s_instance"
+offset = 0x46083c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CPickupManager singleton (CIsSingleton<CPickupManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
 name = "CLevelManager::s_instance"
 offset = 0x460840
 type = "undefined4"
-subsystem = "runtime"
+subsystem = "state"
 confidence = "confirmed"
-notes = "CLevelManager singleton (Zombies level). +0x1a0: the local player's entity (pointer; entity id at +4)."
+notes = "The CLevelManager singleton (CIsSingleton<CLevelManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CGameNetwork::s_instance"
+offset = 0x460844
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CGameNetwork singleton (CIsSingleton<CGameNetwork>): its constructor stores this here, its destructor clears it."
 
 [[global]]
 name = "CSaveManager::s_instance"
 offset = 0x460848
 type = "undefined4"
-subsystem = "saves"
+subsystem = "state"
 confidence = "confirmed"
-notes = "Save manager singleton. The save database (CIsSubject for SUBJECT_SAVE/SUBJECT_LOAD, sections at +0x30) is at s_instance + 8; one in-game save, save_game.i3d."
+notes = "The CSaveManager singleton (CIsSingleton<CSaveManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAIControllerMonkey::s_table"
+offset = 0x460884
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAIControllerMonkey (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTeleportManager::s_instance"
+offset = 0x4609f8
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CTeleportManager singleton (CIsSingleton<CTeleportManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CProjectileManager::s_instance"
+offset = 0x4609fc
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CProjectileManager singleton (CIsSingleton<CProjectileManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CNotableEntManager::s_instance"
+offset = 0x460a00
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CNotableEntManager singleton (CIsSingleton<CNotableEntManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAIControllerRomero::s_table"
+offset = 0x460a10
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAIControllerRomero (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CCameraShake::s_instance"
+offset = 0x460cf4
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CCameraShake singleton (CIsSingleton<CCameraShake>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CSoundSequenceManager::s_instance"
+offset = 0x460cf8
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CSoundSequenceManager singleton (CIsSingleton<CSoundSequenceManager>): its constructor stores this here, its destructor clears it."
 
 [[global]]
 name = "CAIControllerZombie::s_table"
@@ -1178,20 +1479,684 @@ confidence = "confirmed"
 notes = "Component table of CAIControllerZombie (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CAIControllerZombie."
 
 [[global]]
+name = "CStatsManager::s_instance"
+offset = 0x46107c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CStatsManager singleton (CIsSingleton<CStatsManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
 name = "CScoreManager::s_instance"
 offset = 0x461080
 type = "undefined4"
 subsystem = "state"
 confidence = "confirmed"
-notes = "Score singleton (points). GetLocalScore(s_instance), AddScore(s_instance, playerNameHash, delta, 0). Embeds a CIsObserver at +0x20 and a CIsNetworkSubject at +0x28."
+notes = "The CScoreManager singleton (CIsSingleton<CScoreManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CFullscreenFXManager::s_instance"
+offset = 0x461084
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CFullscreenFXManager singleton (CIsSingleton<CFullscreenFXManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAchievementDB::s_instance"
+offset = 0x461088
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CAchievementDB singleton (CIsSingleton<CAchievementDB>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAITutor::s_table"
+offset = 0x4610a4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAITutor (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTutorialManager::s_instance"
+offset = 0x461168
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CTutorialManager singleton (CIsSingleton<CTutorialManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAIWeapon::s_table"
+offset = 0x4611fc
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAIWeapon (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CAIWeaponHandler::s_table"
+offset = 0x4612a4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAIWeaponHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CASMHandler::s_table"
+offset = 0x461350
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CASMHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CAccelerometerInput::s_instance"
+offset = 0x4613f4
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CAccelerometerInput singleton (CIsSingleton<CAccelerometerInput>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAmbienceManager::s_instance"
+offset = 0x461418
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CAmbienceManager singleton (CIsSingleton<CAmbienceManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAmbientColouriser::s_table"
+offset = 0x46141c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAmbientColouriser (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CAmbientFader::s_table"
+offset = 0x461528
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAmbientFader (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CAmbientLightColouriser::s_table"
+offset = 0x4615d0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAmbientLightColouriser (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CHUDManager::s_instance"
+offset = 0x461680
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CHUDManager singleton (CIsSingleton<CHUDManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAnalogTouchPad::s_instance"
+offset = 0x461684
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CAnalogTouchPad singleton (CIsSingleton<CAnalogTouchPad>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CAnimatedScenery::s_table"
+offset = 0x46168c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CAnimatedScenery (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CBarricade::s_table"
+offset = 0x4617c8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CBarricade (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CBodyDamageController::s_table"
+offset = 0x4618a4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CBodyDamageController (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CBodyGib::s_table"
+offset = 0x461a60
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CBodyGib (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CBodyHandler::s_table"
+offset = 0x461b08
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CBodyHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CCameraProcessorTwist::s_table"
+offset = 0x461c14
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CCameraProcessorTwist (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CCameraProcessorShake::s_table"
+offset = 0x461cbc
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CCameraProcessorShake (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CCentrifuge::s_table"
+offset = 0x461de4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CCentrifuge (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CChainLightning::s_table"
+offset = 0x461ec0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CChainLightning (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CCollisionFilter::s_table"
+offset = 0x461f78
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CCollisionFilter (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CConsoleShaderParamManager::s_instance"
+offset = 0x462048
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CConsoleShaderParamManager singleton (CIsSingleton<CConsoleShaderParamManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CContentUnlocker::s_instance"
+offset = 0x46204c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CContentUnlocker singleton (CIsSingleton<CContentUnlocker>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOAIController::s_table"
+offset = 0x462080
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOAIController (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDORoundManager::s_instance"
+offset = 0x462164
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CDORoundManager singleton (CIsSingleton<CDORoundManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOAIControllerBossSilverback::s_table"
+offset = 0x4621c0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOAIControllerBossSilverback (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOAIControllerSilverbackResult::s_table"
+offset = 0x462348
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOAIControllerSilverbackResult (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOAIControllerTauntingSilverback::s_table"
+offset = 0x4623f8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOAIControllerTauntingSilverback (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOHordeManager::s_instance"
+offset = 0x462490
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CDOHordeManager singleton (CIsSingleton<CDOHordeManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOASMHandler::s_table"
+offset = 0x4624a0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOASMHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOPlayerInput::s_instance"
+offset = 0x462548
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CDOPlayerInput singleton (CIsSingleton<CDOPlayerInput>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOAcknowledgedSpawnManager::s_instance"
+offset = 0x4625d4
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CDOAcknowledgedSpawnManager singleton (CIsSingleton<CDOAcknowledgedSpawnManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOBattleChickenBodyHandler::s_table"
+offset = 0x462604
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOBattleChickenBodyHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOBattleChickenController::s_table"
+offset = 0x462710
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOBattleChickenController (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOBuffalo::s_table"
+offset = 0x462818
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOBuffalo (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOCameraController::s_table"
+offset = 0x4628c4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOCameraController (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOCollisionFilter::s_table"
+offset = 0x462978
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOCollisionFilter (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDODamageActionSpawn::s_table"
+offset = 0x462a24
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDODamageActionSpawn (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDODynamicEntityComponent::s_table"
+offset = 0x462ad0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDODynamicEntityComponent (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOEntityFlags::s_table"
+offset = 0x462b7c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOEntityFlags (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOExplosion::s_table"
+offset = 0x462c28
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOExplosion (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOFateBonusTrigger::s_table"
+offset = 0x462cd4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOFateBonusTrigger (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOFlamethrowerProjectile::s_table"
+offset = 0x462da0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOFlamethrowerProjectile (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOFlyingPointsPickup::s_table"
+offset = 0x462e58
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOFlyingPointsPickup (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOPersistentStorage::s_instance"
+offset = 0x462ef4
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CDOPersistentStorage singleton (CIsSingleton<CDOPersistentStorage>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOFreeCameraDevice::s_table"
+offset = 0x462f08
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOFreeCameraDevice (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOPickupManager::s_instance"
+offset = 0x463014
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CDOPickupManager singleton (CIsSingleton<CDOPickupManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOKeyboardInput::s_instance"
+offset = 0x463018
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CDOKeyboardInput singleton (CIsSingleton<CDOKeyboardInput>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOGoreManager::s_instance"
+offset = 0x46301c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CDOGoreManager singleton (CIsSingleton<CDOGoreManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOGib::s_table"
+offset = 0x46302c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOGib (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOGore::s_table"
+offset = 0x4630d8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOGore (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOHealth::s_table"
+offset = 0x463278
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOHealth (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOHelicopterBodyHandler::s_table"
+offset = 0x4633b8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOHelicopterBodyHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
 
 [[global]]
 name = "CUIPageManager::s_instance"
 offset = 0x46363c
 type = "undefined4"
-subsystem = "ui"
+subsystem = "state"
 confidence = "confirmed"
-notes = "CUIPageManager singleton: in-game IwUI pages (FindElement by name, ShowPage)."
+notes = "The CUIPageManager singleton (CIsSingleton<CUIPageManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CMusicManager::s_instance"
+offset = 0x463654
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CMusicManager singleton (CIsSingleton<CMusicManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDOLightningBolt::s_table"
+offset = 0x463738
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOLightningBolt (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOMeleeAttackHandler::s_table"
+offset = 0x4637f0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOMeleeAttackHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOMonkeyBomb::s_table"
+offset = 0x46389c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOMonkeyBomb (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOMotor::s_table"
+offset = 0x463944
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOMotor (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDONextRoundTrigger::s_table"
+offset = 0x4639f8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDONextRoundTrigger (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOPickupBonusLife::s_table"
+offset = 0x4641d4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOPickupBonusLife (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOPickupFate::s_table"
+offset = 0x46428c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOPickupFate (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOPlayerController::s_table"
+offset = 0x464404
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOPlayerController (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOProjectile::s_table"
+offset = 0x464684
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOProjectile (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOProjectileWeaponHandler::s_table"
+offset = 0x4648ac
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOProjectileWeaponHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDORaycastedParticle::s_table"
+offset = 0x464960
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDORaycastedParticle (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDORenderableTrail::s_table"
+offset = 0x464a0c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDORenderableTrail (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDORoundTinter::s_table"
+offset = 0x464fd4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDORoundTinter (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOScoreCarrier::s_table"
+offset = 0x465080
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOScoreCarrier (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOSentryGunController::s_table"
+offset = 0x465134
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOSentryGunController (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOShadow::s_table"
+offset = 0x465218
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOShadow (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOSpawnPoint::s_table"
+offset = 0x465578
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOSpawnPoint (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOSpawnPointPickup::s_table"
+offset = 0x4657b4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOSpawnPointPickup (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOSpawnPointZombie::s_table"
+offset = 0x46595c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOSpawnPointZombie (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOSpawnedEntityTracker::s_table"
+offset = 0x465bec
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOSpawnedEntityTracker (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOSyncRequester::s_table"
+offset = 0x465c90
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOSyncRequester (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOTacticalBomb::s_table"
+offset = 0x465d44
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOTacticalBomb (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOTankBodyHandler::s_table"
+offset = 0x465df0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOTankBodyHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOTeleporter::s_table"
+offset = 0x465ee4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOTeleporter (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOTeslaTower::s_table"
+offset = 0x465fa0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOTeslaTower (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOTransformSynchroniser::s_table"
+offset = 0x466078
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOTransformSynchroniser (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDOWalkingBodyHandler::s_table"
+offset = 0x466164
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDOWalkingBodyHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDamageActionSpawn::s_table"
+offset = 0x466584
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDamageActionSpawn (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDeathActionSpawn::s_table"
+offset = 0x466630
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDeathActionSpawn (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CGameStore::s_instance"
+offset = 0x4666d8
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CGameStore singleton (CIsSingleton<CGameStore>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CDirection::s_table"
+offset = 0x4666ec
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDirection (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDoor::s_table"
+offset = 0x466798
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDoor (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CDynamicEntityComponent::s_table"
+offset = 0x466850
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CDynamicEntityComponent (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CEasterEgg::s_table"
+offset = 0x466900
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CEasterEgg (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
 
 [[global]]
 name = "CEntityFlags::s_table"
@@ -1201,12 +2166,120 @@ confidence = "confirmed"
 notes = "Component table of CEntityFlags (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CEntityFlags."
 
 [[global]]
+name = "CExplosion::s_table"
+offset = 0x466a7c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CExplosion (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CFlinger::s_table"
+offset = 0x466bb8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CFlinger (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CFogEffect::s_table"
+offset = 0x466e20
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CFogEffect (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CFootsteps::s_table"
+offset = 0x466ed0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CFootsteps (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CLocalise::s_instance"
+offset = 0x46724c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CLocalise singleton (CIsSingleton<CLocalise>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "g_fullscreenFxPlayEvent"
+offset = 0x4672f0
+type = "undefined4"
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "The id of the event CFullscreenFXManager plays an effect on (a = config hash, b = ms)."
+
+[[global]]
+name = "CSuspendManager::s_instance"
+offset = 0x46747c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CSuspendManager singleton (CIsSingleton<CSuspendManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CMetricsManager::s_instance"
+offset = 0x467480
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CMetricsManager singleton (CIsSingleton<CMetricsManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsAmbientManager::s_instance"
+offset = 0x467844
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsAmbientManager singleton (CIsSingleton<CIsAmbientManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsSectorManager::s_instance"
+offset = 0x467848
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsSectorManager singleton (CIsSingleton<CIsSectorManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CIsLODControllerQuotaManager::s_instance"
+offset = 0x46784c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CIsLODControllerQuotaManager singleton (CIsSingleton<CIsLODControllerQuotaManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CTouchComponentBroadcaster::s_instance"
+offset = 0x467850
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CTouchComponentBroadcaster singleton (CIsSingleton<CTouchComponentBroadcaster>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CLevelStateManager::s_instance"
+offset = 0x467854
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CLevelStateManager singleton (CIsSingleton<CLevelStateManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
 name = "CInputManager::s_instance"
 offset = 0x467858
 type = "undefined4"
-subsystem = "runtime"
+subsystem = "state"
 confidence = "confirmed"
-notes = "CInputManager singleton. +0x20: its CIsSubject (input events; input action 0x11 sends SUBJECT_PLAYER_FREE_MODE)."
+notes = "The CInputManager singleton (CIsSingleton<CInputManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CTransactionManager::s_instance"
+offset = 0x46787c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CTransactionManager singleton (CIsSingleton<CTransactionManager>): its constructor stores this here, its destructor clears it."
 
 [[global]]
 name = "CHealth::s_table"
@@ -1216,11 +2289,131 @@ confidence = "confirmed"
 notes = "Component table of CHealth (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CHealth."
 
 [[global]]
+name = "CHostController::s_table"
+offset = 0x467a18
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CHostController (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIceSlide::s_table"
+offset = 0x467ac8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIceSlide (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CImpactEffect::s_table"
+offset = 0x467ba0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CImpactEffect (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CInitialRigidBodyState::s_table"
+offset = 0x467e30
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CInitialRigidBodyState (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CJumpConnection::s_table"
+offset = 0x467f48
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CJumpConnection (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CLifetime::s_table"
+offset = 0x468108
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CLifetime (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CLocator::s_table"
+offset = 0x468394
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CLocator (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CLunarLander::s_table"
+offset = 0x468450
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CLunarLander (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CLunarLanderDoor::s_table"
+offset = 0x4685c8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CLunarLanderDoor (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CLunarLanderStation::s_table"
+offset = 0x468678
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CLunarLanderStation (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CParsableEnumManager::s_instance"
+offset = 0x46889c
+type = "undefined4"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CParsableEnumManager singleton (CIsSingleton<CParsableEnumManager>): its constructor stores this here, its destructor clears it."
+
+[[global]]
+name = "CModelBlockSwitcher::s_table"
+offset = 0x4688e8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CModelBlockSwitcher (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CMonkeyLander::s_table"
+offset = 0x468a80
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CMonkeyLander (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CMysteryBox::s_table"
+offset = 0x468c64
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CMysteryBox (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CNotableEntity::s_table"
+offset = 0x468f08
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CNotableEntity (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
 name = "CPOI::s_table"
 offset = 0x469f24
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Component table of CPOI (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CPOI."
+
+[[global]]
+name = "CPackAPunch::s_table"
+offset = 0x469fd4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CPackAPunch (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CPathWalker::s_table"
+offset = 0x46bc98
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CPathWalker (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
 
 [[global]]
 name = "CPerkManager::s_table"
@@ -1244,11 +2437,137 @@ confidence = "confirmed"
 notes = "Component table of CPlayerFreeFly (developer fly mode), keyed by player entity id."
 
 [[global]]
+name = "CPlayerJumpPoint::s_table"
+offset = 0x46cf7c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CPlayerJumpPoint (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CPlayerWeapon::s_table"
+offset = 0x46d028
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CPlayerWeapon (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
 name = "CPowerSwitch::s_table"
 offset = 0x46d188
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Component table of CPowerSwitch (red-black tree keyed by entity id, entity +4). CPowerSwitch +0x7c StartEnabled (usable), +0x88 switched on (no prompt once on)."
+
+[[global]]
+name = "CProjectileEntity::s_table"
+offset = 0x46d248
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CProjectileEntity (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CProjectorScreen::s_table"
+offset = 0x46d390
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CProjectorScreen (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRadialEffectNuke::s_table"
+offset = 0x46d564
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRadialEffectNuke (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRadialRingFX::s_table"
+offset = 0x46d61c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRadialRingFX (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRadialRingFXManager::s_table"
+offset = 0x46d6c4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRadialRingFXManager (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRemotePerkManager::s_table"
+offset = 0x46d770
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRemotePerkManager (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRemotePlayer::s_table"
+offset = 0x46d818
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRemotePlayer (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRemotePlayerWeapon::s_table"
+offset = 0x46d908
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRemotePlayerWeapon (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRenderFlasher::s_table"
+offset = 0x46d9b4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRenderFlasher (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRenderableTrail::s_table"
+offset = 0x46da5c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRenderableTrail (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRigCollision::s_table"
+offset = 0x46db8c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRigCollision (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRocket::s_table"
+offset = 0x46dd24
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRocket (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CRocketLauncher::s_table"
+offset = 0x46de10
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CRocketLauncher (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CScoreHandler::s_table"
+offset = 0x46e00c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CScoreHandler (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CSmokeTrail::s_table"
+offset = 0x46e2e8
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CSmokeTrail (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CSnowTrigger::s_table"
+offset = 0x46e398
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CSnowTrigger (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
 
 [[global]]
 name = "CSoundEmitter::s_table"
@@ -1265,11 +2584,144 @@ confidence = "confirmed"
 notes = "Component table of CSpawnPoint (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CSpawnPoint."
 
 [[global]]
+name = "CSpinner::s_table"
+offset = 0x46e650
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CSpinner (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTVScreen::s_table"
+offset = 0x46e710
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTVScreen (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTeleportMainframe::s_table"
+offset = 0x46e7c0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTeleportMainframe (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTeleportPointGersch::s_table"
+offset = 0x46eae0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTeleportPointGersch (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTeleporter::s_table"
+offset = 0x46eb90
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTeleporter (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTeleporterCable::s_table"
+offset = 0x46ec3c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTeleporterCable (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTrapSwitch::s_table"
+offset = 0x46eec4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTrapSwitch (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTrap::s_table"
+offset = 0x46ef74
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTrap (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTurret::s_table"
+offset = 0x46f0c0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTurret (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CTutorialPickup::s_table"
+offset = 0x46f354
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CTutorialPickup (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CVertexColouriser::s_table"
+offset = 0x46fa74
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CVertexColouriser (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CWeaponAimAssist::s_table"
+offset = 0x4700d0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CWeaponAimAssist (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CWeaponChalkOutline::s_table"
+offset = 0x47022c
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CWeaponChalkOutline (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
 name = "CWeaponManager::s_table"
 offset = 0x4704d0
 subsystem = "weapons"
 confidence = "confirmed"
 notes = "Component table of CWeaponManager. Components live in a red-black tree: header node pointer at +4 (header +8 = first node), nodes link parent +4, left +8, right +0xc, key (entity id) +0x10, component +0x14. The weapon manager sits on a child of the player entity; its +0x48 is the player entity."
+
+[[global]]
+name = "CIsASMAnimator::s_table"
+offset = 0x470bb0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsASMAnimator (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsAnimator::s_table"
+offset = 0x470c58
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsAnimator (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsBoneAttachment::s_table"
+offset = 0x470d10
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsBoneAttachment (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsCameraControllerFree::s_table"
+offset = 0x470dbc
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsCameraControllerFree (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsLODControllerDistance::s_table"
+offset = 0x470e74
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsLODControllerDistance (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "CIsLODControllerQuota::s_table"
+offset = 0x470fa4
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsLODControllerQuota (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
 
 [[global]]
 name = "CIsRenderableGFXEmitter::s_table"
@@ -1279,11 +2731,33 @@ confidence = "confirmed"
 notes = "Component table of CIsRenderableGFXEmitter (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsRenderableGFXEmitter."
 
 [[global]]
+name = "CIsRenderableInSector::s_table"
+offset = 0x471294
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsRenderableInSector (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
 name = "CIsRenderableModel::s_table"
 offset = 0x4712e4
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Component table of CIsRenderableModel (red-black tree keyed by entity id, entity +4); Find(&s_table, entityId) gives the entity's CIsRenderableModel."
+
+[[global]]
+name = "CIsAmbientReceiver::s_table"
+offset = 0x4714a0
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Component table of CIsAmbientReceiver (red-black tree keyed by entity id, entity +4); CIsComponentTableBase::Find(&s_table, id) gives the entity's component."
+
+[[global]]
+name = "g_iwResManager"
+offset = 0x492b10
+type = "undefined4"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "The Marmalade CIwResManager (what CIwResManager_GetResNamed / GetResHashed / GetGroupNamed take first)."
 
 [[global]]
 name = "g_resBuildStylePath"
@@ -1340,6 +2814,14 @@ thumb = false
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "S3E entry point (logs \"_IwMain\"). Initialises the engine, runs the game, shuts down."
+
+[[function]]
+name = "operator_new_cpp"
+offset = 0x016772
+thumb = true
+subsystem = "libc"
+confidence = "confirmed"
+notes = "The C++ operator new(size) (Thumb): the allocator (operator_new 0x34c1a8), then the new-handler loop when it fails. STL nodes come from it; free them with operator_delete_cpp."
 
 [[function]]
 name = "Demonware_GetServerAddress"
@@ -1470,6 +2952,14 @@ confidence = "confirmed"
 notes = "Find(entity id): the component stored for that entity, or null (tree keyed by id)."
 
 [[function]]
+name = "CIsCollisionBox::FromEntity"
+offset = 0x04eed0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsCollisionBox component, or 0."
+
+[[function]]
 name = "CIsClassInfo::AddProperty"
 offset = 0x04f2b8
 thumb = true
@@ -1500,6 +2990,30 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "CIsClassInfo(info, name): reflection class record. +4 name, +8 IwHashString(name), +0x3c base list (base info, offset), +0x40 property map keyed by property hash, +0x4c derived classes. Each class keeps one in a guarded static returned by T::GetClassInfo."
+
+[[function]]
+name = "CIsCollisionCapsule::FromEntity"
+offset = 0x04fe9c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsCollisionCapsule component, or 0."
+
+[[function]]
+name = "CIsCollisionCompound::FromEntity"
+offset = 0x050618
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsCollisionCompound component, or 0."
+
+[[function]]
+name = "CIsCollisionMesh::FromEntity"
+offset = 0x0511e4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsCollisionMesh component, or 0."
 
 [[function]]
 name = "Collision_BuildBIH"
@@ -1564,6 +3078,22 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Follows its transform (moves the Bullet object), enables on SUBJECT_ENABLE_COLLISION and disables on SUBJECT_DISABLE_COLLISION (subscribed on the entity's broadcaster)."
+
+[[function]]
+name = "CIsCollisionSphere::FromEntity"
+offset = 0x053578
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsCollisionSphere component, or 0."
+
+[[function]]
+name = "CIsRigidBody::FromEntity"
+offset = 0x054098
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsRigidBody component, or 0."
 
 [[function]]
 name = "gameswf_FnCallArg"
@@ -1646,6 +3176,30 @@ confidence = "confirmed"
 notes = "Detour dtNavMeshQuery::moveAlongSurface(query, startRef, start, end, filter, result, visited, &visitedCount, maxVisited)."
 
 [[function]]
+name = "CIsCrowdAgent::FromEntity"
+offset = 0x0a2338
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsCrowdAgent component, or 0."
+
+[[function]]
+name = "CrowdAgent_Remove"
+offset = 0x0a2396
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "Removes a CIsCrowdAgent from the Detour crowd (+0x58 its index, -1 when out)."
+
+[[function]]
+name = "CrowdAgent_Place"
+offset = 0x0a23b0
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "CrowdAgent_Place(CIsCrowdAgent, x, y, z) (centimetres): removes the agent from the Detour crowd and adds it again at the position (snapped to the nearest navmesh polygon), with its radius, height, speed and flags; the zombie's change-target code uses it."
+
+[[function]]
 name = "NavMesh_FindTag"
 offset = 0x0a3754
 thumb = true
@@ -1678,12 +3232,28 @@ confidence = "confirmed"
 notes = "SetTagFlags(navMesh, tagHash, flags, set): sets or clears arbitrary poly flags on every polygon of a tag (CDONextRoundTrigger)."
 
 [[function]]
+name = "CIsNavMeshTarget::FromEntity"
+offset = 0x0a5764
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsNavMeshTarget component, or 0."
+
+[[function]]
 name = "ClassRegistry_Add"
 offset = 0x0a893e
 thumb = true
 subsystem = "entities"
 confidence = "likely"
 notes = "Adds (IwHashString(class name) -> CIsClassInfo) to the class registry map (from ClassRegistry_Get). Called first in every T::RegisterReflection."
+
+[[function]]
+name = "CIsBroadcaster::FromEntity"
+offset = 0x0b88bc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsBroadcaster component, or 0."
 
 [[function]]
 name = "CIsBroadcaster::Subscribe"
@@ -1846,6 +3416,22 @@ confidence = "confirmed"
 notes = "CIsEntityDB::CreateFromSpec(db, spec, mode, owner): allocates an entity with a fresh runtime id, creates the spec's child specs recursively and attaches them through CIsHierarchy, applies the spec (vslot 16: every component spec creates/initialises its component), then initialises components. Entities are found by CIsNamed name hash, so copies need unique names."
 
 [[function]]
+name = "CIsEntityProperties::FromEntity"
+offset = 0x0bb95c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsEntityProperties component, or 0."
+
+[[function]]
+name = "CIsHierarchy::FromEntity"
+offset = 0x0bc6ac
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsHierarchy component, or 0."
+
+[[function]]
 name = "CIsHierarchy::FindChild"
 offset = 0x0bc7aa
 thumb = true
@@ -1884,6 +3470,14 @@ thumb = true
 subsystem = "entities"
 confidence = "likely"
 notes = "Finds an entity by name (e.g. \"player_weapon\")."
+
+[[function]]
+name = "CIsRenderable::UpdateTransform"
+offset = 0x0bf460
+thumb = true
+subsystem = "rendering"
+confidence = "likely"
+notes = "Updates the renderable's world matrix from its entity's CIsTransform (+0x54 of the second part), facing the camera for billboards; a renderable whose entity has no transform crashes here (parts of other effects)."
 
 [[function]]
 name = "CIsSubject::NotifyVirtual"
@@ -1956,6 +3550,14 @@ thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Removes a system (by its id at +0x14) and re-sorts. Called from each system's destructor."
+
+[[function]]
+name = "CIsTransform::FromEntity"
+offset = 0x0c23e4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsTransform component, or 0."
 
 [[function]]
 name = "Transform_SetDirty"
@@ -2624,12 +4226,28 @@ confidence = "likely"
 notes = "IwHashString of the entity's name (entity +0x20), cached at +0x2c. The game keys scores per player and navmesh door tags by it; CIsEntityDB::FindEntity finds entities by it."
 
 [[function]]
+name = "CAIControllerMonkey::FromEntity"
+offset = 0x107074
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CAIControllerMonkey component, or 0."
+
+[[function]]
 name = "Cvar_RegisterIntArray"
 offset = 0x10b350
 thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarintarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CAIControllerZombie::FromEntity"
+offset = 0x1104f8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CAIControllerZombie component, or 0."
 
 [[function]]
 name = "CAIControllerZombie::State_Dead"
@@ -2640,12 +4258,92 @@ confidence = "confirmed"
 notes = "Dead state: sends SUBJECT_ZOMBIE_DEATH, then a kill-score event to the killer by hit location/damage type (+0x124 body part, +0x22c kind): SUBJECT_ZOMBIE_SCORE_KILL_HEAD/TORSO/LIMB/KNIFE/GRENADE; headshots add the zombieHeadshotBonus cvar table; fades out after zombieDeathFadeTime."
 
 [[function]]
+name = "CAITutor::FromEntity"
+offset = 0x118464
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CAITutor component, or 0."
+
+[[function]]
+name = "CAIWeapon::FromEntity"
+offset = 0x11a694
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CAIWeapon component, or 0."
+
+[[function]]
+name = "CAIWeaponHandler::FromEntity"
+offset = 0x11af90
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CAIWeaponHandler component, or 0."
+
+[[function]]
+name = "CASMHandler::FromEntity"
+offset = 0x11b8a4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CASMHandler component, or 0."
+
+[[function]]
 name = "Cvar_RegisterFixed"
 offset = 0x11bfb0
 thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarfixed with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "AchievementDB_Find"
+offset = 0x11cb1e
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "AchievementDB_Find(db, hash): the achievement with that name hash, or 0."
+
+[[function]]
+name = "Achievement_SetProgress"
+offset = 0x11ce00
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Achievement_SetProgress(achievement, value): when enabled (+0x36) and the DB allows (+0x4c clear), sets the progress (+0x28) clamped to the target (+0x24); reaching the target unlocks it and saves (CSaveManager)."
+
+[[function]]
+name = "AchievementDB_AddOnLevel"
+offset = 0x11ce7c
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "AchievementDB_AddOnLevel(db, name, level, amount): adds progress when the level's name is `level` (strcmp)."
+
+[[function]]
+name = "AchievementDB_Reset"
+offset = 0x11ced2
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "AchievementDB_Reset(db, name): sets the achievement's progress back to 0."
+
+[[function]]
+name = "CAmbientColouriser::FromEntity"
+offset = 0x11e290
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CAmbientColouriser component, or 0."
+
+[[function]]
+name = "CAmbientLightColouriser::FromEntity"
+offset = 0x11f228
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CAmbientLightColouriser component, or 0."
 
 [[function]]
 name = "Cvar_RegisterFloatArray2"
@@ -2656,12 +4354,92 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarfloatarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "CAnimatedScenery::FromEntity"
+offset = 0x120448
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CAnimatedScenery component, or 0."
+
+[[function]]
+name = "CBarricade::FromEntity"
+offset = 0x121cb8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CBarricade component, or 0."
+
+[[function]]
+name = "CBodyDamageController::FromEntity"
+offset = 0x122b50
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CBodyDamageController component, or 0."
+
+[[function]]
+name = "CBodyGib::FromEntity"
+offset = 0x124a18
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CBodyGib component, or 0."
+
+[[function]]
+name = "CBodyHandler::FromEntity"
+offset = 0x1252ac
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CBodyHandler component, or 0."
+
+[[function]]
 name = "Physics_RayCast"
 offset = 0x12640c
 thumb = true
 subsystem = "entities"
 confidence = "likely"
 notes = "Raycast(from, to, outHitPos, outNormal, outEntity, outShape, filter, mask, outMaterial)."
+
+[[function]]
+name = "Physics_RayCastAll"
+offset = 0x126a78
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Physics_RayCastAll(from, to, list, filter, mask): every hit of a ray (btCollisionWorld AllHitsRayResultCallback on CIsBulletWorld +0x34) into an STLport list (list object -> sentinel node; nodes next +0, previous +4, position +8, normal +0x14, entity +0x20, shape +0x24, distance squared +0x28, material +0x2c; 0x30 bytes, operator new), one per entity, sorted nearest first (list::sort swaps sentinels). Returns the hit count. Weapon_FireBullets uses it for bullets that go through."
+
+[[function]]
+name = "CameraShake_Play"
+offset = 0x127e30
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "CameraShake_Play(CCameraShake, name): looks up the CCameraShakeConfig (by IwHashString(name)) into +0x20; duration below 0 sets +0x24 endless, else +0x28 the time left (ms). Returns 1 when found. CCameraProcessorShake adds the offsets (+0x34 x y z, +0x40 roll) to the camera matrix. Shakes: romero-transform-shake (misc), explosion-large, explosion-lightning-bolt (Dead Ops)."
+
+[[function]]
+name = "CChainLightning::FromEntity"
+offset = 0x129a70
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CChainLightning component, or 0."
+
+[[function]]
+name = "CCollisionFilter::FromEntity"
+offset = 0x12b108
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CCollisionFilter component, or 0."
+
+[[function]]
+name = "CDOAIController::FromEntity"
+offset = 0x12d790
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOAIController component, or 0."
 
 [[function]]
 name = "Cvar_RegisterFloatArray"
@@ -2672,12 +4450,164 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarfloatarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "CDOAIControllerSilverbackResult::FromEntity"
+offset = 0x1310dc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOAIControllerSilverbackResult component, or 0."
+
+[[function]]
+name = "CDOASMHandler::FromEntity"
+offset = 0x132450
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOASMHandler component, or 0."
+
+[[function]]
 name = "Cvar_RegisterFloatAngle"
 offset = 0x133b80
 thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarfloatangle with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "CDOBattleChickenBodyHandler::FromEntity"
+offset = 0x134440
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOBattleChickenBodyHandler component, or 0."
+
+[[function]]
+name = "CDOBattleChickenController::FromEntity"
+offset = 0x134d90
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOBattleChickenController component, or 0."
+
+[[function]]
+name = "CDOCameraController::FromEntity"
+offset = 0x1377c4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOCameraController component, or 0."
+
+[[function]]
+name = "CDODynamicEntityComponent::FromEntity"
+offset = 0x139310
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDODynamicEntityComponent component, or 0."
+
+[[function]]
+name = "CDOEntityFlags::FromEntity"
+offset = 0x139934
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOEntityFlags component, or 0."
+
+[[function]]
+name = "CDOFlamethrowerProjectile::FromEntity"
+offset = 0x13b83c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOFlamethrowerProjectile component, or 0."
+
+[[function]]
+name = "CDOFlyingPointsPickup::FromEntity"
+offset = 0x13c3c0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOFlyingPointsPickup component, or 0."
+
+[[function]]
+name = "CDOGib::FromEntity"
+offset = 0x13e1bc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOGib component, or 0."
+
+[[function]]
+name = "CDOGore::FromEntity"
+offset = 0x13e8b8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOGore component, or 0."
+
+[[function]]
+name = "CDOHealth::FromEntity"
+offset = 0x13fb64
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOHealth component, or 0."
+
+[[function]]
+name = "CDOHelicopterBodyHandler::FromEntity"
+offset = 0x141128
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOHelicopterBodyHandler component, or 0."
+
+[[function]]
+name = "CDOLightningBolt::FromEntity"
+offset = 0x14a3b8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOLightningBolt component, or 0."
+
+[[function]]
+name = "CDOMeleeAttackHandler::FromEntity"
+offset = 0x14aecc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOMeleeAttackHandler component, or 0."
+
+[[function]]
+name = "CDOMotor::FromEntity"
+offset = 0x14c280
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOMotor component, or 0."
+
+[[function]]
+name = "CDOPickupBonusLife::FromEntity"
+offset = 0x1530d0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOPickupBonusLife component, or 0."
+
+[[function]]
+name = "CDOPickupFate::FromEntity"
+offset = 0x1538e8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOPickupFate component, or 0."
+
+[[function]]
+name = "CDOPlayerController::FromEntity"
+offset = 0x15623c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOPlayerController component, or 0."
 
 [[function]]
 name = "CDOPlayerController::FixedStep"
@@ -2694,6 +4624,110 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "Calls CDOPlayerController::FixedStep for every enabled Dead Ops player controller. The director calls the table every fixed step, also in the front end with no players."
+
+[[function]]
+name = "CDOProjectile::FromEntity"
+offset = 0x15a110
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOProjectile component, or 0."
+
+[[function]]
+name = "CDOProjectileWeaponHandler::FromEntity"
+offset = 0x15c32c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOProjectileWeaponHandler component, or 0."
+
+[[function]]
+name = "CDORaycastedParticle::FromEntity"
+offset = 0x15d45c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDORaycastedParticle component, or 0."
+
+[[function]]
+name = "CDOScoreCarrier::FromEntity"
+offset = 0x1648f0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOScoreCarrier component, or 0."
+
+[[function]]
+name = "CDOSentryGunController::FromEntity"
+offset = 0x1650bc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOSentryGunController component, or 0."
+
+[[function]]
+name = "CDOSpawnedEntityTracker::FromEntity"
+offset = 0x16e3ac
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOSpawnedEntityTracker component, or 0."
+
+[[function]]
+name = "CDOSyncRequester::FromEntity"
+offset = 0x16eae8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOSyncRequester component, or 0."
+
+[[function]]
+name = "CDOTacticalBomb::FromEntity"
+offset = 0x16f2bc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOTacticalBomb component, or 0."
+
+[[function]]
+name = "CDOTankBodyHandler::FromEntity"
+offset = 0x16fc98
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOTankBodyHandler component, or 0."
+
+[[function]]
+name = "CDOTransformSynchroniser::FromEntity"
+offset = 0x173864
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOTransformSynchroniser component, or 0."
+
+[[function]]
+name = "CDOWalkingBodyHandler::FromEntity"
+offset = 0x176d98
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDOWalkingBodyHandler component, or 0."
+
+[[function]]
+name = "CDirection::FromEntity"
+offset = 0x17ae88
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDirection component, or 0."
+
+[[function]]
+name = "CDoor::FromEntity"
+offset = 0x17b578
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CDoor component, or 0."
 
 [[function]]
 name = "CDoor::Init"
@@ -2736,6 +4770,14 @@ confidence = "confirmed"
 notes = "Subscribes to SUBJECT_WEAPON_HIT on the entity's broadcaster and registers the egg with the musical easter egg manager (CLevelManager +0x27c) under its song."
 
 [[function]]
+name = "CEntityFlags::FromEntity"
+offset = 0x17e1c0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CEntityFlags component, or 0."
+
+[[function]]
 name = "Weapon_ApplySpread"
 offset = 0x17e9ec
 thumb = true
@@ -2750,6 +4792,30 @@ thumb = true
 subsystem = "weapons"
 confidence = "confirmed"
 notes = "Weapon_FireBullets(pellets, ...): per pellet applies spread, raycasts 10000 units (Physics_RayCast) and sends SUBJECT_WEAPON_HIT (with the body part hit) to the hit entity's CIsBroadcaster, or spawns the surface impact effect; draws the tracer."
+
+[[function]]
+name = "CExplosion::FromEntity"
+offset = 0x17fbec
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CExplosion component, or 0."
+
+[[function]]
+name = "Explosion_DamageEntity"
+offset = 0x17ff34
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "Damage falls from m_MaxDamage (within m_InnerRadius) to m_MinDamage (at m_Radius); players are hurt only by their own (CProjectileEntity owner +0x88) at OwnExplosionDamageModifier percent; ExplosionRayCast checks line of sight; sends SUBJECT_EXPLOSION_HIT {damage, transform, crawler, owner} (m_ImpactEffect 1/2: SUBJECT_HUMAN_GUN_HIT)."
+
+[[function]]
+name = "Explosion_Detonate"
+offset = 0x180910
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "Explosion_Detonate(CExplosion, quiet, instigator): (SUBJECT_EXPLODE, unless NoExplosions) finds the entities within m_Radius (Bullet sphere query) whose CEntityFlags match m_DamageEntFlags and inside m_FOV, damages each (Explosion_DamageEntity); m_ImpactEffect 3 spawns chain_lightning; plays the explosion VFX (m_DoExplosionVFX) and, with m_ShouldDestroyOnExplosion, sends SUBJECT_EXPLODED and destroys the entity."
 
 [[function]]
 name = "CFlashMenuState::CallActionScript"
@@ -2774,6 +4840,14 @@ thumb = true
 subsystem = "ui"
 confidence = "likely"
 notes = "Switches the front end to a menu by name hash (e.g. mp_map_select)."
+
+[[function]]
+name = "CFootsteps::FromEntity"
+offset = 0x1851cc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CFootsteps component, or 0."
 
 [[function]]
 name = "Cvar_RegisterString"
@@ -2808,6 +4882,14 @@ confidence = "confirmed"
 notes = "Static init: registers the SUBJECT_OPTIONS_* event ids."
 
 [[function]]
+name = "CFullscreenFXManager::OnEvent"
+offset = 0x18bdec
+thumb = true
+subsystem = "rendering"
+confidence = "confirmed"
+notes = "The play event (id at 0x4a4672f0): a = a CFullscreenFXConfig name hash, b = display time ms (0: the config's m_DurationTime); starts its fade in / show / fade out. Also saves and loads the running effect."
+
+[[function]]
 name = "CGame::CGame"
 offset = 0x18c8d8
 thumb = true
@@ -2822,6 +4904,14 @@ thumb = true
 subsystem = "runtime"
 confidence = "likely"
 notes = "vtable slot 19, run at the start of each frame by CIwGame::Update."
+
+[[function]]
+name = "String_Equals"
+offset = 0x18cc3c
+thumb = true
+subsystem = "libc"
+confidence = "confirmed"
+notes = "String_Equals(a, b): strcmp(a, b) == 0. The level manager compares the level's name (CLevelManager +0x55) with it (Level_IsAscension, Level_Load's Call of the Dead set-up, the start sounds and camera, the tutorial's weapon groups)."
 
 [[function]]
 name = "CGame::Init"
@@ -2904,6 +4994,22 @@ confidence = "confirmed"
 notes = "Vertical look sensitivity, as GetAimXSensitivity with the *AimYSensitivity cvars and the setting at +0x58."
 
 [[function]]
+name = "CHealth::FromEntity"
+offset = 0x199714
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CHealth component, or 0."
+
+[[function]]
+name = "CHealth::SetMaxHealth"
+offset = 0x19972c
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "SetMaxHealth(health, max): +0x44 the most health can be now (SetHealth clamps to it; Juggernog doubles it; CreateZombie sets the round's health); keeps m_Wound (+0x68) in step. +0x40 m_MaxHealth is the spec's base."
+
+[[function]]
 name = "CHealth::Damage"
 offset = 0x199754
 thumb = true
@@ -2934,6 +5040,30 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "SetHealth(value, networked, source): sends SUBJECT_HEALTH_MODIFY; OnEvent clamps to [0, max (+0x44)], ignores it while invulnerable or when the god flag (+0x70) is set, starts regeneration (m_Wound, m_HealDelay, m_HealingTime) and temporary invulnerability after a hit, then CheckDeath."
+
+[[function]]
+name = "CHealth::SetHealthInt"
+offset = 0x19a268
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "SetHealth with an int value (converted to float)."
+
+[[function]]
+name = "CHostController::FromEntity"
+offset = 0x19a880
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CHostController component, or 0."
+
+[[function]]
+name = "CImpactEffect::FromEntity"
+offset = 0x19bc24
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CImpactEffect component, or 0."
 
 [[function]]
 name = "Cvar_RegisterIntArray2"
@@ -3038,6 +5168,14 @@ confidence = "confirmed"
 notes = "Event handler setup (slot 9): registers slots Back, AutoAim, InvertY, RightHanded, Left, Right, Calibrate (element) and OnLODChanged, OnMusicChanged, OnSFXChanged (element, short value) on the page root (+0x24)."
 
 [[function]]
+name = "Stats_Get"
+offset = 0x19e554
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Stats_Get(statsManager, name): the stat's value in the current mode's map (Stats_GetMode), keyed by IwHashString(name) (STAT_ZOMBIESKILLED, STAT_HEADSHOTS, STAT_REVIVED, ...)."
+
+[[function]]
 name = "Poi_FindPromptElement"
 offset = 0x19f78c
 thumb = true
@@ -3059,7 +5197,7 @@ offset = 0x19fd48
 thumb = true
 subsystem = "entities"
 confidence = "confirmed"
-notes = "The player pressed use (SUBJECT_POI_ACTION): broadcasts the interact event (the id doors, perks, ... subscribe on their CIsBroadcaster) on the nearest point of interest, entity id at CLevelManager +0x214, with the local player's name hash."
+notes = "The player pressed use (SUBJECT_POI_ACTION): broadcasts the interact event on the nearest point of interest's CIsBroadcaster (entity at CLevelManager +0x214) with the local player's name hash. boz.pieces points +0x214 at any piece and calls it."
 
 [[function]]
 name = "CIngameStatePlaying::UpdatePoiPrompt"
@@ -3070,11 +5208,27 @@ confidence = "confirmed"
 notes = "Observer for the level manager's POI events. SUBJECT_POI_ACTION: Poi_SendUse. SUBJECT_POI_TRIGGER (arg 4 = the POI entity in reach, 0 for none): hides the prompt (and the COD points elements), then builds the prompt for the POI's m_poiType (0 barricade: needs a CBarricade; 1 door, 2 wall buy, 3 box, 4 perk, ...) or from the POI's interface (+0x3c, vtable +8 returns the text and show/button flags), and shows it with Poi_ShowPrompt or the cost variant. A type whose component is missing leaves the prompt hidden."
 
 [[function]]
+name = "GameOver_PlayMusic"
+offset = 0x1a2f7c
+thumb = true
+subsystem = "audio"
+confidence = "likely"
+notes = "Plays blackops-music/mus_gameover.mp3 (Music_Play, once, at once)."
+
+[[function]]
 name = "CIngameStateSensitivity::Enter"
 offset = 0x1a44c4
 thumb = true
 subsystem = "ui"
 confidence = "confirmed"
+
+[[function]]
+name = "CInitialRigidBodyState::FromEntity"
+offset = 0x1a6760
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CInitialRigidBodyState component, or 0."
 
 [[function]]
 name = "CInputManager::OnInputAction"
@@ -3117,6 +5271,14 @@ confidence = "likely"
 notes = "Subscribes the level managers to SUBJECT_RESTART_LEVEL/END_GAME/SAVE/LOAD, then finds the group named after the level (CLevelManager+0x55) and stores its CLevel resource of the same name (searched in the group and its children) at +0x204. Called by CGameStateIngame::vf2 after ResConfig_InGame loads the level's groups."
 
 [[function]]
+name = "Level_IsAscension"
+offset = 0x1a8960
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Level_IsAscension(levelManager): the level's name is \"ascension\" (String_Equals). StartFirstWave then turns the round VFX on; the level start skips Kino's teleport sounds."
+
+[[function]]
 name = "LevelManager_GetWeaponsGroup"
 offset = 0x1a89b4
 thumb = true
@@ -3131,6 +5293,30 @@ thumb = true
 subsystem = "unknown"
 confidence = "likely"
 notes = "The loaded group named weapon_projectiles_<level> (tutorial uses kino), else weapon_projectiles_common (not shipped)."
+
+[[function]]
+name = "LevelManager_UpdateAmbience"
+offset = 0x1a8ad4
+thumb = true
+subsystem = "audio"
+confidence = "likely"
+notes = "Every frame: switches indoor_wind / outdoor_wind with the sector manager's outdoor flag and, once at the level start (+0x23c), plays general_screams and the map's start: Kino/proto tele_incomingend and the start_kino sequence, Call of the Dead level_start_0 (by String_Equals on the level name)."
+
+[[function]]
+name = "LevelManager_SetCamera"
+offset = 0x1a8d64
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "LevelManager_SetCamera(levelManager, camera): uses (or makes) MainCamera; on Call of the Dead (String_Equals on the level name) spawns snowCameraEffects on it, 50 units up."
+
+[[function]]
+name = "Level_GetStartingWave"
+offset = 0x1a8e38
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Level_GetStartingWave(CLevel, players, difficulty): single player: m_StartingWavesSP[difficulty] (easy, normal, hard); co-op: m_StartingWavesMP[players - 2]; 0 when the list is empty (the caller then uses wave1)."
 
 [[function]]
 name = "CLevelManager::StartFirstWave"
@@ -3189,12 +5375,44 @@ confidence = "confirmed"
 notes = "Picks the nearest point of interest in reach, stores its entity id at CLevelManager +0x214 and notifies SUBJECT_POI_TRIGGER (a = entity id, 0 for none); CIngameStatePlaying::OnEvent then shows the prompt for its CPOI m_poiType (0 barricade, 1 door, 2 wall buy, 3 box, 4 perk, 5 Pack-a-Punch, 6 trap switch, 7 power, 8 turret, 9 teleporter, 10 mainframe, 11 lander, 12/13 lander station, 14 revive, 15 claymore, 16 tutorial pickup)."
 
 [[function]]
+name = "CLifetime::FromEntity"
+offset = 0x1acad0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CLifetime component, or 0."
+
+[[function]]
 name = "UI_GetLocalisedCaption"
 offset = 0x1af724
 thumb = true
 subsystem = "ui"
 confidence = "confirmed"
 notes = "Text for an IwUI label's localiseCaption property (a string id hash) via Localise_GetString."
+
+[[function]]
+name = "CLocator::FromEntity"
+offset = 0x1afb88
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CLocator component, or 0."
+
+[[function]]
+name = "CLunarLander::FromEntity"
+offset = 0x1b068c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CLunarLander component, or 0."
+
+[[function]]
+name = "CLunarLanderStation::FromEntity"
+offset = 0x1b3f8c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CLunarLanderStation component, or 0."
 
 [[function]]
 name = "Game_InitEngine"
@@ -3213,6 +5431,70 @@ confidence = "confirmed"
 notes = "The game's main(), called from IwMain. Reads DeployConfig, initialises, constructs CGame (0xe4 bytes), calls Init once, Update until the quit flag at +0x54 is 1, then ShutDown and deletes the game."
 
 [[function]]
+name = "CModelBlockSwitcher::FromEntity"
+offset = 0x1b709c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CModelBlockSwitcher component, or 0."
+
+[[function]]
+name = "CMonkeyLander::FromEntity"
+offset = 0x1b8204
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CMonkeyLander component, or 0."
+
+[[function]]
+name = "Music_Pause"
+offset = 0x1b9bbe
+thumb = true
+subsystem = "audio"
+confidence = "confirmed"
+notes = "Pauses the streamed music (s3eAudioPause, or the platform player)."
+
+[[function]]
+name = "Music_Resume"
+offset = 0x1b9bc2
+thumb = true
+subsystem = "audio"
+confidence = "confirmed"
+notes = "Resumes the streamed music (s3eAudioResume)."
+
+[[function]]
+name = "Music_SetVolume"
+offset = 0x1b9bc6
+thumb = true
+subsystem = "audio"
+confidence = "confirmed"
+notes = "Music_SetVolume(musicManager, volume 0-4096): +0xb0 = volume / 16 (at most 256), applied unless fading."
+
+[[function]]
+name = "CMusicManager::CMusicManager"
+offset = 0x1b9c28
+thumb = true
+subsystem = "audio"
+confidence = "likely"
+notes = "Registers MusicFadeRate and ResourcePath; music is streamed mp3 (s3eAudio)."
+
+[[function]]
+name = "Music_Play"
+offset = 0x1b9d1c
+thumb = true
+subsystem = "audio"
+confidence = "confirmed"
+notes = "Music_Play(musicManager, path, repeat, now, volume, lock): streams an mp3 (\"blackops-music/mus_gameover.mp3\") unless locked (+0xc2) or off (+0xc1 clear) or already playing (+4 = IwHashString(path)); now switches at once, else fades (MusicFadeRate); volume 0-1 times the music volume (+0xb0); lock keeps others from changing it until it ends."
+
+[[function]]
+name = "CMysteryBox::FromEntity"
+offset = 0x1ba104
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CMysteryBox component, or 0."
+
+[[function]]
 name = "CMysteryBox::ChooseWeapon"
 offset = 0x1ba538
 thumb = true
@@ -3227,6 +5509,14 @@ thumb = true
 subsystem = "state"
 confidence = "likely"
 notes = "Current box price (m_Cost, or m_FireSaleCost during a fire sale)."
+
+[[function]]
+name = "CNotableEntity::FromEntity"
+offset = 0x1bd948
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CNotableEntity component, or 0."
 
 [[function]]
 name = "Online_AutoLogin"
@@ -3245,6 +5535,30 @@ confidence = "confirmed"
 notes = "Registers the point of interest with the level manager: in the moving list when m_Moveable, else in the nearby-POI grid. Nothing else is needed for it to be the POI in reach (use works through Poi_SendUse)."
 
 [[function]]
+name = "CPOI::FromEntity"
+offset = 0x1bfb24
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CPOI component, or 0."
+
+[[function]]
+name = "CPackAPunch::FromEntity"
+offset = 0x1c06b4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CPackAPunch component, or 0."
+
+[[function]]
+name = "CPathWalker::FromEntity"
+offset = 0x1c9e84
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CPathWalker component, or 0."
+
+[[function]]
 name = "CPerk::Init"
 offset = 0x1ca960
 thumb = true
@@ -3261,12 +5575,52 @@ confidence = "confirmed"
 notes = "HUD image element name for a perk id (Perk_Deadshot_Image ... Perk_Speed_Cola_Image)."
 
 [[function]]
+name = "PerkManager_SetOwned"
+offset = 0x1cbac4
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "Sets a NetworkBoolArray's bits (CPerkManager +0x4c: the value at +0x58) and marks it changed (+8 bit 0, the dirty pointer at +4). GainPerk uses it with the perk's bit added."
+
+[[function]]
+name = "CPerkManager::FromEntity"
+offset = 0x1cbc2c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CPerkManager component, or 0."
+
+[[function]]
+name = "PerkManager_ShowIcon"
+offset = 0x1cbeb8
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "PerkManager_ShowIcon(perkManager, hudElementName, visible): shows or hides a perk's HUD icon (Perk_Juggernog_Image, ...)."
+
+[[function]]
+name = "PerkManager_ResetAll"
+offset = 0x1cbff4
+thumb = true
+subsystem = "unknown"
+confidence = "confirmed"
+notes = "ResetAllPerks: clears every perk bit (+0x4c), resets the player's CHealth maximum and hides every perk icon (+0x78 = 0)."
+
+[[function]]
 name = "CPerkManager::OnCommand"
 offset = 0x1cc016
 thumb = true
 subsystem = "state"
 confidence = "confirmed"
 notes = "Console commands: id 1 ResetAllPerks. EnablePerk (id 0) is registered but has no handler in the release build."
+
+[[function]]
+name = "PerkManager_LayoutIcons"
+offset = 0x1cc028
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Called after a perk icon changes (GainPerk): lays the visible perk icons out."
 
 [[function]]
 name = "CPerkManager::GainPerk"
@@ -3285,12 +5639,20 @@ confidence = "confirmed"
 notes = "SUBJECT_ON_PERK_GAINED handler: GainPerk unless the perk is already owned."
 
 [[function]]
+name = "HUD_SetElementVisible"
+offset = 0x1cffe4
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "HUD_SetElementVisible(name, visible): finds the element in the current page (CUIPageManager::FindElement), CIwUIElement::SetVisible and full opacity. The power-ups show their icons with it (Insta_Kill_Image, Double_Points_Image, Fire_Sale_Image, Death_Machine_Image)."
+
+[[function]]
 name = "CPickupManager::SpawnPickupAt"
 offset = 0x1d0dac
 thumb = true
 subsystem = "state"
-confidence = "likely"
-notes = "SpawnPickupAt(type, transform, offset): 2 = max ammo, 7 = perk bottle (last dog/monkey of a round)."
+confidence = "confirmed"
+notes = "SpawnPickupAt(manager, type, transform, offset): spawns <name>_pickup (type 0-8: double_points, insta_kill, max_ammo, nuke, carpenter, firesale, deathmachine, perkbottle, lightningbolt) at the transform's position (+0xa8) plus the offset, with its rotation (+0x98)."
 
 [[function]]
 name = "CPickupManager::TryDropPickup"
@@ -3321,8 +5683,8 @@ name = "CPickupManager::ApplyPickup"
 offset = 0x1d2c98
 thumb = true
 subsystem = "state"
-confidence = "likely"
-notes = "Handles SUBJECT_ON_PICKUP: applies a collected power-up."
+confidence = "confirmed"
+notes = "ApplyPickup(manager, player, type, sound): 0 double points (+0xbc = DoublePointsTime), 1 insta-kill (+0xb8 = InstaKillTime), 2 max ammo, 3 nuke (spawns nuke_effect_kill, SUBJECT_NUKE_NOW), 4 carpenter (+0xc8 = CarpenterScoreTime, SUBJECT_CARPENTER_ACTIVATED), 5 fire sale (+0xc0), 6 death machine (+0xc4, gives DeathMachineWeapon), 7 perk bottle, 8 lightning bolt (gives LightningBoltWeapon); shows the HUD icon."
 
 [[function]]
 name = "CPlayerController::IsAiming"
@@ -3331,6 +5693,14 @@ thumb = true
 subsystem = "entities"
 confidence = "confirmed"
 notes = "True while the player's state machine (+0x1cc) is in state 8, an aiming movement state (picks the Aim* turn and walk speeds). Not a reliable 'aiming down sights' test: standing still while aiming is another state. Use the weapon manager's +0xbc flag for that."
+
+[[function]]
+name = "CPlayerController::FromEntity"
+offset = 0x1d38cc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CPlayerController component, or 0."
 
 [[function]]
 name = "CPlayerController::LateUpdate"
@@ -3363,6 +5733,14 @@ thumb = true
 subsystem = "weapons"
 confidence = "likely"
 notes = "Player fires: triggers the arms shoot animation and sends SUBJECT_WEAPON_SHOOT on the weapon manager (+0x88)."
+
+[[function]]
+name = "Achievement_Unlock"
+offset = 0x1d542c
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Achievement_Unlock(?, name): the CAchievement resource by name; sets its progress to its target (Achievement_SetProgress)."
 
 [[function]]
 name = "CPlayerController::AddPerk"
@@ -3429,6 +5807,22 @@ confidence = "confirmed"
 notes = "Developer fly mode (noclip). SUBJECT_PLAYER_FREE_MODE toggles +0x30 (flying): switches the player controller's movement off/on and subscribes to ON_ANALOG_STICK and SUBJECT_PLAYER_ASCEND. While flying, the movement stick moves the transform along the view axes by FreeFlySpeed x stick per event, and SUBJECT_PLAYER_ASCEND raises it by FreeFlySpeed (no collision)."
 
 [[function]]
+name = "CPlayerJumpPoint::FromEntity"
+offset = 0x1de584
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CPlayerJumpPoint component, or 0."
+
+[[function]]
+name = "CPlayerWeapon::FromEntity"
+offset = 0x1df41c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CPlayerWeapon component, or 0."
+
+[[function]]
 name = "CPlayerWeapon::CreateBehaviour"
 offset = 0x1df434
 thumb = true
@@ -3467,6 +5861,22 @@ thumb = true
 subsystem = "weapons"
 confidence = "confirmed"
 notes = "True for behaviour 2 (automatic), 10 (Death Machine) and 5 (automatic shotgun): holding fire keeps shooting."
+
+[[function]]
+name = "CPowerSwitch::FromEntity"
+offset = 0x1e2254
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CPowerSwitch component, or 0."
+
+[[function]]
+name = "CProjectileEntity::FromEntity"
+offset = 0x1e2fa0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CProjectileEntity component, or 0."
 
 [[function]]
 name = "Projectile_IsDevice"
@@ -3549,12 +5959,60 @@ confidence = "likely"
 notes = "ProjectileManager_Register(manager, entity): devices (behaviour 4, 6) register in CProjectileEntity::Init."
 
 [[function]]
+name = "CRadialRingFXManager::FromEntity"
+offset = 0x1e8440
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CRadialRingFXManager component, or 0."
+
+[[function]]
+name = "CRemotePerkManager::FromEntity"
+offset = 0x1e8d14
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CRemotePerkManager component, or 0."
+
+[[function]]
+name = "CRemotePlayer::FromEntity"
+offset = 0x1e9668
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CRemotePlayer component, or 0."
+
+[[function]]
+name = "CRemotePlayerWeapon::FromEntity"
+offset = 0x1eb144
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CRemotePlayerWeapon component, or 0."
+
+[[function]]
 name = "Downloader_Run"
 offset = 0x1ef3e4
 thumb = true
 subsystem = "engine"
 confidence = "likely"
 notes = "Pack downloader: mounts blackops_loader.dz, builds the pack name blackops_%s.dz for the device texture format and loads downloader/downloader.group for its UI. Skipped when packs are already present."
+
+[[function]]
+name = "CRigCollision::FromEntity"
+offset = 0x1efdf8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CRigCollision component, or 0."
+
+[[function]]
+name = "CRocket::FromEntity"
+offset = 0x1f10f4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CRocket component, or 0."
 
 [[function]]
 name = "CSaveManager::NotifyLoad"
@@ -3613,6 +6071,14 @@ confidence = "confirmed"
 notes = "Single-player autosave at each round start (CWaveManager::StartWave): writes the in-game save (SaveGame), then the profile/stats files."
 
 [[function]]
+name = "CScoreHandler::FromEntity"
+offset = 0x1f5410
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CScoreHandler component, or 0."
+
+[[function]]
 name = "CScoreHandler::GetPoints"
 offset = 0x1f59fc
 thumb = true
@@ -3645,12 +6111,60 @@ confidence = "likely"
 notes = "OnScoreChanged(score, playerId, delta): updates the HUD and co-op peers after AddScore."
 
 [[function]]
+name = "ScoreConfig_GetScore"
+offset = 0x1f632e
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "ScoreConfig_GetScore(config, eventHash): points for the event (m_Scores), 0 when not listed."
+
+[[function]]
+name = "ScoreConfig_GetLimit"
+offset = 0x1f634e
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "ScoreConfig_GetLimit(config, eventHash): the event's per-round limit factor (m_ScoreLimits; the limit is this x the round number, capped by ScoreMaxLimit), 0 when none."
+
+[[function]]
 name = "CScoreManager::AddScore"
 offset = 0x1f73e0
 thumb = true
 subsystem = "state"
 confidence = "confirmed"
 notes = "AddScore(playerId, delta, countForStats): adds to the player's score (map +0x40, created at the StartingScore cvar), clamped at 0; earned points also go to +0x4c when countForStats; then announces the change. SUBJECT_ADD_SCORE adds, SUBJECT_CHARGE_POINTS and SUBJECT_POINTS_PENALTY subtract (skipped when the UnlimitedScore cvar is set)."
+
+[[function]]
+name = "ScoreConfig_Build"
+offset = 0x1f777c
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Turns a CScoreConfig's m_Scores (+0x54) and m_ScoreLimits (+0x64) lists of ScorePair (std::string Type, unsigned Score) into maps keyed by IwHashString(Type) at +0x58 and +0x68."
+
+[[function]]
+name = "CScoreManager::GetConfig"
+offset = 0x1f77e0
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "The CScoreConfig named by the ScoreConfigName cvar (default score_table), found once and kept at +0x58; its lists become maps on load (ScoreConfig_Build)."
+
+[[function]]
+name = "CSmokeTrail::FromEntity"
+offset = 0x1f7f5c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CSmokeTrail component, or 0."
+
+[[function]]
+name = "CSoundEmitter::FromEntity"
+offset = 0x1f944c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CSoundEmitter component, or 0."
 
 [[function]]
 name = "CSoundSequenceManager::Play"
@@ -3669,6 +6183,22 @@ confidence = "likely"
 notes = "Spawn_Spec(spawnManager, spec, position, rotation, owner, a, b): Entity_CreateFromSpec, then the CIsTransform's position +0xa8 and rotation +0x98."
 
 [[function]]
+name = "SpawnManager_PointTransform"
+offset = 0x1fa86e
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "SpawnManager_PointTransform(spawnManager, entityNameHash, outPosition, outRotation): an entity's world position (+0xa8) and rotation (+0x98) by name; 1 when found."
+
+[[function]]
+name = "SpawnManager_PointSpawnType"
+offset = 0x1fa8ba
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "The spawn animation of a spawn point (CSpawnPoint +0x30) by entity name hash."
+
+[[function]]
 name = "Spawn_FindSpec"
 offset = 0x1fa95c
 thumb = true
@@ -3685,12 +6215,124 @@ confidence = "likely"
 notes = "Spawn_ByHash(spawnManager, specHash, position, rotation): spawns an entity spec (found in any loaded group) at a position (vec3) and rotation (quat xyzw); returns the entity, 0 when the spec is not loaded."
 
 [[function]]
+name = "SpawnManager_PickPoint"
+offset = 0x1fb3ac
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "SpawnManager_PickPoint(spawnManager, specHash): a spawn point for a spec: active points (+0x34) within SpawnMaxDistance of the player, one of the NumOfClosestSpawns nearest at random (else the nearest); returns its name hash."
+
+[[function]]
+name = "CSpawnPoint::OnEvent"
+offset = 0x1fb6d0
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "SUBJECT_SPAWNPOINT_ACTIVATE / DEACTIVATE set the active flag (component +0x34) zombies spawn from."
+
+[[function]]
+name = "CSpawnPoint::FromEntity"
+offset = 0x1fb8e4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CSpawnPoint component, or 0."
+
+[[function]]
+name = "CSpinner::FromEntity"
+offset = 0x1fc078
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CSpinner component, or 0."
+
+[[function]]
+name = "Stats_GetMode"
+offset = 0x1fc760
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Stats_GetMode(): 1 in Zombies, 2 in Dead Ops Arcade (CLevelManager +0x208)."
+
+[[function]]
+name = "Stats_FindOrAdd"
+offset = 0x1fcb12
+thumb = true
+subsystem = "state"
+confidence = "likely"
+notes = "Finds (or makes) a stat's map node for (mode, statHash); value at node +0x14."
+
+[[function]]
+name = "Stats_Add"
+offset = 0x1fcb7a
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Stats_Add(statsManager, mode, statHash, delta): adds to a stat (made at 0 when new)."
+
+[[function]]
+name = "CTeleportMainframe::FromEntity"
+offset = 0x1fe034
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CTeleportMainframe component, or 0."
+
+[[function]]
+name = "CTeleportPointGersch::FromEntity"
+offset = 0x201208
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CTeleportPointGersch component, or 0."
+
+[[function]]
+name = "CTeleporter::FromEntity"
+offset = 0x201ab8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CTeleporter component, or 0."
+
+[[function]]
 name = "CTouchComponentAnaloguePad::Update"
 offset = 0x203744
 thumb = true
 subsystem = "ui"
 confidence = "confirmed"
 notes = "Per-frame analogue pad (Xperia Play touchpads; HUD scheme 3 only). +0x7c is the pad (0 move, 1 look). While touched it sends SendAnalogStick with the angle of the finger from the pad centre, the magnitude through the pad's response graph, the radius fraction and the unit direction."
+
+[[function]]
+name = "CTrapSwitch::FromEntity"
+offset = 0x206768
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CTrapSwitch component, or 0."
+
+[[function]]
+name = "CTrap::FromEntity"
+offset = 0x2074a4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CTrap component, or 0."
+
+[[function]]
+name = "CTurret::FromEntity"
+offset = 0x208a3c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CTurret component, or 0."
+
+[[function]]
+name = "CTutorialPickup::FromEntity"
+offset = 0x20defc
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CTutorialPickup component, or 0."
 
 [[function]]
 name = "CUIPageManager::ShowPage"
@@ -3749,12 +6391,36 @@ confidence = "likely"
 notes = "Looks up the CResolutionSpecificString named loading-<level> (in fixed.group) and returns the loading screen group path for the current resolution, or 0. A missing entry makes CIwResManager_LoadGroup strcpy a null path (crash)."
 
 [[function]]
+name = "CVertexColouriser::FromEntity"
+offset = 0x213700
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CVertexColouriser component, or 0."
+
+[[function]]
+name = "ZombieSpawnInfo::ZombieSpawnInfo"
+offset = 0x214e50
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "ZombieSpawnInfo: +4 spec, +8 name hash (g_game +0xd4 base + counter +0xd8), +0xc spawn animation (the spawn point's +0x30), +0x10 spawn point name, +0x14 CZombieConfiguration (look; its +0x58 the spec), +0x18 speed share, +0x1c position, +0x28 rotation (s x y z, identity 1 0 0 0), +0x38 tracked by the round (default true), +0x39 powered, +0x3a counts as spawned (default 1), +0x3c health, +0x40 random, +0x44 restoring a save."
+
+[[function]]
 name = "Wave_Find"
 offset = 0x214f28
 thumb = true
 subsystem = "state"
 confidence = "confirmed"
 notes = "Returns the CWave resource with this name hash (CIwResManager lookup of type \"CWave\")."
+
+[[function]]
+name = "WaveManager_SpawnBoss"
+offset = 0x2151e4
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "WaveManager_SpawnBoss(waveManager, specHash, position, rotation (s x y z), name, a): Spawn_ByHash, subscribes the wave manager to its CHealth SUBJECT_DIED and keeps the entity at +0xb4 (George). SpawnGeorgeRomero and SUBJECT_SPAWN_GEORGE_WITH_NCHECK use it."
 
 [[function]]
 name = "CWaveManager::SpawnGeorgeRomero"
@@ -3771,6 +6437,14 @@ thumb = true
 subsystem = "state"
 confidence = "likely"
 notes = "QueueWave(waveHash): sets the wave the next SUBJECT_NEW_WAVE starts."
+
+[[function]]
+name = "CWaveManager::PickSpecialWave"
+offset = 0x2159a8
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "The special round (CWaveSpeciality) for the next round, or 0: of the level's special waves those whose m_waveType is the game (single player: the difficulty +0x20c; co-op: players + 1), in order by m_repeatTimes; due once at least m_minNormalWavesInterval normal rounds passed and then with m_chance percent until m_maxNormalWavesInterval."
 
 [[function]]
 name = "CWaveManager::SpawnZombies"
@@ -3797,6 +6471,14 @@ confidence = "confirmed"
 notes = "Starts the next round: removes leftover zombies, loads the CWave named by the event (Wave_Find), resets spawned/killed counts (+0x7c/+0x84), sets the next-wave timer (+0x90, wave slot 30) and start delay (+0x94, slot 39), plays begin_wave (dog/monkey variants), increments the round (+0x78), calls the wave's slot 44, refreshes zombie health and autosaves in single player."
 
 [[function]]
+name = "CWaveManager::CreateZombie"
+offset = 0x218264
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Spawns one zombie of a ZombieSpawnInfo: its health is the wave's GetZombieHealth(round) (times the powered multiplier for a powered zombie) times the difficulty's ZombieEasy/Normal/HardHealthMultiplier; its speed tier from the wave's walk/walk fast/run/sprint shares; a configuration's look; tracked in the live map when it counts."
+
+[[function]]
 name = "CWaveManager::OnSpawnZombie"
 offset = 0x2187cc
 thumb = true
@@ -3811,6 +6493,30 @@ thumb = true
 subsystem = "saves"
 confidence = "likely"
 notes = "Restores the wave state on SUBJECT_LOAD."
+
+[[function]]
+name = "CWeaponAimAssist::FromEntity"
+offset = 0x219da8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CWeaponAimAssist component, or 0."
+
+[[function]]
+name = "CWeaponChalkOutline::FromEntity"
+offset = 0x21c4b8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CWeaponChalkOutline component, or 0."
+
+[[function]]
+name = "Weapon_Refill"
+offset = 0x21dc7c
+thumb = true
+subsystem = "weapons"
+confidence = "likely"
+notes = "Weapon_Refill(weapon, inHand): full clip and reserve."
 
 [[function]]
 name = "CWeaponManager::FromEntity"
@@ -3885,6 +6591,22 @@ confidence = "confirmed"
 notes = "Effective spread of the weapon in use: m_accuracy (+0x1c0) spreadMin/Max (+0x1c8/+0x1cc) times modCrouched (+0x1d0) when crouched or modProne (+0x1d4) when prone, times the DeadshotAccuracyModifier cvar with Deadshot; results at +0x1d8/+0x1dc."
 
 [[function]]
+name = "WeaponManager_RefillAll"
+offset = 0x21f018
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Max ammo: grenades back to 4 (+0x1cc), tactical refilled (+0x1d0), every slot (+0x1e0..+0x1f0) refilled (Weapon_Refill), HUD updated."
+
+[[function]]
+name = "WeaponManager_RefillWeapon"
+offset = 0x21f068
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "WeaponManager_RefillWeapon(manager, weaponHash): refills one weapon (or the grenades / tactical when it is one)."
+
+[[function]]
 name = "CWeaponManager::MeleeAttack"
 offset = 0x21f0e8
 thumb = true
@@ -3941,6 +6663,38 @@ confidence = "confirmed"
 notes = "Component Init: the weapon manager lives on a child of the player entity; +0x48 is that player entity. Links its controller, perks and broadcaster, finds the MainCamera entity and copies its CIsCamera m_fov into +0xc4 (base FOV) and +0xc0 (current FOV)."
 
 [[function]]
+name = "CIsASMAnimator::FromEntity"
+offset = 0x2252c4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsASMAnimator component, or 0."
+
+[[function]]
+name = "CIsAnimator::FromEntity"
+offset = 0x225cd4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsAnimator component, or 0."
+
+[[function]]
+name = "CIsBoneAttachment::FromEntity"
+offset = 0x226bd8
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsBoneAttachment component, or 0."
+
+[[function]]
+name = "CIsLODControllerQuota::FromEntity"
+offset = 0x228c9c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsLODControllerQuota component, or 0."
+
+[[function]]
 name = "Cvar_RegisterIntArray3"
 offset = 0x2292b4
 thumb = true
@@ -3949,12 +6703,36 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarintarray with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "CIsRenderableGFXEmitter::FromEntity"
+offset = 0x22a7b4
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsRenderableGFXEmitter component, or 0."
+
+[[function]]
+name = "CIsRenderableModel::FromEntity"
+offset = 0x22c27c
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsRenderableModel component, or 0."
+
+[[function]]
 name = "CIsRenderableModel::SetVisible"
 offset = 0x22c5a8
 thumb = true
 subsystem = "rendering"
 confidence = "confirmed"
 notes = "SetVisible(model, visible): sets the visible byte of every asset in the model's asset list (+0x4c). CDoor hides its model with it after opening when m_HideAfterActivate is set."
+
+[[function]]
+name = "CIsAmbientReceiver::FromEntity"
+offset = 0x22ea04
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "FromEntity(entity): the entity's CIsAmbientReceiver component, or 0."
 
 [[function]]
 name = "Sector_LoadGroup"
@@ -4428,6 +7206,14 @@ thumb = false
 subsystem = "libc"
 confidence = "confirmed"
 notes = "std::_Rb_tree_increment(node): next node in order (parent +4, left +8, right +0xc). Used to walk console maps and component tables."
+
+[[function]]
+name = "operator_delete_cpp"
+offset = 0x34a4c0
+thumb = false
+subsystem = "libc"
+confidence = "confirmed"
+notes = "The C++ operator delete(pointer) (ARM): skips null, handles the aligned-allocation table, then the allocator's delete (operator_delete 0x34c1c4)."
 
 [[function]]
 name = "operator_new"

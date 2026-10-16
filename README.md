@@ -11,6 +11,7 @@ console. It contains no game code or assets; it is knowledge recovered by revers
 | `reflection/boz-1.0.11.toml` | Every reflected class: bases and fields (offset, size, type)                 |
 | `events/boz-1.0.11.toml`     | Observer events (`SUBJECT_*`): ids and the classes that send and handle them |
 | `console/boz-1.0.11.toml`    | Console variables and developer commands                                     |
+| `runtime/boz-1.0.11.toml`    | Names each class uses at run time (what it spawns or plays by name)          |
 
 ## Creation Notes
 
