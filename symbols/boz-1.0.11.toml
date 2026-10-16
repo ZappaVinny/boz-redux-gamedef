@@ -1454,6 +1454,14 @@ confidence = "confirmed"
 notes = "Bullet 2.78 btWorldImporter::createBvhTriangleMeshShape (vslot 16). With a null btOptimizedBvh it constructs btBvhTriangleMeshShape(mesh, quantized=true, buildBvh=true) and builds a fresh BVH; otherwise it reuses the deserialized one. bozkit clears m_quantizedFloatBvh after editing collision geometry so this rebuild path runs."
 
 [[function]]
+name = "Physics_SetActivation"
+offset = 0x029924
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Physics_SetActivation(body, state): Bullet activation state (1 active, 2 sleeping, 3 wants deactivation)."
+
+[[function]]
 name = "CIsComponentTableBase::Find"
 offset = 0x04eeb0
 thumb = true
@@ -1822,6 +1830,14 @@ confidence = "confirmed"
 notes = "Studio frame tick (g_director). Processes pending entity changes, advances the clock (+0x30 frame ms, +0x28 total ms, +0x38 frame seconds), then if time moved: ComponentTables_Update, _Update2, _Update3, Systems_Update, Systems_LateUpdate; always ComponentTables_PostUpdate and Systems_PostUpdate. Called from CGame vtable slot 27 each frame."
 
 [[function]]
+name = "EntityDB_Destroy"
+offset = 0x0bb2d8
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "EntityDB_Destroy(entityDB, entity): removes an entity and its children (queued)."
+
+[[function]]
 name = "Entity_CreateFromSpec"
 offset = 0x0bb64e
 thumb = true
@@ -1940,6 +1956,14 @@ thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Removes a system (by its id at +0x14) and re-sorts. Called from each system's destructor."
+
+[[function]]
+name = "Transform_SetDirty"
+offset = 0x0c2430
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Transform_SetDirty(transform): marks a CIsTransform (+0x30) and its hierarchy children for a world matrix update after its local position (+0xa8) or rotation (+0x98) changed."
 
 [[function]]
 name = "CIsTransform::UpdateWorld"
@@ -3445,6 +3469,86 @@ confidence = "confirmed"
 notes = "True for behaviour 2 (automatic), 10 (Death Machine) and 5 (automatic shotgun): holding fire keeps shooting."
 
 [[function]]
+name = "Projectile_IsDevice"
+offset = 0x1e2fb8
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "behaviourType 4 or 6."
+
+[[function]]
+name = "Projectile_UpdateGersch"
+offset = 0x1e31f8
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Projectile_UpdateGersch(projectile): behaviour 6 (Gersch device). Closed (+0xc7 = 0): once its body rests, SUBJECT_SPAWN_GERSCH_EFFECT. Open: counts +0xc0 (ms) down by the frame time, then SUBJECT_TERMINATE."
+
+[[function]]
+name = "Projectile_InKillRadius"
+offset = 0x1e35c8
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Projectile_InKillRadius(projectile, distanceSq): distance < m_proximityRadius x 100."
+
+[[function]]
+name = "Projectile_PullRadius"
+offset = 0x1e35f0
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "the Gersch device's pull radius (m_strongPullingDistance)."
+
+[[function]]
+name = "Projectile_Impact"
+offset = 0x1e36f8
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Projectile_Impact(projectile, hitEntity): a projectile hit something: SUBJECT_EXPLODE, grenade_explosion, then SUBJECT_TERMINATE (bolts call it before moving to the hit point)."
+
+[[function]]
+name = "Projectile_UpdateFlight"
+offset = 0x1e3974
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Projectile_UpdateFlight(projectile): launch velocity; behaviour 2 (bolts) ray-casts from the last position and calls Projectile_Impact on a hit."
+
+[[function]]
+name = "Projectile_IsGersch"
+offset = 0x1e4324
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "behaviourType 6."
+
+[[function]]
+name = "ProjectileManager_Launch"
+offset = 0x1e55d4
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "ProjectileManager_Launch(manager, owner, specHash, transform, velocity, angularVelocity, ?): spawns a projectile (weapons, cluster bombs) with its owner (+0x88) and spec (+0xec)."
+
+[[function]]
+name = "ProjectileManager_FindNearest"
+offset = 0x1e5724
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "ProjectileManager_FindNearest(manager, position, radius, outDistanceSq): the nearest registered device (behaviour 4 or 6) within radius. Zombies use 5000."
+
+[[function]]
+name = "ProjectileManager_Register"
+offset = 0x1e57c4
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "ProjectileManager_Register(manager, entity): devices (behaviour 4, 6) register in CProjectileEntity::Init."
+
+[[function]]
 name = "Downloader_Run"
 offset = 0x1ef3e4
 thumb = true
@@ -3557,6 +3661,30 @@ confidence = "likely"
 notes = "Play(sequenceHash, flags, ...): plays a sound sequence (music stings, wave start)."
 
 [[function]]
+name = "Spawn_Spec"
+offset = 0x1fa76c
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Spawn_Spec(spawnManager, spec, position, rotation, owner, a, b): Entity_CreateFromSpec, then the CIsTransform's position +0xa8 and rotation +0x98."
+
+[[function]]
+name = "Spawn_FindSpec"
+offset = 0x1fa95c
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Spawn_FindSpec(hash, flags): the CIsEntitySpec resource by hash (CIwResManager_GetResHashed)."
+
+[[function]]
+name = "Spawn_ByHash"
+offset = 0x1fa9c6
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Spawn_ByHash(spawnManager, specHash, position, rotation): spawns an entity spec (found in any loaded group) at a position (vec3) and rotation (quat xyzw); returns the entity, 0 when the spec is not loaded."
+
+[[function]]
 name = "CTouchComponentAnaloguePad::Update"
 offset = 0x203744
 thumb = true
@@ -3595,6 +3723,22 @@ thumb = true
 subsystem = "unknown"
 confidence = "likely"
 notes = "StartLevel <name> (front-end console command id 0): switches the network to Loopback, makes a room and sends CEventStartGame carrying the level name. The name is not checked against any list."
+
+[[function]]
+name = "Sound_PlayHashAt"
+offset = 0x21098c
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Sound_PlayHashAt(hash, transform)."
+
+[[function]]
+name = "Sound_PlayNamedAt"
+offset = 0x2109f0
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "Sound_PlayNamedAt(name, transform): plays the sound spec named name at a CIsTransform."
 
 [[function]]
 name = "LoadingScreen_GetGroupPath"
@@ -3723,6 +3867,14 @@ thumb = true
 subsystem = "weapons"
 confidence = "confirmed"
 notes = "SetReloading(on, kind): sends SUBJECT_WEAPON_RELOAD and fires the matching reload animation trigger (+0xaa reload flag)."
+
+[[function]]
+name = "WeaponManager_UpdateAim"
+offset = 0x21e174
+thumb = true
+subsystem = "unknown"
+confidence = "likely"
+notes = "WeaponManager_UpdateAim(manager): ray-casts 10000 units from the camera (+0x80 transform, eye height from the controller +0x60 +0x1f8) along its forward axis; the crosshair point goes to manager +0xcc/+0xd0/+0xd4, +0xf0 = aiming at a live zombie."
 
 [[function]]
 name = "CWeaponManager::UpdateSpread"
