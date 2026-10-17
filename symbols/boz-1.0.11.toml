@@ -9,7 +9,7 @@ image_base = 0x4a000000
 
 # Mapping progress per subsystem (free text, kept by hand).
 [coverage]
-engine = "boundary report by import family (ExportBozEngineBoundary); asset pipeline mapped: Game_InitEngine picks blackops_<format>.dz, CIsArchiveManager (slots 2-10) mounts it through derbh (dzArchiveAttach), CIwResManager_LoadGroup builds [debug_patches/]<name>.group.bin, IwPath_Resolve tries data-<style>/ then the bare name, everything reaches s3eFileOpen; IwHashString"
+engine = "boundary report by import family (ExportBozEngineBoundary); asset pipeline mapped: Game_InitEngine picks blackops_<format>.dz, CIsArchiveManager (slots 2-10) mounts it through derbh (dzArchiveAttach), CIwResManager_LoadGroup builds [debug_patches/]<name>.group.bin, IwPath_Resolve tries data-<style>/ then the bare name, everything reaches s3eFileOpen; native assets: CIwTexture/CIwImage serialisation identifies raw format 0x05 (16-bit ARGB4444) and 0x0e (32-bit, bytes B G R A) plus a bit-packed cooked mip header followed at body +0x4f by platform ETC1 (archive marker 0x27) or DXT1 (0x34) blocks; CIwModelBlockVerts stores a center-biased component-planar int16 position array followed by unique-to-render vertex remaps; CIwModelBlockCols writes four component planes through descriptor 0x0104, or when its flag byte is 1 writes one grayscale byte per vertex and expands it at load to (v,v,v,255); each GL primitive block stores an explicit index into CIwModel's terminal CIwMaterial reference array; IwHashString"
 runtime = "main loop (GameMain, CIwGame/CGame Init/Update/ShutDown), top-level game states (0 Ingame, 1 DOIngame, 2 FrontEnd, 3 Splash), CIsStateMachine events (1 Enter, 2 Exit, 4 message, 5 frame); class map with constructors/destructors from tools; console variables (13 Cvar_Register*, 597 cvars); frame pipeline mapped: CGame::Update -> CIwGame::Update -> BeginFrame (UpdateStates: state Update -> sub-state Update -> CIwWorld::Update) and slot 27 (state Render, sound, network, Director_Tick: component tables Update/Update2/Update3 + systems Update/LateUpdate, then PostUpdate); 65 singletons located (T::s_instance, BozNameSingletons); system and component-table slot meanings"
 state = "rounds mapped: CWaveManager (struct, Update, OnEvent, StartWave) runs CWave definitions (slots 20-46 getters; CWaveRepeatable scales base * multiplier^(round - m_StartingWave)); round ends when killed >= GetZombieCount; score mapped: CScoreManager::AddScore, SUBJECT_ADD_SCORE / SUBJECT_CHARGE_POINTS / SUBJECT_POINTS_PENALTY, COD Points fallback, cvars UnlimitedScore and StartingScore; Dead Ops: CDORoundManager rounds from 42 CDORound resources (arena, lightmap, music, lighting), CDOZombieSpawner hordes (unlock round, spawn rates)"
 entities = "component system mapped: CIsComponent slots (Init, GetTypeId, ...), 162 CIsComponentTable<T> globals (T::s_table) and 114 T::FromEntity lookups named by BozNameComponentTables; observer events (CIsSubject Subscribe/Notify/Dispatch, CIsObserver::OnEvent); reflection mapped (CIsClassInfo, AddBase, AddProperty): 369 classes, 929 named fields in sdk/reflection/boz-1.0.11.toml (ExportBozReflection), T::GetClassInfo and T::RegisterReflection named; event bus mapped: 337 SUBJECT_* events (ids = IwHashString of the name, SubjectId_Register) in sdk/events/boz-1.0.11.toml with sending and handling classes (BozNameHashGlobals, ExportBozEvents); purchases all send SUBJECT_CHARGE_POINTS to CScoreManager; pathing: Recast/Detour v7 navmeshes (CIsNavMesh = 128-byte Recast config + Detour tiles), CIsCrowdAgent crowd agents, CIsNavMeshConnection / CJumpConnection climbs"
@@ -6951,32 +6951,36 @@ confidence = "confirmed"
 notes = "Derbh: reads the DTRZ header (file count, 16-byte file records, names) and runs the decompressor plug-ins for the archive. ICF [derbh] MinBufSize."
 
 [[function]]
-name = "CIwModel::CIwModel_Serialise"
+name = "CIwModel::Serialise"
 offset = 0x23ebe0
 thumb = false
-subsystem = "unknown"
-confidence = "likely"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises model flags, bounds, model-block arrays and the terminal dynamic array of CIwMaterial resource references. GL primitive blocks select entries from this array by explicit u32 index."
 
 [[function]]
-name = "CIwModelBlockGLPrimBase_ResolveMaterial"
+name = "CIwModelBlockGLPrimBase::ResolveMaterial"
 offset = 0x23f1ec
 thumb = false
-subsystem = "unknown"
-confidence = "likely"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Bounds-checks the primitive's material index against CIwModel's material count at object +0x34, then returns materials[index] from the pointer at +0x30 (or the active override array)."
 
 [[function]]
-name = "CIwModelBlockGLPrimBase::CIwModelBlockGLPrimBase_Serialise"
+name = "CIwModelBlockGLPrimBase::Serialise"
 offset = 0x240878
 thumb = false
-subsystem = "unknown"
-confidence = "likely"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises a GL primitive block. For group format 0x30403 and newer, the u32 following the block header is an index into CIwModel's material-reference array; it is not implied by primitive-block order. The u16 index stream follows that material index."
 
 [[function]]
-name = "CIwModelBlockGLPrimBase::CIwModelBlockGLPrimBase_ApplyMaterialAndIndices"
+name = "CIwModelBlockGLPrimBase::ApplyMaterialAndIndices"
 offset = 0x2409dc
 thumb = false
-subsystem = "unknown"
-confidence = "likely"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Resolves the primitive's explicit material index, calls IwGxSetMaterial and installs the primitive index pointer/count/range into GX state before drawing."
 
 [[function]]
 name = "CIwModelBlockGLTriList::CIwModelBlockGLTriList_Render"
@@ -6986,11 +6990,12 @@ subsystem = "unknown"
 confidence = "likely"
 
 [[function]]
-name = "CIwModelBlockCols::CIwModelBlockCols_Serialise"
+name = "CIwModelBlockCols::Serialise"
 offset = 0x24220c
 thumb = false
-subsystem = "unknown"
-confidence = "likely"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises one colour per render vertex. General RGBA uses IwSerialiseStructArray descriptor 0x0104 (four byte component planes). If every colour is opaque grayscale, a flag byte selects a compact stream of one byte per vertex; load expands each byte to (v,v,v,255). Vtable slot 5 at image 0x4a408c6c."
 
 [[function]]
 name = "CIwModelBlockVerts::Serialise"
@@ -7124,8 +7129,17 @@ notes = "Descriptor-driven array serialiser used by native resource blocks. Desc
 name = "IwGxSetMaterial"
 offset = 0x277f44
 thumb = false
-subsystem = "unknown"
-confidence = "likely"
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Installs a CIwMaterial into the current GX state. Visits all four texture slots at object offsets 0x2c..0x38 and conditionally copies the packed colours at 0x1c, 0x20 and 0x24 into render state. This corroborates the material serializer layout; the field at 0x54 is a shader technique, not a texture."
+
+[[function]]
+name = "CIwMaterial::Serialise"
+offset = 0x27e910
+thumb = false
+subsystem = "engine"
+confidence = "confirmed"
+notes = "Serialises a default-state marker and flags. Non-default records then contain two i16 fields, four packed colours, four CIwTexture references, optional auxiliary state, a byte field and a CIwGxShaderTechnique reference. Compact/default-state records contain flags and ONE primary CIwTexture reference. The shared final serialization call targets this+0x2c in the compact branch; only the full branch changes its destination to this+0x54 (shader technique)."
 
 [[function]]
 name = "CIwTexture::Serialise"
