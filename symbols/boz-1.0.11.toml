@@ -1057,6 +1057,14 @@ confidence = "confirmed"
 notes = "Director callback slot called between fixed steps with an interpolation factor. The client replaces it to blend transforms for high frame rates."
 
 [[global]]
+name = "s_StartWaveInfoVtable"
+offset = 0x405a70
+type = "undefined *"
+subsystem = "state"
+confidence = "confirmed"
+notes = "The vtable pointer of a StartWaveInfo (the new-wave info CWaveManager::Update fills with WaveManager_FillNextWave before sending SUBJECT_NEW_WAVE): +4 wave hash, +0x10 next wave, +0x14 previous round."
+
+[[global]]
 name = "CIwNetworkConnectionStunDemonware::s_instance"
 offset = 0x42c178
 type = "undefined4"
@@ -3480,6 +3488,14 @@ confidence = "likely"
 notes = "Updates the renderable's world matrix from its entity's CIsTransform (+0x54 of the second part), facing the camera for billboards; a renderable whose entity has no transform crashes here (parts of other effects)."
 
 [[function]]
+name = "CIsSubject::Dispatch"
+offset = 0x0c1194
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "Dispatch(subject, event, a, b, sender): calls every observer subscribed to the event on this subject. Every SUBJECT_* event passes through it."
+
+[[function]]
 name = "CIsSubject::NotifyVirtual"
 offset = 0x0c12f8
 thumb = true
@@ -4258,6 +4274,14 @@ confidence = "confirmed"
 notes = "Dead state: sends SUBJECT_ZOMBIE_DEATH, then a kill-score event to the killer by hit location/damage type (+0x124 body part, +0x22c kind): SUBJECT_ZOMBIE_SCORE_KILL_HEAD/TORSO/LIMB/KNIFE/GRENADE; headshots add the zombieHeadshotBonus cvar table; fades out after zombieDeathFadeTime."
 
 [[function]]
+name = "CAIControllerZombie::OnEvent"
+offset = 0x115b74
+thumb = true
+subsystem = "entities"
+confidence = "confirmed"
+notes = "The zombie's event handler: weapon, explosion, trap and special deaths (ZOMBIE_GERSCH_DEATH, CHAIN_LIGHTNING_DEATH, ... call CHealth::Damage with no attacker), and SUBJECT_DIED, which adds STAT_ZOMBIESKILLED when the attacker name hash is the local player's."
+
+[[function]]
 name = "CAITutor::FromEntity"
 offset = 0x118464
 thumb = true
@@ -5015,7 +5039,7 @@ offset = 0x199754
 thumb = true
 subsystem = "entities"
 confidence = "confirmed"
-notes = "Damage(amount, attackerEntity): sends SUBJECT_BO_DAMAGE_RESPONSE, then (if alive) SUBJECT_HEALTH_DECREASE to itself; OnEvent applies it."
+notes = "Damage(health, amount, attacker): attacker is the attacker's name hash (0 for none; SUBJECT_DIED looks it up with CIsEntityDB::FindEntity). Sends SUBJECT_BO_DAMAGE_RESPONSE, then (if alive) SUBJECT_HEALTH_DECREASE to itself; OnEvent applies it."
 
 [[function]]
 name = "CHealth::CheckDeath"
@@ -5735,6 +5759,22 @@ confidence = "likely"
 notes = "Player fires: triggers the arms shoot animation and sends SUBJECT_WEAPON_SHOOT on the weapon manager (+0x88)."
 
 [[function]]
+name = "CPlayerController::FireWeaponAimed"
+offset = 0x1d4ee8
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "Fire button while aiming (HandleFireInput mode 1): the arms' aimed shoot trigger (0x1b, or 10 when the weapon has no ADS shoot animation), SUBJECT_WEAPON_SHOOT on the weapon manager, and the aimed shoot sound."
+
+[[function]]
+name = "CPlayerController::FireWeaponAlternate"
+offset = 0x1d4f26
+thumb = true
+subsystem = "weapons"
+confidence = "confirmed"
+notes = "HandleFireInput mode 2: the arms' alternate shoot trigger (0x19), SUBJECT_WEAPON_SHOOT on the weapon manager, and its sound."
+
+[[function]]
 name = "Achievement_Unlock"
 offset = 0x1d542c
 thumb = true
@@ -6210,9 +6250,9 @@ notes = "Spawn_FindSpec(hash, flags): the CIsEntitySpec resource by hash (CIwRes
 name = "Spawn_ByHash"
 offset = 0x1fa9c6
 thumb = true
-subsystem = "unknown"
+subsystem = "entities"
 confidence = "likely"
-notes = "Spawn_ByHash(spawnManager, specHash, position, rotation): spawns an entity spec (found in any loaded group) at a position (vec3) and rotation (quat xyzw); returns the entity, 0 when the spec is not loaded."
+notes = "Spawn_ByHash(spawnManager, specHash, position, rotation): spawns an entity spec (found in any loaded group) at a position (vec3) and rotation (quaternion stored scalar first: s x y z); returns the entity, 0 when the spec is not loaded."
 
 [[function]]
 name = "SpawnManager_PickPoint"
@@ -6399,6 +6439,14 @@ confidence = "confirmed"
 notes = "FromEntity(entity): the entity's CVertexColouriser component, or 0."
 
 [[function]]
+name = "CWaveRepeatable::GetZombieHealth"
+offset = 0x2142cc
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "GetZombieHealth(wave, round): a repeating round's zombie health, hard-coded as 10 x round^2 - 150 (the wave's own health fields are not used)."
+
+[[function]]
 name = "ZombieSpawnInfo::ZombieSpawnInfo"
 offset = 0x214e50
 thumb = true
@@ -6445,6 +6493,14 @@ thumb = true
 subsystem = "state"
 confidence = "confirmed"
 notes = "The special round (CWaveSpeciality) for the next round, or 0: of the level's special waves those whose m_waveType is the game (single player: the difficulty +0x20c; co-op: players + 1), in order by m_repeatTimes; due once at least m_minNormalWavesInterval normal rounds passed and then with m_chance percent until m_maxNormalWavesInterval."
+
+[[function]]
+name = "WaveManager_FillNextWave"
+offset = 0x215ae4
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "FillNextWave(manager, powerOn, info): fills a new-wave info (+4 wave hash, +8/+0xc special wave values, +0x10 the wave after) from the next special wave or the current wave's m_NextWave; the caller then sends SUBJECT_NEW_WAVE on manager+0x20."
 
 [[function]]
 name = "CWaveManager::SpawnZombies"
