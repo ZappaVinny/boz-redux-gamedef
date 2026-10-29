@@ -1,4 +1,4 @@
-# BOZ Redux symbol database. Edit in Ghidra and export (see docs/modding-design.md),
+# BOZ Redux symbol database. Edit in Ghidra and export (see docs/contributing.md),
 # or by hand. Offsets are from the image base. Confidence: confirmed | likely.
 
 [game]

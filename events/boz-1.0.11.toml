@@ -227,6 +227,7 @@ handled_by = ["CFlashMenuState"]
 [[event]]
 name = "SUBJECT_DIED"
 id = 0x212b850a
+sent_by = ["CHealth"]
 handled_by = ["CAIControllerHellhound", "CAIControllerMonkey", "CAIControllerRomero", "CAIControllerZombie", "CDamageActionSpawn", "CHealth", "CPerk", "CPlayerController", "CRocket", "CWaveManager"]
 
 [[event]]
@@ -309,6 +310,7 @@ handled_by = ["CDOAIControllerBossSilverback", "CDOBuffalo", "CDODamageActionSpa
 [[event]]
 name = "SUBJECT_EXIT_COLLISION"
 id = 0xa7e1f6b9
+sent_by = ["CIsCollisionObject"]
 handled_by = ["CCentrifuge", "CDOPlayerController", "CLunarLander", "CProjectileEntity", "CSnowTrigger", "CTeleporter"]
 
 [[event]]
@@ -350,6 +352,7 @@ handled_by = ["CAIControllerHellhound", "CAIControllerMonkey", "CAIControllerRom
 [[event]]
 name = "SUBJECT_FREEZE_ME"
 id = 0x2bf17426
+sent_by = ["CPlayerController"]
 handled_by = ["CRemotePlayer"]
 
 [[event]]
@@ -361,6 +364,7 @@ handled_by = ["CAIControllerMonkey"]
 [[event]]
 name = "SUBJECT_HEALTH_DECREASE"
 id = 0x57ae7465
+sent_by = ["CHealth"]
 handled_by = ["CHealth"]
 
 [[event]]
@@ -372,6 +376,7 @@ handled_by = ["CAIControllerRomero"]
 [[event]]
 name = "SUBJECT_HEALTH_MODIFY"
 id = 0x263cfef1
+sent_by = ["CHealth"]
 handled_by = ["CHealth", "CPlayerController"]
 
 [[event]]
@@ -434,6 +439,7 @@ handled_by = ["CPickupManager"]
 [[event]]
 name = "SUBJECT_LOAD"
 id = 0x21300114
+sent_by = ["CSaveManager"]
 handled_by = ["CAnimatedScenery", "CBarricade", "CCentrifuge", "CDOAIController", "CDOAIControllerSilverback", "CDOASMHandler", "CDOBuffalo", "CDODynamicEntityComponent", "CDOFateBonusTrigger", "CDOGoreManager", "CDOHealth", "CDOHordeManager", "CDONextRoundTrigger", "CDOPersistentStorage", "CDOPickupFate", "CDOPlayerController", "CDORoundManager", "CDOSentryGunController", "CDOSpawnPointBase", "CDOTacticalBomb", "CDOTeleporter", "CDOTeslaTower", "CDirection", "CDoor", "CDynamicEntityComponent", "CEasterEggManager", "CFlinger", "CFullscreenFXManager", "CGame", "CGameStateIngame", "CHealth", "CIceSlide", "CInitialRigidBodyState", "CLifetime", "CLighthouse", "CLunarLander", "CMonkeyLander", "CMysteryBox", "CPackAPunch", "CPerk", "CPerkManager", "CPickupManager", "CPlayerController", "CPowerSwitch", "CProjectileEntity", "CProjectorScreen", "CRocket", "CRocketLauncher", "CScoreHandler", "CScoreManager", "CTeleportMainframe", "CTeleportManager", "CTeleporter", "CTeleporterCable", "CTrap", "CTurret", "CVFXManager", "CWaveManager", "CWeaponManager", "CZipLine"]
 
 [[event]]
@@ -501,6 +507,7 @@ handled_by = ["CMysteryBox"]
 [[event]]
 name = "SUBJECT_MB_CHOOSE_WEAPON"
 id = 0xa5adbecc
+sent_by = ["CMysteryBox"]
 handled_by = ["CMysteryBox"]
 
 [[event]]
@@ -749,6 +756,7 @@ id = 0x7ee79cd3
 [[event]]
 name = "SUBJECT_OPTIONS_AUTO_AIM"
 id = 0x12694e0e
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_BRIGHTNESS"
@@ -757,42 +765,52 @@ id = 0x803d2658
 [[event]]
 name = "SUBJECT_OPTIONS_CONTROL_METHOD"
 id = 0x411130e0
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_DEFAULT_SETTINGS"
 id = 0x64f5d654
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_DETAIL_LEVEL"
 id = 0xf3c4df09
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_INVERT_Y_AXIS"
 id = 0x64f7d143
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_LEFTY_CONTROLS"
 id = 0x0e3bc256
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_SENSITIVITY_X_AXIS"
 id = 0xf8226b35
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_SENSITIVITY_Y_AXIS"
 id = 0xfa7793d6
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_SFX"
 id = 0xe23e9c90
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_USER_RADIO"
 id = 0xca11e06c
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_OPTIONS_VOLUME"
 id = 0xfef5d497
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_PACKAPUNCH_DEACTIVATING"
@@ -934,6 +952,7 @@ handled_by = ["CFlashMenuState"]
 [[event]]
 name = "SUBJECT_POPUP_MODAL"
 id = 0xce4dc514
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_POWERSWITCH_SYNCH"
@@ -944,6 +963,7 @@ handled_by = ["CPowerSwitch"]
 [[event]]
 name = "SUBJECT_PRIVACY_POLICY"
 id = 0xc5d35cc1
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_PROFILE_GC_LOGIN"
@@ -1012,6 +1032,7 @@ handled_by = ["CDOAIController"]
 [[event]]
 name = "SUBJECT_RESPAWN"
 id = 0x8b9f28d4
+sent_by = ["CDOPlayerController"]
 handled_by = ["CDOPlayerController"]
 
 [[event]]
@@ -1136,6 +1157,7 @@ handled_by = ["CAIControllerRomero"]
 [[event]]
 name = "SUBJECT_SAVE"
 id = 0x21339ee3
+sent_by = ["CSaveManager"]
 handled_by = ["CAnimatedScenery", "CBarricade", "CCentrifuge", "CDOAIController", "CDOAIControllerSilverback", "CDOASMHandler", "CDOBuffalo", "CDODynamicEntityComponent", "CDOFateBonusTrigger", "CDOGoreManager", "CDOHealth", "CDOHordeManager", "CDOIngameStateLoading", "CDONextRoundTrigger", "CDOPersistentStorage", "CDOPickupFate", "CDOPlayerController", "CDORoundManager", "CDOSentryGunController", "CDOSpawnPointBase", "CDOTacticalBomb", "CDOTeleporter", "CDOTeslaTower", "CDirection", "CDoor", "CDynamicEntityComponent", "CEasterEggManager", "CFlinger", "CFullscreenFXManager", "CGame", "CGameStateIngame", "CHealth", "CIceSlide", "CInitialRigidBodyState", "CLevelManager", "CLifetime", "CLighthouse", "CLunarLander", "CMonkeyLander", "CMysteryBox", "CPackAPunch", "CPerk", "CPerkManager", "CPickupManager", "CPlayerController", "CPowerSwitch", "CProjectileEntity", "CProjectorScreen", "CRocket", "CRocketLauncher", "CScoreHandler", "CScoreManager", "CTeleportMainframe", "CTeleportManager", "CTeleporter", "CTeleporterCable", "CTrap", "CTurret", "CVFXManager", "CWaveManager", "CWeaponManager", "CZipLine"]
 
 [[event]]
@@ -1431,6 +1453,7 @@ handled_by = ["CProjectileEntity"]
 [[event]]
 name = "SUBJECT_TERMS_OF_USE"
 id = 0x5330ee9f
+handled_by = ["CFrontendStateOptions"]
 
 [[event]]
 name = "SUBJECT_TRANSITION_MENU"
@@ -1549,16 +1572,19 @@ handled_by = ["CRemotePlayer", "CRemotePlayerWeapon"]
 [[event]]
 name = "SUBJECT_WEAPON_RELOAD"
 id = 0x2b0eec34
+sent_by = ["CWeaponManager"]
 handled_by = ["CRemotePlayer", "CRemotePlayerWeapon"]
 
 [[event]]
 name = "SUBJECT_WEAPON_SET"
 id = 0x89355f69
+sent_by = ["CWeaponManager"]
 handled_by = ["CRemotePlayer", "CRemotePlayerWeapon"]
 
 [[event]]
 name = "SUBJECT_WEAPON_SHOOT"
 id = 0xac0c7c4a
+sent_by = ["CPlayerController"]
 handled_by = ["CAITutor", "CRemotePlayer", "CRemotePlayerWeapon"]
 
 [[event]]
@@ -1600,6 +1626,7 @@ handled_by = ["CAIControllerZombie"]
 [[event]]
 name = "SUBJECT_ZOMBIE_DEATH"
 id = 0x06cdd8bf
+sent_by = ["CAIControllerZombie"]
 handled_by = ["CAIControllerHellhound", "CAIControllerMonkey", "CAIControllerZombie", "CPickupManager", "CPlayerController", "CTutorialManager"]
 
 [[event]]

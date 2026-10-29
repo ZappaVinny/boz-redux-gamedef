@@ -1340,7 +1340,6 @@ bases = [{ name = "CIsComponent", offset = 0x0 }]
 fields = [
   { name = "m_worldTM", offset = 0x38, size = 48, type = "CIwFMat" },
   { name = "m_localRotation", offset = 0x98, size = 16, type = "CIwFQuat" },
-  { name = "m_localPosition", offset = 0xa8, size = 12, type = "CIwFVec3" },
   { name = "m_localTM", offset = 0xc0, size = 48, type = "CIwFMat" },
   { name = "m_pivotTM", offset = 0xf0, size = 48, type = "CIwFMat" },
 ]
