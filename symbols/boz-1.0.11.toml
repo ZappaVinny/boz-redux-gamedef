@@ -1402,6 +1402,22 @@ confidence = "confirmed"
 notes = "The CPickupManager singleton (CIsSingleton<CPickupManager>): its constructor stores this here, its destructor clears it."
 
 [[global]]
+name = "g_frontEndMapVote"
+offset = 0x46717e
+type = "bool"
+subsystem = "ui"
+confidence = "confirmed"
+notes = "Co-op lobby map vote on (FrontEnd_SetMapVote). Off: the host starts CLevelManager+0x55."
+
+[[global]]
+name = "g_lobbyLevel"
+offset = 0x46707f
+type = "char[255]"
+subsystem = "ui"
+confidence = "confirmed"
+notes = "The co-op lobby's level (FrontEnd_SetLobbyLevel): the Wi-Fi room's name prefix when publishing and the filter when searching."
+
+[[global]]
 name = "CLevelManager::s_instance"
 offset = 0x460840
 type = "undefined4"
@@ -6397,6 +6413,30 @@ thumb = true
 subsystem = "runtime"
 confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarstring with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
+
+[[function]]
+name = "FrontEnd_SetMapVote"
+offset = 0x1859a0
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "FrontEnd_SetMapVote(on): sets g_frontEndMapVote. Off: the co-op lobby plays CLevelManager+0x55 (the chosen map) instead of the players' vote. The connection screen turns it off when it enters the Wi-Fi lobby."
+
+[[function]]
+name = "FrontEnd_SetLobbyLevel"
+offset = 0x185978
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "FrontEnd_SetLobbyLevel(filter, level): copies the lobby's room filter (empty for Wi-Fi) and level (g_lobbyLevel). The Wi-Fi lobby publishes its room as <level>_<n> and only joins rooms whose name starts with the level (CFrontendStateConnectWifi::MatchesRoom)."
+
+[[function]]
+name = "CFrontendStateConnectWifi::MatchesRoom"
+offset = 0x187498
+thumb = true
+subsystem = "ui"
+confidence = "confirmed"
+notes = "vtable slot 13: true when a found room's name starts with g_lobbyLevel, so Wi-Fi co-op only joins rooms on the same map."
 
 [[function]]
 name = "FrontEnd_StartGame"
