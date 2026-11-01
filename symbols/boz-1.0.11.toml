@@ -6415,6 +6415,30 @@ confidence = "confirmed"
 notes = "Registers (or finds) the console variable <name> of type cvarstring with a default given as text, via g_console's register method (vtable +0x5c). Returns the CIwConsoleVar; the value is at +0x10. Callers keep the result in a function-local static."
 
 [[function]]
+name = "CIsBulletWorld::FixedStep"
+offset = 0x04e4d4
+thumb = true
+subsystem = "engine"
+confidence = "confirmed"
+notes = "The physics system's simulation step: steps the Bullet dynamics world (+0x34) once. Runs every simulation tick while a level plays, whatever the player is doing; not while paused."
+
+[[function]]
+name = "CIngameStatePlaying::Update"
+offset = 0x1a01b0
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Zombies' playing in-game state, updated every frame of actual play: not while paused, on the results screen after the game is over (CIngameStateResults) or spectating (CIngameStateSpectator)."
+
+[[function]]
+name = "CDOIngameStatePlaying::Update"
+offset = 0x1476b8
+thumb = true
+subsystem = "state"
+confidence = "confirmed"
+notes = "Dead Ops Arcade's playing in-game state, updated every frame of actual play (not paused, not on its results screen, CDOIngameStateResult)."
+
+[[function]]
 name = "FrontEnd_SetMapVote"
 offset = 0x1859a0
 thumb = true
